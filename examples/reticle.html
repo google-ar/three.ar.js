@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<title>three.ar.js - Reticle Demo</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+<style>
+body {
+    font-family: Monospace;
+    margin: 0px;
+    overflow: hidden;
+}
+#info {
+    color: #fff;
+    position: absolute;
+    bottom: 10px;
+    width: 100%;
+    text-align: center;
+    z-index: 100;
+    display: block;
+    background-color: #333;
+}
+#info a {
+    text-decoration: none;
+    color: #ff0077;
+}
+
+</style>
+</head>
+<body>
+<div id="info">
+    <a href="http://threejs.org">three.js</a>
+    <a href="http://">three.ar.js</a> Reticle Demo
+    <a href="http://www.syedrezaali.com">@rezaali</a>
+</div>
+<script src="../third_party/three.js/three.js"></script>
+<script src="../third_party/three.js/VRControls.js"></script>
+<script src="../dist/three.ar.js"></script>
+<script>
+var container,
+    vrDisplay, hit, reticle,
+    scene, camera, vrControls, renderer;
+
+THREE.ARUtils.getARDisplay().then(function(display) {
+    if (!display) {
+        alert('No AR Displays found.');
+        return;
+    }
+
+    vrDisplay = display;
+    init();
+    update();
+});
+
+function init() {
+    scene = new THREE.Scene();
+    camera = new THREE.ARPerspectiveCamera(vrDisplay, 60, window.innerWidth / window.innerHeight, 0.01, 100);
+    vrControls = new THREE.VRControls(camera);
+
+    renderer = new THREE.WebGLRenderer();
+    renderer.setPixelRatio(window.devicePixelRatio);
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.autoClear = false;
+    document.body.appendChild(renderer.domElement);
+
+    reticle = new THREE.ARReticle(vrDisplay, 0.025, 0.030, 0xff0077, 0.25);
+    scene.add(reticle);
+
+    window.addEventListener('resize', onWindowResize, false);
+}
+
+function update() {
+    reticle.update(0.5, 0.5);
+    vrControls.update();
+
+    render();
+    requestAnimationFrame(update);
+}
+
+function render() {
+    renderer.clear();
+    renderer.render(scene, camera);
+}
+
+function onWindowResize() {
+    camera.aspect = window.innerWidth / window.innerHeight;
+    camera.updateProjectionMatrix();
+    renderer.setSize(window.innerWidth, window.innerHeight);
+}
+
+</script>
+</body>
+</html>

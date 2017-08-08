@@ -1,0 +1,22 @@
+{
+  "name": "three-ar",
+  "version": "0.0.1",
+  "description": "Helper three.js classes for WebAR prototyping",
+  "main": "./dist/three.ar.js",
+  "scripts": {
+    "build": "webpack",
+    "dev": "webpack-dev-server"
+  },
+  "author": "Jordan Santell <jsantell@google.com>",
+  "license": "Apache-2.0",
+  "devDependencies": {
+    "babel-core": "^6.24.1",
+    "babel-loader": "^7.0.0",
+    "babel-preset-latest": "^6.24.1",
+    "glsl-y-hsv": "^1.0.0",
+    "glslify-loader": "^1.0.2",
+    "raw-loader": "^0.5.1",
+    "webpack": "^2.6.1",
+    "webpack-dev-server": "^2.5.0"
+  }
+}
