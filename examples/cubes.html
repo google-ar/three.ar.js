@@ -1,0 +1,204 @@
+<!--
+/*
+ * Copyright 2017 Google Inc. All Rights Reserved.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <script>
+    // Catch any possible error and show an alert.
+    // Useful for "hacky" debugging.
+    window.addEventListener('error', function(event) {
+                            var errorMessage = event.message;
+                            var url = event.filename;
+                            var lineNumber = event.lineno;
+                            var columnNumber = event.colno;
+                            alert("ERROR: " + errorMessage + " at " + url + " : " + lineNumber +
+                                  " : " + columnNumber);
+                            });
+  </script>
+  <title>WebAR - ThreeJS Cubes Example</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, user-scalable=no,
+  minimum-scale=1.0, maximum-scale=1.0">
+  <style>
+    body {
+      font-family: Monospace;
+      margin: 0px;
+      overflow: hidden;
+    }
+    #info {
+      color: #fff;
+      position: absolute;
+      bottom: 10px;
+      width: 100%;
+      text-align: center;
+      z-index: 100;
+      display:block;
+    }
+    a {
+      color: skyblue
+    }
+  </style>
+</head>
+<body>
+<div id="info"> WebAR - ThreeJS Cubes Example by
+    <a href="http://www.syedrezaali.com"> Reza Ali</a>
+</div>
+<script src="../third_party/three.js/three.js"></script>
+<script src="../third_party/three.js/VRControls.js"></script>
+<script src="../dist/three.ar.js"></script>
+<script>
+
+var arView;
+var vrDisplay;
+var vrFrameData;
+var vrControls;
+
+var canvas;
+var camera;
+var scene;
+var renderer;
+var cube;
+
+var colors = [
+  new THREE.Color( 0xffffff ),
+  new THREE.Color( 0xffff00 ),
+  new THREE.Color( 0xff00ff ),
+  new THREE.Color( 0xff0000 ),
+  new THREE.Color( 0x00ffff ),
+  new THREE.Color( 0x00ff00 ),
+  new THREE.Color( 0x0000ff ),
+  new THREE.Color( 0x000000 )
+];
+
+if (navigator.getVRDisplays) {
+  navigator.getVRDisplays().then(function(vrDisplays) {
+    if( vrDisplays && vrDisplays.length > 0 ) {
+      for( var i = 0; i < vrDisplays.length; i++ ) {
+        vrDisplay = vrDisplays[i];
+        if ( vrDisplay.capabilities.hasPassThroughCamera ) {
+          vrFrameData = new VRFrameData();
+          init(vrDisplay);
+          break;
+        }
+        else {
+          vrDisplay = null;
+        }
+      }
+      if (!vrDisplay) {
+        alert( "Could not find a VRDisplay with AR capabilities." );
+      }
+    }
+  });
+}
+else {
+  alert( "This browser does not support WebVR." );
+}
+
+function init() {
+  arView = new THREE.ARView(vrDisplay);
+
+  camera = new THREE.PerspectiveCamera();
+
+  scene = new THREE.Scene();
+
+  var geometry = new THREE.BoxGeometry( 0.05, 0.05, 0.05 );
+
+  var faceIndices = [ 'a', 'b', 'c' ];
+  for ( var i = 0; i < geometry.faces.length; i++ ) {
+    var f  = geometry.faces[ i ];
+    for( var j = 0; j < 3; j++ ) {
+      var vertexIndex = f[ faceIndices[ j ] ];
+      f.vertexColors[ j ] = colors[vertexIndex];
+    }
+  }
+
+  var material = new THREE.MeshBasicMaterial({ vertexColors: THREE.VertexColors });
+  cube = new THREE.Mesh( geometry, material );
+
+  vrControls = new THREE.VRControls( camera );
+
+  renderer = new THREE.WebGLRenderer( { alpha: true } );
+  renderer.setPixelRatio( window.devicePixelRatio );
+  renderer.setSize( window.innerWidth, window.innerHeight );
+  renderer.autoClear = false;
+
+  canvas = renderer.domElement;
+  document.body.appendChild( canvas );
+
+  window.addEventListener( 'resize', onWindowResize, false );
+  canvas.addEventListener( 'touchstart', onClick, false );
+
+  update();
+}
+
+function update()
+{
+  if( vrDisplay ) {
+    vrDisplay.getFrameData(vrFrameData);
+  }
+
+  arView.update();
+  vrControls.update();
+
+  camera.projectionMatrix.fromArray( vrFrameData.leftProjectionMatrix );
+
+  // arView.render(renderer);
+  renderer.clearDepth();
+  renderer.render(scene, camera);
+
+  requestAnimationFrame( update );
+}
+
+function onWindowResize()
+{
+  renderer.setSize( window.innerWidth, window.innerHeight );
+}
+
+function onClick()
+{
+  if( vrFrameData ) {
+    var pose = vrFrameData.pose;
+
+    var ori = new THREE.Quaternion(
+      pose.orientation[0],
+      pose.orientation[1],
+      pose.orientation[2],
+      pose.orientation[3]
+    );
+
+    var pos = new THREE.Vector3(
+      pose.position[0],
+      pose.position[1],
+      pose.position[2]
+    );
+
+    var dirMtx = new THREE.Matrix4();
+    dirMtx.makeRotationFromQuaternion( ori );
+
+    var push = new THREE.Vector3( 0, 0, -1.0 );
+    push.transformDirection( dirMtx );
+    pos.addScaledVector( push, 0.125 );
+
+    var clone = cube.clone();
+    scene.add(clone);
+    clone.position.copy(pos);
+    clone.quaternion.copy(ori);
+  }
+}
+</script>
+</body>
+</html>

@@ -13,9 +13,9 @@
  * limitations under the License.
  */
 
-import { isARDisplay, isARKit, getARCamera } from './ARUtils';
-import vertexShader from './shaders/arview.vert';
-import fragmentShader from './shaders/arview.frag';
+import { isARDisplay, isARKit } from "./ARUtils";
+import vertexShader from "./shaders/arview.vert";
+import fragmentShader from "./shaders/arview.frag";
 
 /**
  * A mesh that renders the passed in VRDisplay's see through camera,
@@ -23,7 +23,8 @@ import fragmentShader from './shaders/arview.frag';
  */
 class ARViewMesh extends THREE.Mesh {
   constructor(vrDisplay) {
-    const arCamera = getARCamera(vrDisplay);
+    console.log(vrDisplay);
+    const arCamera = vrDisplay.getPassThroughCamera();
 
     if (!isARDisplay(vrDisplay) || isARKit(vrDisplay)) {
       super(new THREE.BufferGeometry(), new THREE.MeshBasicMaterial());
@@ -73,7 +74,7 @@ class ARViewMesh extends THREE.Mesh {
       return;
     }
 
-    const uvs = this.geometry.getAttribute('uv');
+    const uvs = this.geometry.getAttribute("uv");
     const newUVs = this.uvs[uvIndex];
 
     for (let i = 0; i < uvs.length; i++) {
@@ -92,24 +93,37 @@ class ARViewMesh extends THREE.Mesh {
  * @param {Float32Array<number>} uv
  * @return {THREE.BufferGeometry}
  */
-function createARViewMeshGeometry (uv) {
+function createARViewMeshGeometry(uv) {
   const geometry = new THREE.BufferGeometry();
 
   const positionBuffer = new Float32Array([
-    -1.0,  1.0, 0.0,
-    -1.0, -1.0, 0.0,
-    1.0,  1.0, 0.0,
-    1.0, -1.0, 0.0
+    -1.0,
+    1.0,
+    0.0,
+    -1.0,
+    -1.0,
+    0.0,
+    1.0,
+    1.0,
+    0.0,
+    1.0,
+    -1.0,
+    0.0
   ]);
 
-  geometry.addAttribute('position',
-    new THREE.BufferAttribute(positionBuffer, 3));
+  geometry.addAttribute(
+    "position",
+    new THREE.BufferAttribute(positionBuffer, 3)
+  );
 
-  geometry.addAttribute('uv', new THREE.BufferAttribute(
-    new Float32Array(uv), 2));
+  geometry.addAttribute(
+    "uv",
+    new THREE.BufferAttribute(new Float32Array(uv), 2)
+  );
 
-  geometry.setIndex(new THREE.BufferAttribute(
-    new Uint16Array([0, 1, 2, 2, 1, 3]), 1));
+  geometry.setIndex(
+    new THREE.BufferAttribute(new Uint16Array([0, 1, 2, 2, 1, 3]), 1)
+  );
 
   geometry.computeBoundingSphere();
 
@@ -124,36 +138,16 @@ function createARViewMeshGeometry (uv) {
  * @param {number} v
  * @return {Array<Float32Array<number>>}
  */
-function createARViewMeshUVs (u, v) {
+function createARViewMeshUVs(u, v) {
   // All the possible texture coordinates for the 4 possible orientations.
   // The ratio between the texture size and the camera size is used in order
   // to be compatible with the YUV to RGB conversion option (not recommended
   // but still available).
   return [
-    new Float32Array([
-      0, 0,
-      0, v,
-      u, 0,
-      u, v
-    ]),
-    new Float32Array([
-      u, 0,
-      0, 0,
-      u, v,
-      0, v
-    ]),
-    new Float32Array([
-      u, v,
-      u, 0,
-      0, v,
-      0, 0
-    ]),
-    new Float32Array([
-      0, v,
-      u, v,
-      0, 0,
-      u, 0
-    ])
+    new Float32Array([0, 0, 0, v, u, 0, u, v]),
+    new Float32Array([u, 0, 0, 0, u, v, 0, v]),
+    new Float32Array([u, v, u, 0, 0, v, 0, 0]),
+    new Float32Array([0, v, u, v, 0, 0, u, 0])
   ];
 }
 
@@ -164,13 +158,13 @@ function createARViewMeshUVs (u, v) {
  * @param {VRSeeThroughCamera?} arCamera
  * @return {THREE.Material}
  */
-function createARViewMeshMaterial (arCamera) {
+function createARViewMeshMaterial(arCamera) {
   // The material is different if the see through camera is
   // provided inside the vrDisplay or not.
   if (!arCamera) {
     return new THREE.MeshBasicMaterial({
-      color: 0xFFFFFF,
-      side: THREE.DoubleSide,
+      color: 0xffffff,
+      side: THREE.DoubleSide
     });
   }
 
@@ -188,14 +182,14 @@ function createARViewMeshMaterial (arCamera) {
   return new THREE.RawShaderMaterial({
     uniforms: {
       map: {
-        value: videoTexture,
-      },
+        value: videoTexture
+      }
     },
     vertexShader,
     fragmentShader,
-    side: THREE.DoubleSide,
+    side: THREE.DoubleSide
   });
-};
+}
 
 /**
  * Maps an orientation value (0, 90, 180, 270) to the index of stored
@@ -204,7 +198,7 @@ function createARViewMeshMaterial (arCamera) {
  * @param {number} orientation
  * @return {number}
  */
-function getIndexFromOrientation (orientation) {
+function getIndexFromOrientation(orientation) {
   switch (orientation) {
     case 90:
       return 1;
@@ -215,7 +209,7 @@ function getIndexFromOrientation (orientation) {
     default:
       return 0;
   }
-};
+}
 
 /**
 * Returns an index that is based on the combination between the
@@ -227,13 +221,14 @@ function getIndexFromOrientation (orientation) {
 *                  combination of the device and see through camera
 *                  orientations.
 */
-function getNormalizedIndexFromOrientation (arCamera) {
+function getNormalizedIndexFromOrientation(arCamera) {
   let cameraOrientation = arCamera ? arCamera.orientation : 0;
   let screenOrientation = screen.orientation.angle;
 
-  let result = getIndexFromOrientation(screenOrientation) -
-               getIndexFromOrientation(cameraOrientation);
-  return ((result + 4) % 4);
+  let result =
+    getIndexFromOrientation(screenOrientation) -
+    getIndexFromOrientation(cameraOrientation);
+  return (result + 4) % 4;
 }
 
 export default ARViewMesh;
