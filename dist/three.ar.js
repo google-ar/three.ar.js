@@ -520,7 +520,6 @@ var ARVideoRenderer = function () {
 
     this.vrDisplay = vrDisplay;
     this.gl = gl;
-    console.log(gl);
     if (this.vrDisplay) {
       this.passThroughCamera = vrDisplay.getPassThroughCamera();
       this.program = getProgram(gl, _arview2.default, _arview4.default);
