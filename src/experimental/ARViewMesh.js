@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-import { isARDisplay, isARKit } from './ARUtils';
+import { isARDisplay, isARKit, getARCamera } from './ARUtils';
 import vertexShader from './shaders/arview.vert';
 import fragmentShader from './shaders/arview.frag';
 
@@ -23,9 +23,7 @@ import fragmentShader from './shaders/arview.frag';
  */
 class ARViewMesh extends THREE.Mesh {
   constructor(vrDisplay) {
-    const arCamera = vrDisplay && vrDisplay.getPassThroughCamera ?
-      vrDisplay.getPassThroughCamera() :
-      null;
+    const arCamera = getARCamera(vrDisplay);
 
     if (!isARDisplay(vrDisplay) || isARKit(vrDisplay)) {
       super(new THREE.BufferGeometry(), new THREE.MeshBasicMaterial());
