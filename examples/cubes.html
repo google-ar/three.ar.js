@@ -63,10 +63,7 @@
 <script>
 
 // THREE.JS
-var scene, camera, vrControls, renderer;
-
-// WEBGL
-var gl, canvas;
+var scene, camera, vrControls, renderer, canvas;
 
 var vrDisplay;
 var vrFrameData;
@@ -115,8 +112,6 @@ function setup()
   document.body.appendChild(canvas);
 
   arView = new THREE.ARView(vrDisplay, renderer);
-
-  renderer.resetGLState();
 
   scene = new THREE.Scene();
     camera = new THREE.ARPerspectiveCamera(vrDisplay, 60, window.innerWidth / window.innerHeight, 0.01, 100);
