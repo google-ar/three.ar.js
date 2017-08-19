@@ -118,7 +118,6 @@ class ARVideoRenderer {
   constructor(vrDisplay, gl) {
     this.vrDisplay = vrDisplay;
     this.gl = gl;
-
     if (this.vrDisplay) {
       this.passThroughCamera = vrDisplay.getPassThroughCamera();
       this.program = getProgram(gl, vertexSource, fragmentSource);
@@ -312,7 +311,7 @@ class ARView {
     this.renderer = renderer;
     this.gl = renderer.context;
 
-    this.videoRenderer = new ARVideoRenderer(vrDisplay, gl);
+    this.videoRenderer = new ARVideoRenderer(vrDisplay, this.gl);
     this.renderer.resetGLState();
   }
 
