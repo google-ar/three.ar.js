@@ -63,7 +63,7 @@
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 7);
+/******/ 	return __webpack_require__(__webpack_require__.s = 6);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -78,7 +78,7 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.loadBlocksModel = exports.getARDisplay = exports.isARDisplay = exports.isARKit = exports.isTango = undefined;
 
-var _loaders = __webpack_require__(8);
+var _loaders = __webpack_require__(7);
 
 THREE.ARUtils = Object.create(null); /*
                                       * Copyright 2017 Google Inc. All Rights Reserved.
@@ -402,103 +402,6 @@ var _createClass = function () { function defineProperties(target, props) { for 
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       * limitations under the License.
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       */
 
-var _ARViewMesh = __webpack_require__(6);
-
-var _ARViewMesh2 = _interopRequireDefault(_ARViewMesh);
-
-var _ARUtils = __webpack_require__(0);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-/**
- * A helper class that takes a VRDisplay with AR capabilities
- * and renders the see through camera to the passed in WebGLRenderer's
- * context.
- */
-var ARView = function () {
-  /**
-   * @param {VRDisplay}
-   */
-  function ARView(vrDisplay) {
-    _classCallCheck(this, ARView);
-
-    this.vrDisplay = vrDisplay;
-    this.scene = new THREE.Scene();
-    this.camera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 100);
-    this.mesh = new _ARViewMesh2.default(vrDisplay);
-    this.scene.add(this.mesh);
-  }
-
-  /**
-   * Updates the underlying mesh's orientation if necessary.
-   */
-
-
-  _createClass(ARView, [{
-    key: 'update',
-    value: function update() {
-      this.mesh.updateOrientation();
-    }
-
-    /**
-     * Renders the see through camera to the passed in renderer
-     *
-     * @param {THREE.WebGLRenderer}
-     */
-
-  }, {
-    key: 'render',
-    value: function render(renderer) {
-      // Don't render anything in ARKit since the platform handles
-      // the see-through camera rendering.
-      if ((0, _ARUtils.isARKit)(this.vrDisplay)) {
-        return;
-      }
-      renderer.render(this.scene, this.camera);
-    }
-  }]);
-
-  return ARView;
-}();
-
-;
-
-THREE.ARView = ARView;
-exports.default = ARView;
-
-/***/ }),
-/* 4 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-module.exports = "#extension GL_OES_EGL_image_external : require\nprecision mediump float;\n#define GLSLIFY 1\n\nvarying vec2 vUV;\n\nuniform samplerExternalOES map;\n\nvoid main(void) {\n  gl_FragColor = texture2D(map, vUV);\n}\n";
-
-/***/ }),
-/* 5 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-module.exports = "#define GLSLIFY 1\nattribute vec3 position;\nattribute vec2 uv;\n\nuniform mat4 modelViewMatrix;\nuniform mat4 projectionMatrix;\n\nvarying vec2 vUV;\n\nvoid main(void) {\n  gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);\n  vUV = uv;\n}\n";
-
-/***/ }),
-/* 6 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
 var _ARUtils = __webpack_require__(0);
 
 var _arview = __webpack_require__(5);
@@ -513,228 +416,305 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; } /*
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * Copyright 2017 Google Inc. All Rights Reserved.
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * Licensed under the Apache License, Version 2.0 (the 'License');
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * you may not use this file except in compliance with the License.
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * You may obtain a copy of the License at
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                *
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                *     http://www.apache.org/licenses/LICENSE-2.0
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                *
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * Unless required by applicable law or agreed to in writing, software
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * distributed under the License is distributed on an 'AS IS' BASIS,
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * See the License for the specific language governing permissions and
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * limitations under the License.
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                */
-
 /**
- * A mesh that renders the passed in VRDisplay's see through camera,
- * if applicable.
- */
-var ARViewMesh = function (_THREE$Mesh) {
-  _inherits(ARViewMesh, _THREE$Mesh);
-
-  function ARViewMesh(vrDisplay) {
-    _classCallCheck(this, ARViewMesh);
-
-    console.log(vrDisplay);
-    var arCamera = vrDisplay.getPassThroughCamera();
-
-    if (!(0, _ARUtils.isARDisplay)(vrDisplay) || (0, _ARUtils.isARKit)(vrDisplay)) {
-      var _this = _possibleConstructorReturn(this, (ARViewMesh.__proto__ || Object.getPrototypeOf(ARViewMesh)).call(this, new THREE.BufferGeometry(), new THREE.MeshBasicMaterial()));
-
-      return _possibleConstructorReturn(_this);
-    }
-
-    var u = arCamera.width / arCamera.textureWidth;
-    var v = arCamera.height / arCamera.textureHeight;
-
-    // Store uvs for 4 possible orientations:
-    // 0: 0 degrees
-    // 1: 90 degrees
-    // 2: 180 degrees
-    // 3: 270 degrees
-    var uvs = createARViewMeshUVs(u, v);
-    var currentUVIndex = 0;
-
-    // Create geometry with the 0 degrees orientation.
-    // We will update the uv based on orientation later
-    var geometry = createARViewMeshGeometry(uvs[0]);
-    var material = createARViewMeshMaterial(arCamera);
-
-    var _this = _possibleConstructorReturn(this, (ARViewMesh.__proto__ || Object.getPrototypeOf(ARViewMesh)).call(this, geometry, material));
-
-    _this.arCamera = arCamera;
-
-    _this.uvs = uvs;
-    _this.currentUVIndex = currentUVIndex;
-
-    _this.updateOrientation();
-    return _possibleConstructorReturn(_this);
+* Creates and load a shader from a string, type specifies either 'vertex' or 'fragment'
+*/
+function getShader(gl, str, type) {
+  var shader;
+  if (type == "fragment") {
+    shader = gl.createShader(gl.FRAGMENT_SHADER);
+  } else if (type == "vertex") {
+    shader = gl.createShader(gl.VERTEX_SHADER);
+  } else {
+    return null;
   }
 
+  gl.shaderSource(shader, str);
+  gl.compileShader(shader);
+
+  var result = gl.getShaderParameter(shader, gl.COMPILE_STATUS);
+  if (!result) {
+    alert(gl.getShaderInfoLog(shader));
+    return null;
+  }
+
+  return shader;
+}
+
+/**
+* Creates a shader program from vertex and fragment shader sources
+*/
+function getProgram(gl, vs, fs) {
+  var vertexShader = getShader(gl, vs, "vertex");
+  var fragmentShader = getShader(gl, fs, "fragment");
+  if (!fragmentShader) {
+    return null;
+  }
+
+  var shaderProgram = gl.createProgram();
+  gl.attachShader(shaderProgram, vertexShader);
+  gl.attachShader(shaderProgram, fragmentShader);
+  gl.linkProgram(shaderProgram);
+
+  var result = gl.getProgramParameter(shaderProgram, gl.LINK_STATUS);
+  // alert("getProgramParameter result = " + result);
+  if (!result) {
+    alert("Could not initialise arview shaders");
+  }
+
+  return shaderProgram;
+}
+
+/**
+* Calculate the correct orientation depending on the device and the camera
+* orientations.
+*/
+function combineOrientations(screenOrientation, seeThroughCameraOrientation) {
+  var seeThroughCameraOrientationIndex = 0;
+  switch (seeThroughCameraOrientation) {
+    case 90:
+      seeThroughCameraOrientationIndex = 1;
+      break;
+    case 180:
+      seeThroughCameraOrientationIndex = 2;
+      break;
+    case 270:
+      seeThroughCameraOrientationIndex = 3;
+      break;
+    default:
+      seeThroughCameraOrientationIndex = 0;
+      break;
+  }
+  var screenOrientationIndex = 0;
+  switch (screenOrientation) {
+    case 90:
+      screenOrientationIndex = 1;
+      break;
+    case 180:
+      screenOrientationIndex = 2;
+      break;
+    case 270:
+      screenOrientationIndex = 3;
+      break;
+    default:
+      screenOrientationIndex = 0;
+      break;
+  }
+  var ret = screenOrientationIndex - seeThroughCameraOrientationIndex;
+  if (ret < 0) {
+    ret += 4;
+  }
+  return ret % 4;
+}
+
+/**
+* Renders the ar camera's video texture
+*/
+
+var ARVideoRenderer = function () {
   /**
-  * Updates the camera mesh texture coordinates depending on the
-  * orientation of the current screen and the AR camera.
+  * @param {VRDisplay, WebGLRenderingContext}
   */
+  function ARVideoRenderer(vrDisplay, gl) {
+    _classCallCheck(this, ARVideoRenderer);
 
+    this.vrDisplay = vrDisplay;
+    this.gl = gl;
 
-  _createClass(ARViewMesh, [{
-    key: "updateOrientation",
-    value: function updateOrientation() {
-      // If we're using a non ARDisplay, or an ARDisplay does not
-      // use a camera implementation (like ARKit), ignore this
-      if (!this.arCamera) {
-        return;
+    if (this.vrDisplay) {
+      this.passThroughCamera = vrDisplay.getPassThroughCamera();
+      this.program = getProgram(gl, _arview2.default, _arview4.default);
+    }
+
+    gl.useProgram(this.program);
+
+    // Setup a quad
+    this.vertexPositionAttribute = gl.getAttribLocation(this.program, "aVertexPosition");
+    this.textureCoordAttribute = gl.getAttribLocation(this.program, "aTextureCoord");
+
+    this.samplerUniform = gl.getUniformLocation(this.program, "uSampler");
+
+    this.vertexPositionBuffer = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, this.vertexPositionBuffer);
+    var vertices = [-1.0, 1.0, 0.0, -1.0, -1.0, 0.0, 1.0, 1.0, 0.0, 1.0, -1.0, 0.0];
+    var f32Vertices = new Float32Array(vertices);
+    gl.bufferData(gl.ARRAY_BUFFER, f32Vertices, gl.STATIC_DRAW);
+    this.vertexPositionBuffer.itemSize = 3;
+    this.vertexPositionBuffer.numItems = 12;
+
+    this.textureCoordBuffer = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, this.textureCoordBuffer);
+    // Precalculate different texture UV coordinates depending on the possible
+    // orientations of the device depending if there is a VRDisplay or not
+    var textureCoords = null;
+    if (this.vrDisplay) {
+      var u = this.passThroughCamera.width / this.passThroughCamera.textureWidth;
+      var v = this.passThroughCamera.height / this.passThroughCamera.textureHeight;
+      textureCoords = [[0.0, 0.0, 0.0, v, u, 0.0, u, v], [u, 0.0, 0.0, 0.0, u, v, 0.0, v], [u, v, u, 0.0, 0.0, v, 0.0, 0.0], [0.0, v, u, v, 0.0, 0.0, u, 0.0]];
+    } else {
+      textureCoords = [[0.0, 0.0, 0.0, 1.0, 1.0, 0.0, 1.0, 1.0], [1.0, 0.0, 0.0, 0.0, 1.0, 1.0, 0.0, 1.0], [1.0, 1.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0], [0.0, 1.0, 1.0, 1.0, 0.0, 0.0, 1.0, 0.0]];
+    }
+
+    this.f32TextureCoords = [];
+    for (var i = 0; i < textureCoords.length; i++) {
+      this.f32TextureCoords.push(new Float32Array(textureCoords[i]));
+    }
+    // Store the current combined orientation to check if it has changed
+    // during the update calls and use the correct texture coordinates.
+    this.combinedOrientation = combineOrientations(screen.orientation.angle, this.passThroughCamera.orientation);
+
+    gl.bufferData(gl.ARRAY_BUFFER, this.f32TextureCoords[this.combinedOrientation], gl.STATIC_DRAW);
+    this.textureCoordBuffer.itemSize = 2;
+    this.textureCoordBuffer.numItems = 8;
+    gl.bindBuffer(gl.ARRAY_BUFFER, null);
+
+    this.indexBuffer = gl.createBuffer();
+    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.indexBuffer);
+    var indices = [0, 1, 2, 2, 1, 3];
+    var ui16Indices = new Uint16Array(indices);
+    gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, ui16Indices, gl.STATIC_DRAW);
+    this.indexBuffer.itemSize = 1;
+    this.indexBuffer.numItems = 6;
+    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, null);
+
+    this.texture = gl.createTexture();
+    gl.useProgram(null);
+
+    // The projection matrix will be based on an identify orthographic camera
+    this.projectionMatrix = [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1];
+    this.mvMatrix = [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1];
+    return this;
+  }
+
+  _createClass(ARVideoRenderer, [{
+    key: "render",
+    value: function render() {
+      var gl = this.gl;
+      gl.useProgram(this.program);
+      gl.bindBuffer(gl.ARRAY_BUFFER, this.vertexPositionBuffer);
+      gl.enableVertexAttribArray(this.vertexPositionAttribute);
+      gl.vertexAttribPointer(this.vertexPositionAttribute, this.vertexPositionBuffer.itemSize, gl.FLOAT, false, 0, 0);
+
+      gl.bindBuffer(gl.ARRAY_BUFFER, this.textureCoordBuffer);
+
+      // Check the current orientation of the device combined with the
+      // orientation of the VRSeeThroughCamera to determine the correct UV
+      // coordinates to be used.
+      var combinedOrientation = combineOrientations(screen.orientation.angle, this.passThroughCamera.orientation);
+      if (combinedOrientation !== this.combinedOrientation) {
+        this.combinedOrientation = combinedOrientation;
+        gl.bufferData(gl.ARRAY_BUFFER, this.f32TextureCoords[this.combinedOrientation], gl.STATIC_DRAW);
       }
+      gl.enableVertexAttribArray(this.textureCoordAttribute);
+      gl.vertexAttribPointer(this.textureCoordAttribute, this.textureCoordBuffer.itemSize, gl.FLOAT, false, 0, 0);
 
-      var uvIndex = getNormalizedIndexFromOrientation(this.arCamera);
+      gl.activeTexture(gl.TEXTURE0);
+      gl.bindTexture(gl.TEXTURE_EXTERNAL_OES, this.texture);
+      // Update the content of the texture in every frame.
+      gl.texImage2D(gl.TEXTURE_EXTERNAL_OES, 0, gl.RGB, gl.RGB, gl.UNSIGNED_BYTE, this.passThroughCamera);
+      gl.uniform1i(this.samplerUniform, 0);
 
-      if (uvIndex === this.currentUVIndex) {
-        return;
-      }
+      gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.indexBuffer);
 
-      var uvs = this.geometry.getAttribute("uv");
-      var newUVs = this.uvs[uvIndex];
+      gl.drawElements(gl.TRIANGLES, this.indexBuffer.numItems, gl.UNSIGNED_SHORT, 0);
 
-      for (var i = 0; i < uvs.length; i++) {
-        uvs.array[i] = newUVs[i];
-      }
-
-      uvs.needsUpdate = true;
-      this.currentUVIndex = uvIndex;
+      // Disable enabled states to allow other render calls to correctly work
+      gl.bindTexture(gl.TEXTURE_EXTERNAL_OES, null);
+      gl.disableVertexAttribArray(this.vertexPositionAttribute);
+      gl.disableVertexAttribArray(this.textureCoordAttribute);
+      gl.bindBuffer(gl.ARRAY_BUFFER, null);
+      gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, null);
+      gl.useProgram(null);
     }
   }]);
 
-  return ARViewMesh;
-}(THREE.Mesh);
+  return ARVideoRenderer;
+}();
 
 /**
- * Create a THREE.BufferGeometry set up with the expected
- * attributes.
- *
- * @param {Float32Array<number>} uv
- * @return {THREE.BufferGeometry}
+ * A helper class that takes a VRDisplay with AR capabilities
+ * and renders the see through camera to the passed in WebGLRenderer's
+ * context.
  */
 
 
-function createARViewMeshGeometry(uv) {
-  var geometry = new THREE.BufferGeometry();
+var ARView = function () {
+  /**
+  * @param {VRDisplay}
+  */
+  function ARView(vrDisplay, renderer) {
+    _classCallCheck(this, ARView);
 
-  var positionBuffer = new Float32Array([-1.0, 1.0, 0.0, -1.0, -1.0, 0.0, 1.0, 1.0, 0.0, 1.0, -1.0, 0.0]);
+    this.vrDisplay = vrDisplay;
+    if ((0, _ARUtils.isARKit)(this.vrDisplay)) {
+      return;
+    }
+    this.renderer = renderer;
+    this.gl = renderer.context;
 
-  geometry.addAttribute("position", new THREE.BufferAttribute(positionBuffer, 3));
-
-  geometry.addAttribute("uv", new THREE.BufferAttribute(new Float32Array(uv), 2));
-
-  geometry.setIndex(new THREE.BufferAttribute(new Uint16Array([0, 1, 2, 2, 1, 3]), 1));
-
-  geometry.computeBoundingSphere();
-
-  return geometry;
-}
-
-/**
- * Create an array of 4 texture coordinate arrays (one for each orientation),
- * based off of the passed in uv values.
- *
- * @param {number} u
- * @param {number} v
- * @return {Array<Float32Array<number>>}
- */
-function createARViewMeshUVs(u, v) {
-  // All the possible texture coordinates for the 4 possible orientations.
-  // The ratio between the texture size and the camera size is used in order
-  // to be compatible with the YUV to RGB conversion option (not recommended
-  // but still available).
-  return [new Float32Array([0, 0, 0, v, u, 0, u, v]), new Float32Array([u, 0, 0, 0, u, v, 0, v]), new Float32Array([u, v, u, 0, 0, v, 0, 0]), new Float32Array([0, v, u, v, 0, 0, u, 0])];
-}
-
-/**
- * Creates a THREE.Material to render the video texture of an AR Camera
- * upon, or a basic material if no AR Camera provided.
- *
- * @param {VRSeeThroughCamera?} arCamera
- * @return {THREE.Material}
- */
-function createARViewMeshMaterial(arCamera) {
-  // The material is different if the see through camera is
-  // provided inside the vrDisplay or not.
-  if (!arCamera) {
-    return new THREE.MeshBasicMaterial({
-      color: 0xffffff,
-      side: THREE.DoubleSide
-    });
+    this.videoRenderer = new ARVideoRenderer(vrDisplay, gl);
+    this.renderer.resetGLState();
   }
 
-  // HACK: Needed to tell the THREE.VideoTexture that the video is ready and
-  // that the texture needs update.
-  arCamera.readyState = 2;
-  arCamera.HAVE_CURRENT_DATA = 2;
+  /**
+  * Renders the see through camera to the passed in renderer
+  *
+  * @param {THREE.WebGLRenderer}
+  */
 
-  var videoTexture = new THREE.VideoTexture(arCamera);
-  videoTexture.minFilter = THREE.NearestFilter;
-  videoTexture.magFilter = THREE.NearestFilter;
-  videoTexture.format = THREE.RGBFormat;
-  videoTexture.flipY = false;
 
-  return new THREE.RawShaderMaterial({
-    uniforms: {
-      map: {
-        value: videoTexture
+  _createClass(ARView, [{
+    key: "render",
+    value: function render() {
+      if ((0, _ARUtils.isARKit)(this.vrDisplay)) {
+        return;
       }
-    },
-    vertexShader: _arview2.default,
-    fragmentShader: _arview4.default,
-    side: THREE.DoubleSide
-  });
-}
 
-/**
- * Maps an orientation value (0, 90, 180, 270) to the index of stored
- * uv values.
- *
- * @param {number} orientation
- * @return {number}
- */
-function getIndexFromOrientation(orientation) {
-  switch (orientation) {
-    case 90:
-      return 1;
-    case 180:
-      return 2;
-    case 270:
-      return 3;
-    default:
-      return 0;
-  }
-}
+      var gl = this.gl;
+      var dpr = window.devicePixelRatio;
+      var width = window.innerWidth * dpr;
+      var height = window.innerHeight * dpr;
 
-/**
-* Returns an index that is based on the combination between the
-* display orientation and the AR camera orientation. This index will
-* always be device natural orientation independent.
-*
-* @param {VRSeeThroughCamera?} arCamera
-* @return {number} The index from 0 to 3 that represents the
-*                  combination of the device and see through camera
-*                  orientations.
-*/
-function getNormalizedIndexFromOrientation(arCamera) {
-  var cameraOrientation = arCamera ? arCamera.orientation : 0;
-  var screenOrientation = screen.orientation.angle;
+      if (gl.viewportWidth !== width) {
+        gl.viewportWidth = width;
+      }
 
-  var result = getIndexFromOrientation(screenOrientation) - getIndexFromOrientation(cameraOrientation);
-  return (result + 4) % 4;
-}
+      if (gl.viewportHeight !== height) {
+        gl.viewportHeight = height;
+      }
 
-exports.default = ARViewMesh;
+      this.gl.viewport(0, 0, gl.viewportWidth, gl.viewportHeight);
+      this.videoRenderer.render();
+      this.renderer.resetGLState();
+    }
+  }]);
+
+  return ARView;
+}();
+
+THREE.ARView = ARView;
+exports.default = ARView;
 
 /***/ }),
-/* 7 */
+/* 4 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+module.exports = "#extension GL_OES_EGL_image_external : require\n\nprecision mediump float;\n#define GLSLIFY 1\n\nvarying vec2 vTextureCoord;\n\nuniform samplerExternalOES uSampler;\n\nvoid main(void) {\n  gl_FragColor = texture2D(uSampler, vTextureCoord);\n}\n";
+
+/***/ }),
+/* 5 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+module.exports = "#define GLSLIFY 1\nattribute vec3 aVertexPosition;\nattribute vec2 aTextureCoord;\n\nvarying vec2 vTextureCoord;\n\nvoid main(void) {\n  gl_Position = vec4(aVertexPosition, 1.0);\n  vTextureCoord = aTextureCoord;\n}\n";
+
+/***/ }),
+/* 6 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -759,7 +739,7 @@ var _ARView2 = _interopRequireDefault(_ARView);
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 /***/ }),
-/* 8 */
+/* 7 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";

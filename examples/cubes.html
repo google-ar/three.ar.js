@@ -62,17 +62,16 @@
 <script src="../dist/three.ar.js"></script>
 <script>
 
-var arView;
+// THREE.JS
+var scene, camera, vrControls, renderer;
+
+// WEBGL
+var gl, canvas;
+
 var vrDisplay;
 var vrFrameData;
-var vrControls;
 
-var canvas;
-var camera;
-var scene;
-var renderer;
 var cube;
-
 var colors = [
   new THREE.Color( 0xffffff ),
   new THREE.Color( 0xffff00 ),
@@ -84,39 +83,47 @@ var colors = [
   new THREE.Color( 0x000000 )
 ];
 
-if (navigator.getVRDisplays) {
-  navigator.getVRDisplays().then(function(vrDisplays) {
-    if( vrDisplays && vrDisplays.length > 0 ) {
-      for( var i = 0; i < vrDisplays.length; i++ ) {
-        vrDisplay = vrDisplays[i];
-        if ( vrDisplay.capabilities.hasPassThroughCamera ) {
-          vrFrameData = new VRFrameData();
-          init(vrDisplay);
-          break;
-        }
-        else {
-          vrDisplay = null;
-        }
+function init(vrDisplays) {
+  if( vrDisplays && vrDisplays.length > 0 ) {
+    for( var i = 0; i < vrDisplays.length; i++ ) {
+      vrDisplay = vrDisplays[i];
+      if( vrDisplay.capabilities.hasPassThroughCamera ) {
+        vrFrameData = new VRFrameData();
+        vrDisplay.depthNear = 0.1;
+        vrDisplay.depthFar = 1000.0;
+        setup();
+        break;
       }
-      if (!vrDisplay) {
-        alert( "Could not find a VRDisplay with AR capabilities." );
+      else {
+        vrDisplay = null;
       }
     }
-  });
-}
-else {
-  alert( "This browser does not support WebVR." );
+  }
+  if( !vrDisplay ) {
+    alert( "Could not find a VRDisplay with AR capabilities." );
+  }
 }
 
-function init() {
-  arView = new THREE.ARView(vrDisplay);
+function setup()
+{
+  renderer = new THREE.WebGLRenderer();
+  renderer.setPixelRatio(window.devicePixelRatio);
+  renderer.setSize(window.innerWidth, window.innerHeight);
+  renderer.autoClear = false;
 
-  camera = new THREE.PerspectiveCamera();
+  canvas = renderer.domElement;
+  document.body.appendChild(canvas);
+  gl = renderer.context;
+
+  arView = new THREE.ARView(vrDisplay, renderer);
+
+  renderer.resetGLState();
 
   scene = new THREE.Scene();
+    camera = new THREE.ARPerspectiveCamera(vrDisplay, 60, window.innerWidth / window.innerHeight, 0.01, 100);
+  vrControls = new THREE.VRControls(camera);
 
   var geometry = new THREE.BoxGeometry( 0.05, 0.05, 0.05 );
-
   var faceIndices = [ 'a', 'b', 'c' ];
   for ( var i = 0; i < geometry.faces.length; i++ ) {
     var f  = geometry.faces[ i ];
@@ -125,19 +132,8 @@ function init() {
       f.vertexColors[ j ] = colors[vertexIndex];
     }
   }
-
   var material = new THREE.MeshBasicMaterial({ vertexColors: THREE.VertexColors });
   cube = new THREE.Mesh( geometry, material );
-
-  vrControls = new THREE.VRControls( camera );
-
-  renderer = new THREE.WebGLRenderer( { alpha: true } );
-  renderer.setPixelRatio( window.devicePixelRatio );
-  renderer.setSize( window.innerWidth, window.innerHeight );
-  renderer.autoClear = false;
-
-  canvas = renderer.domElement;
-  document.body.appendChild( canvas );
 
   window.addEventListener( 'resize', onWindowResize, false );
   canvas.addEventListener( 'touchstart', onClick, false );
@@ -148,56 +144,63 @@ function init() {
 function update()
 {
   if( vrDisplay ) {
-    vrDisplay.getFrameData(vrFrameData);
+    vrDisplay.getFrameData( vrFrameData );
   }
 
-  arView.update();
   vrControls.update();
 
-  camera.projectionMatrix.fromArray( vrFrameData.leftProjectionMatrix );
+  arView.render();
 
-  // arView.render(renderer);
   renderer.clearDepth();
   renderer.render(scene, camera);
 
-  requestAnimationFrame( update );
+  window.requestAnimationFrame( update );
 }
 
 function onWindowResize()
 {
-  renderer.setSize( window.innerWidth, window.innerHeight );
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+  gl.viewportWidth = canvas.width;
+  gl.viewportHeight = canvas.height;
+
+  camera.aspect = window.innerWidth / window.innerHeight;
+  camera.updateProjectionMatrix();
+  renderer.setSize(window.innerWidth, window.innerHeight);
 }
 
 function onClick()
 {
   if( vrFrameData ) {
     var pose = vrFrameData.pose;
-
     var ori = new THREE.Quaternion(
       pose.orientation[0],
       pose.orientation[1],
       pose.orientation[2],
       pose.orientation[3]
     );
-
     var pos = new THREE.Vector3(
       pose.position[0],
       pose.position[1],
       pose.position[2]
     );
-
     var dirMtx = new THREE.Matrix4();
     dirMtx.makeRotationFromQuaternion( ori );
-
     var push = new THREE.Vector3( 0, 0, -1.0 );
     push.transformDirection( dirMtx );
     pos.addScaledVector( push, 0.125 );
-
     var clone = cube.clone();
     scene.add(clone);
     clone.position.copy(pos);
     clone.quaternion.copy(ori);
   }
+}
+
+if( navigator.getVRDisplays ) {
+  navigator.getVRDisplays().then( init );
+} else {
+  alert( "This browser does not support WebVR." );
+  setup();
 }
 </script>
 </body>

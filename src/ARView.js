@@ -13,8 +13,287 @@
  * limitations under the License.
  */
 
-import ARViewMesh from './ARViewMesh';
-import { isARKit } from './ARUtils';
+import { isARKit } from "./ARUtils";
+import vertexSource from "./shaders/arview.vert";
+import fragmentSource from "./shaders/arview.frag";
+
+/**
+* Creates and load a shader from a string, type specifies either 'vertex' or 'fragment'
+*/
+function getShader(gl, str, type) {
+  var shader;
+  if (type == "fragment") {
+    shader = gl.createShader(gl.FRAGMENT_SHADER);
+  } else if (type == "vertex") {
+    shader = gl.createShader(gl.VERTEX_SHADER);
+  } else {
+    return null;
+  }
+
+  gl.shaderSource(shader, str);
+  gl.compileShader(shader);
+
+  var result = gl.getShaderParameter(shader, gl.COMPILE_STATUS);
+  if (!result) {
+    alert(gl.getShaderInfoLog(shader));
+    return null;
+  }
+
+  return shader;
+}
+
+/**
+* Creates a shader program from vertex and fragment shader sources
+*/
+function getProgram(gl, vs, fs) {
+  var vertexShader = getShader(gl, vs, "vertex");
+  var fragmentShader = getShader(gl, fs, "fragment");
+  if (!fragmentShader) {
+    return null;
+  }
+
+  var shaderProgram = gl.createProgram();
+  gl.attachShader(shaderProgram, vertexShader);
+  gl.attachShader(shaderProgram, fragmentShader);
+  gl.linkProgram(shaderProgram);
+
+  var result = gl.getProgramParameter(shaderProgram, gl.LINK_STATUS);
+  // alert("getProgramParameter result = " + result);
+  if (!result) {
+    alert("Could not initialise arview shaders");
+  }
+
+  return shaderProgram;
+}
+
+/**
+* Calculate the correct orientation depending on the device and the camera
+* orientations.
+*/
+function combineOrientations(screenOrientation, seeThroughCameraOrientation) {
+  var seeThroughCameraOrientationIndex = 0;
+  switch (seeThroughCameraOrientation) {
+    case 90:
+      seeThroughCameraOrientationIndex = 1;
+      break;
+    case 180:
+      seeThroughCameraOrientationIndex = 2;
+      break;
+    case 270:
+      seeThroughCameraOrientationIndex = 3;
+      break;
+    default:
+      seeThroughCameraOrientationIndex = 0;
+      break;
+  }
+  var screenOrientationIndex = 0;
+  switch (screenOrientation) {
+    case 90:
+      screenOrientationIndex = 1;
+      break;
+    case 180:
+      screenOrientationIndex = 2;
+      break;
+    case 270:
+      screenOrientationIndex = 3;
+      break;
+    default:
+      screenOrientationIndex = 0;
+      break;
+  }
+  var ret = screenOrientationIndex - seeThroughCameraOrientationIndex;
+  if (ret < 0) {
+    ret += 4;
+  }
+  return ret % 4;
+}
+
+/**
+* Renders the ar camera's video texture
+*/
+class ARVideoRenderer {
+  /**
+  * @param {VRDisplay, WebGLRenderingContext}
+  */
+  constructor(vrDisplay, gl) {
+    this.vrDisplay = vrDisplay;
+    this.gl = gl;
+
+    if (this.vrDisplay) {
+      this.passThroughCamera = vrDisplay.getPassThroughCamera();
+      this.program = getProgram(gl, vertexSource, fragmentSource);
+    }
+
+    gl.useProgram(this.program);
+
+    // Setup a quad
+    this.vertexPositionAttribute = gl.getAttribLocation(
+      this.program,
+      "aVertexPosition"
+    );
+    this.textureCoordAttribute = gl.getAttribLocation(
+      this.program,
+      "aTextureCoord"
+    );
+
+    this.samplerUniform = gl.getUniformLocation(this.program, "uSampler");
+
+    this.vertexPositionBuffer = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, this.vertexPositionBuffer);
+    var vertices = [
+      -1.0,
+      1.0,
+      0.0,
+      -1.0,
+      -1.0,
+      0.0,
+      1.0,
+      1.0,
+      0.0,
+      1.0,
+      -1.0,
+      0.0
+    ];
+    var f32Vertices = new Float32Array(vertices);
+    gl.bufferData(gl.ARRAY_BUFFER, f32Vertices, gl.STATIC_DRAW);
+    this.vertexPositionBuffer.itemSize = 3;
+    this.vertexPositionBuffer.numItems = 12;
+
+    this.textureCoordBuffer = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, this.textureCoordBuffer);
+    // Precalculate different texture UV coordinates depending on the possible
+    // orientations of the device depending if there is a VRDisplay or not
+    var textureCoords = null;
+    if (this.vrDisplay) {
+      var u =
+        this.passThroughCamera.width / this.passThroughCamera.textureWidth;
+      var v =
+        this.passThroughCamera.height / this.passThroughCamera.textureHeight;
+      textureCoords = [
+        [0.0, 0.0, 0.0, v, u, 0.0, u, v],
+        [u, 0.0, 0.0, 0.0, u, v, 0.0, v],
+        [u, v, u, 0.0, 0.0, v, 0.0, 0.0],
+        [0.0, v, u, v, 0.0, 0.0, u, 0.0]
+      ];
+    } else {
+      textureCoords = [
+        [0.0, 0.0, 0.0, 1.0, 1.0, 0.0, 1.0, 1.0],
+        [1.0, 0.0, 0.0, 0.0, 1.0, 1.0, 0.0, 1.0],
+        [1.0, 1.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0],
+        [0.0, 1.0, 1.0, 1.0, 0.0, 0.0, 1.0, 0.0]
+      ];
+    }
+
+    this.f32TextureCoords = [];
+    for (var i = 0; i < textureCoords.length; i++) {
+      this.f32TextureCoords.push(new Float32Array(textureCoords[i]));
+    }
+    // Store the current combined orientation to check if it has changed
+    // during the update calls and use the correct texture coordinates.
+    this.combinedOrientation = combineOrientations(
+      screen.orientation.angle,
+      this.passThroughCamera.orientation
+    );
+
+    gl.bufferData(
+      gl.ARRAY_BUFFER,
+      this.f32TextureCoords[this.combinedOrientation],
+      gl.STATIC_DRAW
+    );
+    this.textureCoordBuffer.itemSize = 2;
+    this.textureCoordBuffer.numItems = 8;
+    gl.bindBuffer(gl.ARRAY_BUFFER, null);
+
+    this.indexBuffer = gl.createBuffer();
+    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.indexBuffer);
+    var indices = [0, 1, 2, 2, 1, 3];
+    var ui16Indices = new Uint16Array(indices);
+    gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, ui16Indices, gl.STATIC_DRAW);
+    this.indexBuffer.itemSize = 1;
+    this.indexBuffer.numItems = 6;
+    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, null);
+
+    this.texture = gl.createTexture();
+    gl.useProgram(null);
+
+    // The projection matrix will be based on an identify orthographic camera
+    this.projectionMatrix = [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1];
+    this.mvMatrix = [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1];
+    return this;
+  }
+
+  render() {
+    var gl = this.gl;
+    gl.useProgram(this.program);
+    gl.bindBuffer(gl.ARRAY_BUFFER, this.vertexPositionBuffer);
+    gl.enableVertexAttribArray(this.vertexPositionAttribute);
+    gl.vertexAttribPointer(
+      this.vertexPositionAttribute,
+      this.vertexPositionBuffer.itemSize,
+      gl.FLOAT,
+      false,
+      0,
+      0
+    );
+
+    gl.bindBuffer(gl.ARRAY_BUFFER, this.textureCoordBuffer);
+
+    // Check the current orientation of the device combined with the
+    // orientation of the VRSeeThroughCamera to determine the correct UV
+    // coordinates to be used.
+    var combinedOrientation = combineOrientations(
+      screen.orientation.angle,
+      this.passThroughCamera.orientation
+    );
+    if (combinedOrientation !== this.combinedOrientation) {
+      this.combinedOrientation = combinedOrientation;
+      gl.bufferData(
+        gl.ARRAY_BUFFER,
+        this.f32TextureCoords[this.combinedOrientation],
+        gl.STATIC_DRAW
+      );
+    }
+    gl.enableVertexAttribArray(this.textureCoordAttribute);
+    gl.vertexAttribPointer(
+      this.textureCoordAttribute,
+      this.textureCoordBuffer.itemSize,
+      gl.FLOAT,
+      false,
+      0,
+      0
+    );
+
+    gl.activeTexture(gl.TEXTURE0);
+    gl.bindTexture(gl.TEXTURE_EXTERNAL_OES, this.texture);
+    // Update the content of the texture in every frame.
+    gl.texImage2D(
+      gl.TEXTURE_EXTERNAL_OES,
+      0,
+      gl.RGB,
+      gl.RGB,
+      gl.UNSIGNED_BYTE,
+      this.passThroughCamera
+    );
+    gl.uniform1i(this.samplerUniform, 0);
+
+    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.indexBuffer);
+
+    gl.drawElements(
+      gl.TRIANGLES,
+      this.indexBuffer.numItems,
+      gl.UNSIGNED_SHORT,
+      0
+    );
+
+    // Disable enabled states to allow other render calls to correctly work
+    gl.bindTexture(gl.TEXTURE_EXTERNAL_OES, null);
+    gl.disableVertexAttribArray(this.vertexPositionAttribute);
+    gl.disableVertexAttribArray(this.textureCoordAttribute);
+    gl.bindBuffer(gl.ARRAY_BUFFER, null);
+    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, null);
+    gl.useProgram(null);
+  }
+}
 
 /**
  * A helper class that takes a VRDisplay with AR capabilities
@@ -23,37 +302,48 @@ import { isARKit } from './ARUtils';
  */
 class ARView {
   /**
-   * @param {VRDisplay}
-   */
-  constructor(vrDisplay) {
+  * @param {VRDisplay}
+  */
+  constructor(vrDisplay, renderer) {
     this.vrDisplay = vrDisplay;
-    this.scene = new THREE.Scene();
-    this.camera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 100);
-    this.mesh = new ARViewMesh(vrDisplay);
-    this.scene.add(this.mesh);
-  }
-
-  /**
-   * Updates the underlying mesh's orientation if necessary.
-   */
-  update() {
-    this.mesh.updateOrientation();
-  }
-
-  /**
-   * Renders the see through camera to the passed in renderer
-   *
-   * @param {THREE.WebGLRenderer}
-   */
-  render(renderer) {
-    // Don't render anything in ARKit since the platform handles
-    // the see-through camera rendering.
     if (isARKit(this.vrDisplay)) {
       return;
     }
-    renderer.render(this.scene, this.camera);
+    this.renderer = renderer;
+    this.gl = renderer.context;
+
+    this.videoRenderer = new ARVideoRenderer(vrDisplay, gl);
+    this.renderer.resetGLState();
   }
-};
+
+  /**
+  * Renders the see through camera to the passed in renderer
+  *
+  * @param {THREE.WebGLRenderer}
+  */
+  render() {
+    if (isARKit(this.vrDisplay)) {
+      return;
+    }
+
+    var gl = this.gl;
+    var dpr = window.devicePixelRatio;
+    var width = window.innerWidth * dpr;
+    var height = window.innerHeight * dpr;
+
+    if (gl.viewportWidth !== width) {
+      gl.viewportWidth = width;
+    }
+
+    if (gl.viewportHeight !== height) {
+      gl.viewportHeight = height;
+    }
+
+    this.gl.viewport(0, 0, gl.viewportWidth, gl.viewportHeight);
+    this.videoRenderer.render();
+    this.renderer.resetGLState();
+  }
+}
 
 THREE.ARView = ARView;
 export default ARView;
