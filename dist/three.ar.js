@@ -340,6 +340,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
  * limitations under the License.
  */
 
+var model = new THREE.Matrix4();
 var tempPos = new THREE.Vector3();
 var tempPlaneDir = new THREE.Vector3();
 
@@ -348,7 +349,7 @@ var ARReticle = function (_THREE$Mesh) {
 
   function ARReticle(vrDisplay) {
     var innerRadius = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 0.025;
-    var outerRadius = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 0.030;
+    var outerRadius = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 0.03;
     var color = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : 0xff0077;
     var easing = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : 0.25;
 
@@ -358,6 +359,8 @@ var ARReticle = function (_THREE$Mesh) {
     var material = new THREE.MeshBasicMaterial({ color: color });
 
     var _this = _possibleConstructorReturn(this, (ARReticle.__proto__ || Object.getPrototypeOf(ARReticle)).call(this, geometry, material));
+
+    _this.visible = false;
 
     _this.easing = easing;
     _this.vrDisplay = vrDisplay;
@@ -376,14 +379,15 @@ var ARReticle = function (_THREE$Mesh) {
       }
 
       var hit = this.vrDisplay.hitTest(x, y);
-      if (hit) {
-        var point = hit.point,
-            plane = hit.plane;
-
-        tempPos.fromArray(point);
+      if (hit && hit.length > 0) {
+        this.visible = true;
+        model.fromArray(hit[0].modelMatrix);
+        tempPos.setFromMatrixPosition(model);
         this.position.lerp(tempPos, this.easing);
 
-        tempPlaneDir.fromArray(plane);
+        tempPlaneDir.set(0, 1, 0);
+        tempPlaneDir.transformDirection(model);
+
         this._planeDir.lerp(tempPlaneDir, this.easing);
 
         tempPos.addVectors(this._planeDir, this.position);
