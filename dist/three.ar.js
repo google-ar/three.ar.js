@@ -1,3 +1,19 @@
+/*
+ * Copyright 2017 Google Inc. All Rights Reserved.
+ * Licensed under the Apache License, Version 2.0 (the 'License');
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an 'AS IS' BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+
 /******/ (function(modules) { // webpackBootstrap
 /******/ 	// The module cache
 /******/ 	var installedModules = {};
@@ -250,19 +266,23 @@ var ARPerspectiveCamera = function (_THREE$PerspectiveCam) {
     _this.isARPerpsectiveCamera = true;
     _this.vrDisplay = vrDisplay;
     _this.updateProjectionMatrix();
+
+    if (!vrDisplay || !vrDisplay.capabilities.hasPassThroughCamera) {
+      console.warn("ARPerspectiveCamera does not a VRDisplay with\n                    a pass through camera. Using supplied values and defaults\n                    instead of device camera intrinsics");
+    }
     return _this;
   }
 
   _createClass(ARPerspectiveCamera, [{
     key: "updateProjectionMatrix",
     value: function updateProjectionMatrix() {
-      var intrinsics = this.getProjectionMatrix();
-      if (!intrinsics) {
+      var projMatrix = this.getProjectionMatrix();
+      if (!projMatrix) {
         _get(ARPerspectiveCamera.prototype.__proto__ || Object.getPrototypeOf(ARPerspectiveCamera.prototype), "updateProjectionMatrix", this).call(this);
         return;
       }
 
-      this.projectionMatrix.fromArray(intrinsics);
+      this.projectionMatrix.fromArray(projMatrix);
     }
   }, {
     key: "getProjectionMatrix",
@@ -272,7 +292,9 @@ var ARPerspectiveCamera = function (_THREE$PerspectiveCam) {
           frameData = new VRFrameData();
         }
         this.vrDisplay.getFrameData(frameData);
-        return frameData.projectionMatrix;
+
+        // Can use either left or right projection matrix
+        return frameData.leftProjectionMatrix;
       }
       return null;
     }
@@ -701,7 +723,7 @@ exports.default = ARView;
 "use strict";
 
 
-module.exports = "#extension GL_OES_EGL_image_external : require\n\nprecision mediump float;\n#define GLSLIFY 1\n\nvarying vec2 vTextureCoord;\n\nuniform samplerExternalOES uSampler;\n\nvoid main(void) {\n  gl_FragColor = texture2D(uSampler, vTextureCoord);\n}\n";
+module.exports = "// Copyright 2017 Google Inc. All Rights Reserved.\n// Licensed under the Apache License, Version 2.0 (the 'License');\n// you may not use this file except in compliance with the License.\n// You may obtain a copy of the License at\n//\n// http://www.apache.org/licenses/LICENSE-2.0\n//\n// Unless required by applicable law or agreed to in writing, software\n// distributed under the License is distributed on an 'AS IS' BASIS,\n// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n// See the License for the specific language governing permissions and\n// limitations under the License.\n\n#extension GL_OES_EGL_image_external : require\n\nprecision mediump float;\n#define GLSLIFY 1\n\nvarying vec2 vTextureCoord;\n\nuniform samplerExternalOES uSampler;\n\nvoid main(void) {\n  gl_FragColor = texture2D(uSampler, vTextureCoord);\n}\n";
 
 /***/ }),
 /* 5 */
@@ -710,7 +732,7 @@ module.exports = "#extension GL_OES_EGL_image_external : require\n\nprecision me
 "use strict";
 
 
-module.exports = "#define GLSLIFY 1\nattribute vec3 aVertexPosition;\nattribute vec2 aTextureCoord;\n\nvarying vec2 vTextureCoord;\n\nvoid main(void) {\n  gl_Position = vec4(aVertexPosition, 1.0);\n  vTextureCoord = aTextureCoord;\n}\n";
+module.exports = "#define GLSLIFY 1\n// Copyright 2017 Google Inc. All Rights Reserved.\n// Licensed under the Apache License, Version 2.0 (the 'License');\n// you may not use this file except in compliance with the License.\n// You may obtain a copy of the License at\n//\n// http://www.apache.org/licenses/LICENSE-2.0\n//\n// Unless required by applicable law or agreed to in writing, software\n// distributed under the License is distributed on an 'AS IS' BASIS,\n// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n// See the License for the specific language governing permissions and\n// limitations under the License.\n\nattribute vec3 aVertexPosition;\nattribute vec2 aTextureCoord;\n\nvarying vec2 vTextureCoord;\n\nvoid main(void) {\n  gl_Position = vec4(aVertexPosition, 1.0);\n  vTextureCoord = aTextureCoord;\n}\n";
 
 /***/ }),
 /* 6 */
