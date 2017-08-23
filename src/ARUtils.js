@@ -15,6 +15,10 @@
 
 import { loadMtl, loadObj } from './loaders';
 
+const LEARN_MORE_LINK = 'https://developer.google.com/ar/develop/web';
+const UNSUPPORTED_MESSAGE = `This experience requires an augmented reality
+  prototype browser. Learn more <a href="${LEARN_MORE_LINK}">here</a>.`;
+
 THREE.ARUtils = Object.create(null);
 
 THREE.ARUtils.isTango = display =>
@@ -93,3 +97,21 @@ THREE.ARUtils.loadBlocksModel = (objPath, mtlPath) => new Promise((resolve, reje
   }).then(resolve, reject);
 });
 export const loadBlocksModel = THREE.ARUtils.loadBlocksModel;
+
+THREE.ARUtils.displayUnsupportedMessage = () => {
+  const element = document.createElement('div');
+  element.id = 'webgl-error-message';
+  element.style.fontFamily = 'monospace';
+  element.style.fontSize = '13px';
+  element.style.fontWeight = 'normal';
+  element.style.textAlign = 'center';
+  element.style.background = '#fff';
+  element.style.border = '1px solid black';
+  element.style.color = '#000';
+  element.style.padding = '1.5em';
+  element.style.width = '400px';
+  element.style.margin = '5em auto 0';
+  element.innerHTML = UNSUPPORTED_MESSAGE;
+  document.body.appendChild(element);
+};
+export const displayUnsupportedMessage = THREE.ARUtils.displayUnsupportedMessage;
