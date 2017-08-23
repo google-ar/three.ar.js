@@ -22,16 +22,22 @@ class ARPerspectiveCamera extends THREE.PerspectiveCamera {
     this.isARPerpsectiveCamera = true;
     this.vrDisplay = vrDisplay;
     this.updateProjectionMatrix();
+
+    if (!vrDisplay || !vrDisplay.capabilities.hasPassThroughCamera) {
+      console.warn(`ARPerspectiveCamera does not a VRDisplay with
+                    a pass through camera. Using supplied values and defaults
+                    instead of device camera intrinsics`);
+    }
   }
 
   updateProjectionMatrix() {
-    const intrinsics = this.getProjectionMatrix();
-    if (!intrinsics) {
+    const projMatrix = this.getProjectionMatrix();
+    if (!projMatrix) {
       super.updateProjectionMatrix();
       return;
     }
 
-    this.projectionMatrix.fromArray(intrinsics);
+    this.projectionMatrix.fromArray(projMatrix);
   }
 
   getProjectionMatrix() {
@@ -40,7 +46,9 @@ class ARPerspectiveCamera extends THREE.PerspectiveCamera {
         frameData = new VRFrameData();
       }
       this.vrDisplay.getFrameData(frameData);
-      return frameData.projectionMatrix;
+
+      // Can use either left or right projection matrix
+      return frameData.leftProjectionMatrix;
     }
     return null;
   }
