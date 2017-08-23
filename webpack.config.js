@@ -41,8 +41,9 @@ module.exports = {
   resolve: {
     extensions: [".js"]
   },
+  // https://webpack.github.io/docs/webpack-dev-server.html
   devServer: {
-    publicPath: "/",
+    publicPath: "/dist",
     contentBase: [path.resolve(__dirname)],
     host: "0.0.0.0",
     disableHostCheck: true
