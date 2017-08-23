@@ -74,38 +74,23 @@ var renderer;
 
 var reticle;
 
-if (navigator.getVRDisplays) {
-  navigator.getVRDisplays().then(function(vrDisplays) {
-    if( vrDisplays && vrDisplays.length > 0 ) {
-      for( var i = 0; i < vrDisplays.length; i++ ) {
-        vrDisplay = vrDisplays[i];
-        if ( vrDisplay.capabilities.hasPassThroughCamera ) {
-          vrFrameData = new VRFrameData();
-          init(vrDisplay);
-          break;
-        }
-        else {
-          vrDisplay = null;
-        }
-      }
-      if (!vrDisplay) {
-        alert( "Could not find a VRDisplay with AR capabilities." );
-      }
-    }
-  });
-}
-else {
-  alert( "This browser does not support WebVR." );
-}
+THREE.ARUtils.getARDisplay().then(function (display) {
+  if (display) {
+    vrDisplay = display;
+    init();
+  } else {
+    // THREE.ARUtils.displayUnsupportedMessage();
+  }
+});
 
 function init() {
-  renderer = new THREE.WebGLRenderer( { alpha: true } );
-  renderer.setPixelRatio( window.devicePixelRatio );
-  renderer.setSize( window.innerWidth, window.innerHeight );
+  renderer = new THREE.WebGLRenderer({ alpha: true });
+  renderer.setPixelRatio(window.devicePixelRatio);
+  renderer.setSize(window.innerWidth, window.innerHeight);
   renderer.autoClear = false;
 
   canvas = renderer.domElement;
-  document.body.appendChild( canvas );
+  document.body.appendChild(canvas);
 
   arView = new THREE.ARView(vrDisplay, renderer);
 
@@ -115,32 +100,31 @@ function init() {
   reticle = new THREE.ARReticle(vrDisplay, 0.025, 0.030, 0xff0077, 0.25);
   scene.add(reticle);
 
-  vrControls = new THREE.VRControls( camera );
+  vrControls = new THREE.VRControls(camera);
 
-  window.addEventListener( 'resize', onWindowResize, false );
+  window.addEventListener('resize', onWindowResize, false);
   update();
 }
 
-function update()
-{
-  if( vrDisplay ) {
-    vrDisplay.getFrameData( vrFrameData );
+function update() {
+  if (vrDisplay) {
+    vrDisplay.getFrameData(vrFrameData);
   }
+
   reticle.update(0.5, 0.5);
 
   vrControls.update();
   arView.render();
 
   renderer.clearDepth();
-  renderer.render( scene, camera );
-  requestAnimationFrame( update );
+  renderer.render(scene, camera);
+  requestAnimationFrame(update);
 }
 
-function onWindowResize()
-{
+function onWindowResize () {
   camera.aspect = window.innerWidth / window.innerHeight;
   camera.updateProjectionMatrix();
-  renderer.setSize( window.innerWidth, window.innerHeight );
+  renderer.setSize(window.innerWidth, window.innerHeight);
 }
 
 </script>
