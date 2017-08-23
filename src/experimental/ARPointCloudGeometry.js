@@ -15,7 +15,14 @@
 
 const MAX_FLOAT32_VALUE = 3.4028e38;
 
+/**
+ * Renders a VRPointCloud.
+ */
 class ARPointCloudGeometry extends THREE.BufferGeometry {
+  /**
+   * @param {VRDisplay} vrDisplay
+   * @param {VRPointCloud} pointCloud
+   */
   constructor(vrDisplay, pointCloud) {
     super();
     if (!vrDisplay) {
@@ -45,6 +52,9 @@ class ARPointCloudGeometry extends THREE.BufferGeometry {
     this.frustumCulled = false;
   }
 
+  /**
+   * @param {boolean} updateGeometry
+   */
   update(updateGeometry) {
     if (!this._vrDisplay) {
       return;
@@ -55,10 +65,13 @@ class ARPointCloudGeometry extends THREE.BufferGeometry {
     }
   }
 
+  /**
+   * @return {VRPointCloud}
+   */
   getPointCloud() {
     return this._pointCloud;
   }
-};
+}
 
 THREE.ARPointCloudGeometry = ARPointCloudGeometry;
 export default ARPointCloudGeometry;

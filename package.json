@@ -5,7 +5,8 @@
   "main": "./dist/three.ar.js",
   "scripts": {
     "build": "webpack",
-    "dev": "webpack-dev-server"
+    "dev": "webpack-dev-server",
+    "lint": "eslint src/**.*"
   },
   "author": "Jordan Santell <jsantell@google.com>",
   "license": "Apache-2.0",
@@ -13,6 +14,8 @@
     "babel-core": "^6.24.1",
     "babel-loader": "^7.0.0",
     "babel-preset-latest": "^6.24.1",
+    "eslint": "^4.5.0",
+    "eslint-config-google": "^0.9.1",
     "glsl-y-hsv": "^1.0.0",
     "glslify-loader": "^1.0.2",
     "raw-loader": "^0.5.1",

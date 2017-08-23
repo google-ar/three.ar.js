@@ -1,0 +1,21 @@
+{
+  "extends": ["eslint:recommended", "google"],
+  "rules": {
+    "max-len": ["error", { "code": 100 }],
+    "object-curly-spacing": ["error", "always"],
+    "arrow-parens": ["error", "as-needed"],
+    "no-console": ["error", { "allow": ["warn", "error"] }]
+  },
+  "env": {
+    "browser": true,
+    "es6": true
+  },
+  "globals": {
+    "THREE": false,
+    "VRFrameData": false
+  },
+  "parserOptions": {
+    "ecmaVersion": 6,
+    "sourceType": "module"
+  }
+}

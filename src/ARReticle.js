@@ -13,11 +13,22 @@
  * limitations under the License.
  */
 
-let model = new THREE.Matrix4();
-let tempPos = new THREE.Vector3();
-let tempPlaneDir = new THREE.Vector3();
+const model = new THREE.Matrix4();
+const tempPos = new THREE.Vector3();
+const tempPlaneDir = new THREE.Vector3();
 
+/**
+ * Class for creating a mesh that fires raycasts and lerps
+ * a 3D object along the surface
+ */
 class ARReticle extends THREE.Mesh {
+  /**
+   * @param {VRDisplay} vrDisplay
+   * @param {number} innerRadius
+   * @param {number} outerRadius
+   * @param {number} color
+   * @param {number} easing
+   */
   constructor(
     vrDisplay,
     innerRadius = 0.025,
@@ -35,12 +46,19 @@ class ARReticle extends THREE.Mesh {
     this._planeDir = new THREE.Vector3();
   }
 
+  /**
+   * Attempt to fire a raycast from normalized screen coordinates
+   * x and y and lerp the reticle to the position.
+   *
+   * @param {number} x
+   * @param {number} y
+   */
   update(x = 0.5, y = 0.5) {
     if (!this.vrDisplay || !this.vrDisplay.hitTest) {
       return;
     }
 
-    var hit = this.vrDisplay.hitTest(x, y);
+    const hit = this.vrDisplay.hitTest(x, y);
     if (hit && hit.length > 0) {
       this.visible = true;
       model.fromArray(hit[0].modelMatrix);

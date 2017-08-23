@@ -20,11 +20,14 @@
  */
 class ARViewMock {
   /**
-   * @param {THREE.Camera}
+   * @param {THREE.Camera} camera
    */
   constructor(camera) {
     this.scene = new THREE.Scene();
-    this.camera = camera || new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.01, 100);
+    this.camera = camera || new THREE.PerspectiveCamera(60,
+                                                        window.innerWidth / window.innerHeight,
+                                                        0.01,
+                                                        100);
     this.axis = new THREE.AxisHelper(1);
     this.grid = new THREE.GridHelper(20, 20);
     this.scene.add(this.axis);
@@ -40,11 +43,11 @@ class ARViewMock {
   /**
    * Renders the see through camera to the passed in renderer
    *
-   * @param {THREE.WebGLRenderer}
+   * @param {THREE.WebGLRenderer} renderer
    */
   render(renderer) {
     renderer.render(this.scene, this.camera);
   }
-};
+}
 
 THREE.ARViewMock = ARViewMock;

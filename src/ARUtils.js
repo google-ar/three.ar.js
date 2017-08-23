@@ -46,7 +46,7 @@ THREE.ARUtils.getARDisplay = () => new Promise((resolve, reject) => {
       return;
     }
 
-    for (var display of displays) {
+    for (let display of displays) {
       if (isARDisplay(display)) {
         resolve(display);
         return;

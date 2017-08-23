@@ -16,7 +16,20 @@
 // Reuse the frame data for getting the projection matrix
 let frameData;
 
+/**
+ * Class extending a THREE.PerspectiveCamera, attempting
+ * to use the projection matrix provided from an AR-enabled
+ * VRDisplay. If no AR-enabled VRDisplay found, uses provided
+ * parameters.
+ */
 class ARPerspectiveCamera extends THREE.PerspectiveCamera {
+  /**
+   * @param {VRDisplay} vrDisplay
+   * @param {number} fov
+   * @param {number} aspect
+   * @param {number} near
+   * @param {number} far
+   */
   constructor(vrDisplay, fov, aspect, near, far) {
     super(fov, aspect, near, far);
     this.isARPerpsectiveCamera = true;
@@ -30,6 +43,11 @@ class ARPerspectiveCamera extends THREE.PerspectiveCamera {
     }
   }
 
+  /**
+   * Updates the underlying `projectionMatrix` property from
+   * the AR-enabled VRDisplay, or falls back to
+   * THREE.PerspectiveCamera.prototype.updateProjectionMatrix
+   */
   updateProjectionMatrix() {
     const projMatrix = this.getProjectionMatrix();
     if (!projMatrix) {
@@ -40,6 +58,11 @@ class ARPerspectiveCamera extends THREE.PerspectiveCamera {
     this.projectionMatrix.fromArray(projMatrix);
   }
 
+  /**
+   * Gets the projection matrix from AR-enabled VRDisplay
+   * if possible.
+   * @return {!Float32Array}
+   */
   getProjectionMatrix() {
     if (this.vrDisplay && this.vrDisplay.getFrameData) {
       if (!frameData) {

@@ -13,18 +13,23 @@
  * limitations under the License.
  */
 
-import { isARKit } from "./ARUtils";
-import vertexSource from "./shaders/arview.vert";
-import fragmentSource from "./shaders/arview.frag";
+import { isARKit } from './ARUtils';
+import vertexSource from './shaders/arview.vert';
+import fragmentSource from './shaders/arview.frag';
 
 /**
-* Creates and load a shader from a string, type specifies either 'vertex' or 'fragment'
-*/
+ * Creates and load a shader from a string, type specifies either 'vertex' or 'fragment'
+ *
+ * @param {WebGLRenderingContext} gl
+ * @param {string} str
+ * @param {string} type
+ * @return {!WebGLShader}
+ */
 function getShader(gl, str, type) {
-  var shader;
-  if (type == "fragment") {
+  let shader;
+  if (type == 'fragment') {
     shader = gl.createShader(gl.FRAGMENT_SHADER);
-  } else if (type == "vertex") {
+  } else if (type == 'vertex') {
     shader = gl.createShader(gl.VERTEX_SHADER);
   } else {
     return null;
@@ -33,7 +38,7 @@ function getShader(gl, str, type) {
   gl.shaderSource(shader, str);
   gl.compileShader(shader);
 
-  var result = gl.getShaderParameter(shader, gl.COMPILE_STATUS);
+  const result = gl.getShaderParameter(shader, gl.COMPILE_STATUS);
   if (!result) {
     alert(gl.getShaderInfoLog(shader));
     return null;
@@ -43,35 +48,43 @@ function getShader(gl, str, type) {
 }
 
 /**
-* Creates a shader program from vertex and fragment shader sources
-*/
+ * Creates a shader program from vertex and fragment shader sources
+ *
+ * @param {WebGLRenderingContext} gl
+ * @param {string} vs
+ * @param {string} fs
+ * @return {!WebGLProgram}
+ */
 function getProgram(gl, vs, fs) {
-  var vertexShader = getShader(gl, vs, "vertex");
-  var fragmentShader = getShader(gl, fs, "fragment");
+  const vertexShader = getShader(gl, vs, 'vertex');
+  const fragmentShader = getShader(gl, fs, 'fragment');
   if (!fragmentShader) {
     return null;
   }
 
-  var shaderProgram = gl.createProgram();
+  const shaderProgram = gl.createProgram();
   gl.attachShader(shaderProgram, vertexShader);
   gl.attachShader(shaderProgram, fragmentShader);
   gl.linkProgram(shaderProgram);
 
-  var result = gl.getProgramParameter(shaderProgram, gl.LINK_STATUS);
-  // alert("getProgramParameter result = " + result);
+  const result = gl.getProgramParameter(shaderProgram, gl.LINK_STATUS);
   if (!result) {
-    alert("Could not initialise arview shaders");
+    alert('Could not initialise arview shaders');
   }
 
   return shaderProgram;
 }
 
 /**
-* Calculate the correct orientation depending on the device and the camera
-* orientations.
-*/
+ * Calculate the correct orientation depending on the device and the camera
+ * orientations.
+ *
+ * @param {number} screenOrientation
+ * @param {number} seeThroughCameraOrientation
+ * @return {number}
+ */
 function combineOrientations(screenOrientation, seeThroughCameraOrientation) {
-  var seeThroughCameraOrientationIndex = 0;
+  let seeThroughCameraOrientationIndex = 0;
   switch (seeThroughCameraOrientation) {
     case 90:
       seeThroughCameraOrientationIndex = 1;
@@ -86,7 +99,7 @@ function combineOrientations(screenOrientation, seeThroughCameraOrientation) {
       seeThroughCameraOrientationIndex = 0;
       break;
   }
-  var screenOrientationIndex = 0;
+  let screenOrientationIndex = 0;
   switch (screenOrientation) {
     case 90:
       screenOrientationIndex = 1;
@@ -101,7 +114,7 @@ function combineOrientations(screenOrientation, seeThroughCameraOrientation) {
       screenOrientationIndex = 0;
       break;
   }
-  var ret = screenOrientationIndex - seeThroughCameraOrientationIndex;
+  let ret = screenOrientationIndex - seeThroughCameraOrientationIndex;
   if (ret < 0) {
     ret += 4;
   }
@@ -109,12 +122,13 @@ function combineOrientations(screenOrientation, seeThroughCameraOrientation) {
 }
 
 /**
-* Renders the ar camera's video texture
-*/
+ * Renders the ar camera's video texture
+ */
 class ARVideoRenderer {
   /**
-  * @param {VRDisplay, WebGLRenderingContext}
-  */
+   * @param {VRDisplay} vrDisplay
+   * @param {WebGLRenderingContext} gl
+   */
   constructor(vrDisplay, gl) {
     this.vrDisplay = vrDisplay;
     this.gl = gl;
@@ -128,18 +142,18 @@ class ARVideoRenderer {
     // Setup a quad
     this.vertexPositionAttribute = gl.getAttribLocation(
       this.program,
-      "aVertexPosition"
+      'aVertexPosition'
     );
     this.textureCoordAttribute = gl.getAttribLocation(
       this.program,
-      "aTextureCoord"
+      'aTextureCoord'
     );
 
-    this.samplerUniform = gl.getUniformLocation(this.program, "uSampler");
+    this.samplerUniform = gl.getUniformLocation(this.program, 'uSampler');
 
     this.vertexPositionBuffer = gl.createBuffer();
     gl.bindBuffer(gl.ARRAY_BUFFER, this.vertexPositionBuffer);
-    var vertices = [
+    let vertices = [
       -1.0,
       1.0,
       0.0,
@@ -151,9 +165,9 @@ class ARVideoRenderer {
       0.0,
       1.0,
       -1.0,
-      0.0
+      0.0,
     ];
-    var f32Vertices = new Float32Array(vertices);
+    let f32Vertices = new Float32Array(vertices);
     gl.bufferData(gl.ARRAY_BUFFER, f32Vertices, gl.STATIC_DRAW);
     this.vertexPositionBuffer.itemSize = 3;
     this.vertexPositionBuffer.numItems = 12;
@@ -162,29 +176,29 @@ class ARVideoRenderer {
     gl.bindBuffer(gl.ARRAY_BUFFER, this.textureCoordBuffer);
     // Precalculate different texture UV coordinates depending on the possible
     // orientations of the device depending if there is a VRDisplay or not
-    var textureCoords = null;
+    let textureCoords = null;
     if (this.vrDisplay) {
-      var u =
+      let u =
         this.passThroughCamera.width / this.passThroughCamera.textureWidth;
-      var v =
+      let v =
         this.passThroughCamera.height / this.passThroughCamera.textureHeight;
       textureCoords = [
         [0.0, 0.0, 0.0, v, u, 0.0, u, v],
         [u, 0.0, 0.0, 0.0, u, v, 0.0, v],
         [u, v, u, 0.0, 0.0, v, 0.0, 0.0],
-        [0.0, v, u, v, 0.0, 0.0, u, 0.0]
+        [0.0, v, u, v, 0.0, 0.0, u, 0.0],
       ];
     } else {
       textureCoords = [
         [0.0, 0.0, 0.0, 1.0, 1.0, 0.0, 1.0, 1.0],
         [1.0, 0.0, 0.0, 0.0, 1.0, 1.0, 0.0, 1.0],
         [1.0, 1.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0],
-        [0.0, 1.0, 1.0, 1.0, 0.0, 0.0, 1.0, 0.0]
+        [0.0, 1.0, 1.0, 1.0, 0.0, 0.0, 1.0, 0.0],
       ];
     }
 
     this.f32TextureCoords = [];
-    for (var i = 0; i < textureCoords.length; i++) {
+    for (let i = 0; i < textureCoords.length; i++) {
       this.f32TextureCoords.push(new Float32Array(textureCoords[i]));
     }
     // Store the current combined orientation to check if it has changed
@@ -205,8 +219,8 @@ class ARVideoRenderer {
 
     this.indexBuffer = gl.createBuffer();
     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.indexBuffer);
-    var indices = [0, 1, 2, 2, 1, 3];
-    var ui16Indices = new Uint16Array(indices);
+    let indices = [0, 1, 2, 2, 1, 3];
+    let ui16Indices = new Uint16Array(indices);
     gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, ui16Indices, gl.STATIC_DRAW);
     this.indexBuffer.itemSize = 1;
     this.indexBuffer.numItems = 6;
@@ -221,8 +235,11 @@ class ARVideoRenderer {
     return this;
   }
 
+  /**
+   * Renders the quad
+   */
   render() {
-    var gl = this.gl;
+    let gl = this.gl;
     gl.useProgram(this.program);
     gl.bindBuffer(gl.ARRAY_BUFFER, this.vertexPositionBuffer);
     gl.enableVertexAttribArray(this.vertexPositionAttribute);
@@ -240,7 +257,7 @@ class ARVideoRenderer {
     // Check the current orientation of the device combined with the
     // orientation of the VRSeeThroughCamera to determine the correct UV
     // coordinates to be used.
-    var combinedOrientation = combineOrientations(
+    let combinedOrientation = combineOrientations(
       screen.orientation.angle,
       this.passThroughCamera.orientation
     );
@@ -301,8 +318,9 @@ class ARVideoRenderer {
  */
 class ARView {
   /**
-  * @param {VRDisplay}
-  */
+   * @param {VRDisplay} vrDisplay
+   * @param {THREE.WebGLRenderer} renderer
+   */
   constructor(vrDisplay, renderer) {
     this.vrDisplay = vrDisplay;
     if (isARKit(this.vrDisplay)) {
@@ -316,19 +334,17 @@ class ARView {
   }
 
   /**
-  * Renders the see through camera to the passed in renderer
-  *
-  * @param {THREE.WebGLRenderer}
-  */
+   * Renders the see through camera to the passed in renderer
+   */
   render() {
     if (isARKit(this.vrDisplay)) {
       return;
     }
 
-    var gl = this.gl;
-    var dpr = window.devicePixelRatio;
-    var width = window.innerWidth * dpr;
-    var height = window.innerHeight * dpr;
+    let gl = this.gl;
+    let dpr = window.devicePixelRatio;
+    let width = window.innerWidth * dpr;
+    let height = window.innerHeight * dpr;
 
     if (gl.viewportWidth !== width) {
       gl.viewportWidth = width;

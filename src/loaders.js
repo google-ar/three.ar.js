@@ -18,7 +18,7 @@
  * exposed ARUtils.
  */
 
-const noop = function(){};
+const noop = function() {};
 
 export const loadObj = (objPath, materials) => new Promise((resolve, reject) => {
   const loader = new THREE.OBJLoader();

@@ -24,7 +24,14 @@ const DEFAULT_CONFIG = {
   useHSVInterpolation: true,
 };
 
+/**
+ * Class extending a THREE Material to render each point
+ * in a VRPointCloud based on depth.
+ */
 class ARPointCloudDepthMaterial extends THREE.RawShaderMaterial {
+  /**
+   * @param {Object} config
+   */
   constructor(config) {
     config = Object.assign({}, DEFAULT_CONFIG, config);
     super({
@@ -51,7 +58,7 @@ class ARPointCloudDepthMaterial extends THREE.RawShaderMaterial {
 
     this.depthWrite = false;
   }
-};
+}
 
 THREE.ARPointCloudDepthMaterial = ARPointCloudDepthMaterial;
 export default ARPointCloudDepthMaterial;
