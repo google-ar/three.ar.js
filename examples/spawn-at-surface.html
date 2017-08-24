@@ -53,7 +53,6 @@
 <script>
 
 var vrDisplay;
-var vrFrameData;
 var vrControls;
 var arView;
 
@@ -82,7 +81,6 @@ var colors = [
  */
 THREE.ARUtils.getARDisplay().then(function (display) {
   if (display) {
-    vrFrameData = new VRFrameData();
     vrDisplay = display;
     init();
   } else {
@@ -152,10 +150,6 @@ function init() {
  * our scene and rendering.
  */
 function update() {
-  // From the WebVR API, populate `vrFrameData` with
-  // updated information for the frame
-  vrDisplay.getFrameData(vrFrameData);
-
   // Update our perspective camera's positioning
   vrControls.update();
 

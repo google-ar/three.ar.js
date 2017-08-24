@@ -53,7 +53,6 @@
 <script>
 
 var vrDisplay;
-var vrFrameData;
 var vrControls;
 var arView;
 
@@ -72,7 +71,6 @@ var reticle;
  */
 THREE.ARUtils.getARDisplay().then(function (display) {
   if (display) {
-    vrFrameData = new VRFrameData();
     vrDisplay = display;
     init();
   } else {
@@ -127,10 +125,6 @@ function init() {
  * our scene and rendering.
  */
 function update() {
-  // From the WebVR API, populate `vrFrameData` with
-  // updated information for the frame
-  vrDisplay.getFrameData(vrFrameData);
-
   // Update our ARReticle's position, and provide normalized
   // screen coordinates to send the hit test -- in this case, (0.5, 0.5)
   // is the middle of our screen
