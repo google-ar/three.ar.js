@@ -71,11 +71,7 @@ Examples of three.ar.js are in the `/examples` directory.
 
 A [list of examples](https://developers.google.com/ar/develop/web/getting-started#examples) that are compatible with [WebARonARKit] and [WebARonARCore] is also available at [developers.google.com].
 
-## Notes
-
-* WebAR prototyping requires [three.js](https://threejs.org/) r86 or higher due to needing a specific [uniform type](https://github.com/mrdoob/three.js/pull/11463) for rendering the AR camera on Android.
-
-## <a name="License">License</a>
+## License
 Apache License Version 2.0 (see the `LICENSE` file inside this repo).
 
 [three.js]: threejs.org/
