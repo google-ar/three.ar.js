@@ -1,26 +1,27 @@
 # three.ar.js
 
-Helper [three.js] classes and utilities for WebAR prototyping.
+**A helper three.js library for building AR web experiences that run in WebARonARKit and WebARonARCore.**
 
-## API
+[WebARonARKit](https://github.com/googlevr/WebARonARKit) and [WebARonARCore](https://github.com/googlevr/WebARonARCore) are experimental apps for iOS and Android that let developers create Augmented Reality (AR) experiences using web technologies. Three.ar.js makes it easier to create these experiences by providing helper classes and utilities on top of the [three.js framework](https://threejs.org/). For example:
 
-API documentation can be found in [API.md].
+* THREE.ARReticle: a visible reticle drawn on the real surface of real world objects.
+* THREE.ARPerspectiveCamera: a camera that matches your Three.js scene to your camera's video feed.
 
-## Development
+See [three.ar.js API documentataion](TODO) for details.
 
-Run `npm run build` to create a new build in `./dist`.
+## Getting started
 
-Run `npm run dev` to start a local dev server on port 8080 (or increments if in use),
-and making changes to files in `./src` will auto update the build, and work on demos
-at `localhost:8080/examples`.
+Run `npm run build` to create a new build in `./dist`. Run `npm run dev` to start a local dev server on port 8080 (or increments if in use), and making changes to files in `./src` will auto update the build, and work on demos at `localhost:8080/examples`.
+
+## Examples
+
+Examples of three.ar.js are in the `/examples` directory. 
+
+A [list of examples](https://developers.google.com/ar/develop/web/getting-started#examples) that are compatible with WebARonARKit and WebARonARCore is also available at [developers.google.com](https://developers.google.com/ar/develop/web/getting-started#examples).
 
 ## Notes
 
-* WebAR prototyping requires [three.js] r86 or higher due to needing a specific [uniform type](https://github.com/mrdoob/three.js/pull/11463) for rendering the AR camera on Android.
+* WebAR prototyping requires [three.js](https://threejs.org/) r86 or higher due to needing a specific [uniform type](https://github.com/mrdoob/three.js/pull/11463) for rendering the AR camera on Android.
 
-## License
-
-Apache License Version 2.0
-
-[three.js]: http://threejs.org
-[API.md]: API.md
+## <a name="License">License</a>
+Apache License Version 2.0 (see the `LICENSE` file inside this repo).
