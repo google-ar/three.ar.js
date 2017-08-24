@@ -38,9 +38,6 @@ $ npm install --save three three.ar.js
 If you are including three.ar.js via script tag, the additional three.ar.js features are appended to the `THREE` namespace, for example:
 
 ```js
-THREE.ARUtils.getARDisplay().then(function (display) {
-  // ...
-});
 ```
 
 For more examples, see the [examples/](examples/) directory.

@@ -17,7 +17,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <title>three.ar.js - Reticle</title>
+  <title>three.ar.js - Spawn At Surface</title>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, user-scalable=no,
   minimum-scale=1.0, maximum-scale=1.0">
@@ -32,19 +32,20 @@
       position: absolute;
       bottom: 10px;
       width: 100%;
+      background-color: #000;
       text-align: center;
       z-index: 100;
       display:block;
     }
     a {
-      color: skyblue
+      color: #ff0077;
     }
   </style>
 </head>
 <body>
 <div id="info">
     <a href="https://github.com/google-ar/three.ar.js" target="_blank">three.ar.js</a>
-    - Reticle
+    - Spawn At Surface
 </div>
 <script src="../third_party/three.js/three.js"></script>
 <script src="../third_party/three.js/VRControls.js"></script>
@@ -60,8 +61,18 @@ var canvas;
 var camera;
 var scene;
 var renderer;
+var cube;
 
-var reticle;
+var colors = [
+  new THREE.Color( 0xffffff ),
+  new THREE.Color( 0xffff00 ),
+  new THREE.Color( 0xff00ff ),
+  new THREE.Color( 0xff0000 ),
+  new THREE.Color( 0x00ffff ),
+  new THREE.Color( 0x00ff00 ),
+  new THREE.Color( 0x0000ff ),
+  new THREE.Color( 0x000000 )
+];
 
 /**
  * Use the `getARDisplay()` utility to leverage the WebVR API
@@ -99,21 +110,40 @@ function init() {
   // the projection matrix provided from the device, so that the
   // perspective camera's depth planes and field of view matches
   // the physical camera on the device.
-  camera = new THREE.ARPerspectiveCamera(vrDisplay, 60, window.innerWidth / window.innerHeight, 0.01, 100);
-
-  // Create our ARReticle, which will continuously fire `hitTest` to trace
-  // the detected surfaces
-  reticle = new THREE.ARReticle(vrDisplay, 0.025, 0.030, 0xff0077, 0.25);
-  scene.add(reticle);
+  camera = new THREE.ARPerspectiveCamera(
+    vrDisplay,
+    60,
+    window.innerWidth / window.innerHeight,
+    vrDisplay.depthNear,
+    vrDisplay.depthFar
+  );
 
   // VRControls is a utility from three.js that applies the device's
   // orientation/position to the perspective camera, keeping our
   // real world and virtual world in sync.
   vrControls = new THREE.VRControls(camera);
 
+  // Create the cube geometry and add it to the scene. Set the position
+  // to (Infinity, Infinity, Infinity) so that it won't appear visible
+  // until the first hit is found, and move it there
+  var geometry = new THREE.BoxGeometry( 0.05, 0.05, 0.05 );
+  var faceIndices = ['a', 'b', 'c'];
+  for (var i = 0; i < geometry.faces.length; i++) {
+    var f  = geometry.faces[i];
+    for (var j = 0; j < 3; j++) {
+      var vertexIndex = f[faceIndices[ j ]];
+      f.vertexColors[j] = colors[vertexIndex];
+    }
+  }
+  var material = new THREE.MeshBasicMaterial({ vertexColors: THREE.VertexColors });
+  cube = new THREE.Mesh(geometry, material);
+  scene.add(cube);
+
   // Bind our event handlers
   window.addEventListener('resize', onWindowResize, false);
+  canvas.addEventListener('touchstart', onClick, false);
 
+  // Kick off the render loop!
   update();
 }
 
@@ -125,11 +155,6 @@ function update() {
   // From the WebVR API, populate `vrFrameData` with
   // updated information for the frame
   vrDisplay.getFrameData(vrFrameData);
-
-  // Update our ARReticle's position, and provide normalized
-  // screen coordinates to send the hit test -- in this case, (0.5, 0.5)
-  // is the middle of our screen
-  reticle.update(0.5, 0.5);
 
   // Update our perspective camera's positioning
   vrControls.update();
@@ -155,6 +180,28 @@ function onWindowResize () {
   camera.aspect = window.innerWidth / window.innerHeight;
   camera.updateProjectionMatrix();
   renderer.setSize(window.innerWidth, window.innerHeight);
+}
+
+/**
+ * When clicking on the screen, fire a ray from where the user clicked
+ * on the screen and if a hit is found, place a cube there.
+ */
+function onClick (e) {
+  // Inspect the event object and generate normalize screen coordinates
+  // (between 0 and 1) for the screen position.
+  var x = e.pageX / window.innerWidth;
+  var y = e.pageY / window.innerHeight;
+
+  // Send a ray from the point of click to the real world surface
+  // and attempt to find a hit. `hitTest` returns an array of potential
+  // hits.
+  var hits = vrDisplay.hitTest(x, y);
+
+  // If a hit is found, just use the first one
+  if (hits && hits.length) {
+    var hit = hits[0];
+    // TODO
+  }
 }
 </script>
 </body>
