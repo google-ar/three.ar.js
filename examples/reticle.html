@@ -32,12 +32,13 @@
       position: absolute;
       bottom: 10px;
       width: 100%;
+      background-color: #000;
       text-align: center;
       z-index: 100;
       display:block;
     }
     a {
-      color: skyblue
+      color: #ff0077;
     }
   </style>
 </head>
@@ -103,7 +104,11 @@ function init() {
 
   // Create our ARReticle, which will continuously fire `hitTest` to trace
   // the detected surfaces
-  reticle = new THREE.ARReticle(vrDisplay, 0.025, 0.030, 0xff0077, 0.25);
+  reticle = new THREE.ARReticle(vrDisplay,
+                                0.03, // innerRadius
+                                0.04, // outerRadius
+                                0xff0077, // color
+                                0.25); // easing
   scene.add(reticle);
 
   // VRControls is a utility from three.js that applies the device's

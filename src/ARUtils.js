@@ -98,6 +98,50 @@ THREE.ARUtils.loadBlocksModel = (objPath, mtlPath) => new Promise((resolve, reje
 });
 export const loadBlocksModel = THREE.ARUtils.loadBlocksModel;
 
+const model = new THREE.Matrix4();
+const tempPos = new THREE.Vector3();
+const tempQuat = new THREE.Quaternion();
+const tempScale = new THREE.Vector3();
+
+/**
+ * Takes a THREE.Object3D and a VRHit and positions and optionally orients
+ * the object according to the transform of the VRHit. Can provide an
+ * easing value between 0 and 1 corresponding to the lerp between the
+ * object's current position/orientation, and the position/orientation of the
+ * hit.
+ *
+ * @param {THREE.Object3D} object
+ * @param {VRHit} hit
+ * @param {number} easing
+ * @param {boolean} applyOrientation
+ */
+THREE.ARUtils.placeObjectAtHit = (object, hit, easing=1, applyOrientation=false) => {
+  if (!hit || !hit.modelMatrix) {
+    throw new Error('placeObjectAtHit requires a VRHit object');
+  }
+
+  model.fromArray(hit.modelMatrix);
+
+  model.decompose(tempPos, tempQuat, tempScale);
+
+  if (easing === 1) {
+    object.position.copy(tempPos);
+    if (applyOrientation) {
+      object.quaternion.copy(tempQuat);
+    }
+  } else {
+    object.position.lerp(tempPos, easing);
+    if (applyOrientation) {
+      object.quaternion.slerp(tempQuat, easing);
+    }
+  }
+};
+export const placeObjectAtHit = THREE.ARUtils.placeObjectAtHit;
+
+/**
+ * Injects a DOM element into the current page prompting the user that
+ * their browser does not support these AR features.
+ */
 THREE.ARUtils.displayUnsupportedMessage = () => {
   const element = document.createElement('div');
   element.id = 'webgl-error-message';

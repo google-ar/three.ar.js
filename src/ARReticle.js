@@ -13,9 +13,7 @@
  * limitations under the License.
  */
 
-const model = new THREE.Matrix4();
-const tempPos = new THREE.Vector3();
-const tempPlaneDir = new THREE.Vector3();
+import { placeObjectAtHit } from './ARUtils';
 
 /**
  * Class for creating a mesh that fires raycasts and lerps
@@ -31,17 +29,22 @@ class ARReticle extends THREE.Mesh {
    */
   constructor(
     vrDisplay,
-    innerRadius = 0.025,
-    outerRadius = 0.03,
+    innerRadius = 0.02,
+    outerRadius = 0.05,
     color = 0xff0077,
     easing = 0.25
   ) {
     const geometry = new THREE.RingGeometry(innerRadius, outerRadius, 36, 64);
     const material = new THREE.MeshBasicMaterial({ color });
+
+    // Orient the geometry so it's position is flat on a horizontal surface
+    geometry.applyMatrix(new THREE.Matrix4().makeRotationX(THREE.Math.degToRad(-90)));
+
     super(geometry, material);
     this.visible = false;
 
     this.easing = easing;
+    this.applyOrientation = true;
     this.vrDisplay = vrDisplay;
     this._planeDir = new THREE.Vector3();
   }
@@ -61,17 +64,7 @@ class ARReticle extends THREE.Mesh {
     const hit = this.vrDisplay.hitTest(x, y);
     if (hit && hit.length > 0) {
       this.visible = true;
-      model.fromArray(hit[0].modelMatrix);
-      tempPos.setFromMatrixPosition(model);
-      this.position.lerp(tempPos, this.easing);
-
-      tempPlaneDir.set(0, 1, 0);
-      tempPlaneDir.transformDirection(model);
-
-      this._planeDir.lerp(tempPlaneDir, this.easing);
-
-      tempPos.addVectors(this._planeDir, this.position);
-      this.lookAt(tempPos);
+      placeObjectAtHit(this, hit[0], this.applyOrientation, this.easing);
     }
   }
 }
