@@ -47,6 +47,12 @@ Takes a [VRDisplay] instance and returns a boolean whether or not this is an ARK
 
 Takes a path for an OBJ model and optionally a path for an MTL texture and returns a promise resolving to a [THREE.Mesh] loaded with the appropriate material. Can be used on downloaded models from Blocks.
 
+### void THREE.ARUtils.placeObjectAtHit(object, hit, easing=1, applyOrientation=false)
+
+Takes a [THREE.Object3D] and a [VRHit] object from a `VRDisplay.prototype.hitTest` call, and
+positions, and optionally orients, the object to the hit's model matrix. Optionally can use
+easing to lerp between the object's current transform to the hit's transform.
+
 ### void THREE.ARUtils.displayUnsupportedMessage()
 
 Generates an element and injects into the DOM a message notifying the user that their browser does not support prototype AR features. See examples of common usage.
