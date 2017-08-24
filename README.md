@@ -1,5 +1,10 @@
 # three.ar.js
 
+[![Build Status](http://img.shields.io/travis/google-ar/three.ar.js.svg?style=flat-square)](https://travis-ci.org/google-ar/three.ar.js)
+[![Build Status](http://img.shields.io/npm/v/three.ar.js.svg?style=flat-square)](https://www.npmjs.org/package/three.ar.js)
+[![Build Status](http://img.shields.io/npm/dt/three.ar.js.svg?style=flat-square)](https://www.npmjs.org/package/three.ar.js)
+[![Build Status](http://img.shields.io/npm/l/three.ar.js.svg?style=flat-square)](https://www.npmjs.org/package/three.ar.js)
+
 **A helper three.js library for building AR web experiences that run in WebARonARKit and WebARonARCore.**
 
 [WebARonARKit](https://github.com/googlevr/WebARonARKit) and [WebARonARCore](https://github.com/googlevr/WebARonARCore) are experimental apps for iOS and Android that let developers create Augmented Reality (AR) experiences using web technologies. Three.ar.js makes it easier to create these experiences by providing helper classes and utilities on top of the [three.js framework](https://threejs.org/). For example:
