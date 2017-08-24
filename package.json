@@ -5,7 +5,7 @@
   "main": "./dist/three.ar.js",
   "scripts": {
     "build": "webpack",
-    "dev": "webpack-dev-server",
+    "dev": "webpack-dev-server --port 8000",
     "lint": "eslint src/**.*"
   },
   "author": "Jordan Santell <jsantell@google.com>",
