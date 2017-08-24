@@ -92,24 +92,28 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.loadBlocksModel = exports.getARDisplay = exports.isARDisplay = exports.isARKit = exports.isTango = undefined;
+exports.displayUnsupportedMessage = exports.placeObjectAtHit = exports.loadBlocksModel = exports.getARDisplay = exports.isARDisplay = exports.isARKit = exports.isTango = undefined;
 
 var _loaders = __webpack_require__(7);
 
-THREE.ARUtils = Object.create(null); /*
-                                      * Copyright 2017 Google Inc. All Rights Reserved.
-                                      * Licensed under the Apache License, Version 2.0 (the 'License');
-                                      * you may not use this file except in compliance with the License.
-                                      * You may obtain a copy of the License at
-                                      *
-                                      *     http://www.apache.org/licenses/LICENSE-2.0
-                                      *
-                                      * Unless required by applicable law or agreed to in writing, software
-                                      * distributed under the License is distributed on an 'AS IS' BASIS,
-                                      * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-                                      * See the License for the specific language governing permissions and
-                                      * limitations under the License.
-                                      */
+var LEARN_MORE_LINK = 'https://developer.google.com/ar/develop/web'; /*
+                                                                      * Copyright 2017 Google Inc. All Rights Reserved.
+                                                                      * Licensed under the Apache License, Version 2.0 (the 'License');
+                                                                      * you may not use this file except in compliance with the License.
+                                                                      * You may obtain a copy of the License at
+                                                                      *
+                                                                      *     http://www.apache.org/licenses/LICENSE-2.0
+                                                                      *
+                                                                      * Unless required by applicable law or agreed to in writing, software
+                                                                      * distributed under the License is distributed on an 'AS IS' BASIS,
+                                                                      * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+                                                                      * See the License for the specific language governing permissions and
+                                                                      * limitations under the License.
+                                                                      */
+
+var UNSUPPORTED_MESSAGE = 'This experience requires an augmented reality\n  prototype browser. Learn more <a href="' + LEARN_MORE_LINK + '">here</a>.';
+
+THREE.ARUtils = Object.create(null);
 
 THREE.ARUtils.isTango = function (display) {
   return display && display.displayName.toLowerCase().includes('tango');
@@ -216,6 +220,71 @@ THREE.ARUtils.loadBlocksModel = function (objPath, mtlPath) {
 };
 var loadBlocksModel = exports.loadBlocksModel = THREE.ARUtils.loadBlocksModel;
 
+var model = new THREE.Matrix4();
+var tempPos = new THREE.Vector3();
+var tempQuat = new THREE.Quaternion();
+var tempScale = new THREE.Vector3();
+
+/**
+ * Takes a THREE.Object3D and a VRHit and positions and optionally orients
+ * the object according to the transform of the VRHit. Can provide an
+ * easing value between 0 and 1 corresponding to the lerp between the
+ * object's current position/orientation, and the position/orientation of the
+ * hit.
+ *
+ * @param {THREE.Object3D} object
+ * @param {VRHit} hit
+ * @param {number} easing
+ * @param {boolean} applyOrientation
+ */
+THREE.ARUtils.placeObjectAtHit = function (object, hit) {
+  var easing = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 1;
+  var applyOrientation = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : false;
+
+  if (!hit || !hit.modelMatrix) {
+    throw new Error('placeObjectAtHit requires a VRHit object');
+  }
+
+  model.fromArray(hit.modelMatrix);
+
+  model.decompose(tempPos, tempQuat, tempScale);
+
+  if (easing === 1) {
+    object.position.copy(tempPos);
+    if (applyOrientation) {
+      object.quaternion.copy(tempQuat);
+    }
+  } else {
+    object.position.lerp(tempPos, easing);
+    if (applyOrientation) {
+      object.quaternion.slerp(tempQuat, easing);
+    }
+  }
+};
+var placeObjectAtHit = exports.placeObjectAtHit = THREE.ARUtils.placeObjectAtHit;
+
+/**
+ * Injects a DOM element into the current page prompting the user that
+ * their browser does not support these AR features.
+ */
+THREE.ARUtils.displayUnsupportedMessage = function () {
+  var element = document.createElement('div');
+  element.id = 'webgl-error-message';
+  element.style.fontFamily = 'monospace';
+  element.style.fontSize = '13px';
+  element.style.fontWeight = 'normal';
+  element.style.textAlign = 'center';
+  element.style.background = '#fff';
+  element.style.border = '1px solid black';
+  element.style.color = '#000';
+  element.style.padding = '1.5em';
+  element.style.width = '400px';
+  element.style.margin = '5em auto 0';
+  element.innerHTML = UNSUPPORTED_MESSAGE;
+  document.body.appendChild(element);
+};
+var displayUnsupportedMessage = exports.displayUnsupportedMessage = THREE.ARUtils.displayUnsupportedMessage;
+
 /***/ }),
 /* 1 */
 /***/ (function(module, exports, __webpack_require__) {
@@ -255,9 +324,23 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 // Reuse the frame data for getting the projection matrix
 var frameData = void 0;
 
+/**
+ * Class extending a THREE.PerspectiveCamera, attempting
+ * to use the projection matrix provided from an AR-enabled
+ * VRDisplay. If no AR-enabled VRDisplay found, uses provided
+ * parameters.
+ */
+
 var ARPerspectiveCamera = function (_THREE$PerspectiveCam) {
   _inherits(ARPerspectiveCamera, _THREE$PerspectiveCam);
 
+  /**
+   * @param {VRDisplay} vrDisplay
+   * @param {number} fov
+   * @param {number} aspect
+   * @param {number} near
+   * @param {number} far
+   */
   function ARPerspectiveCamera(vrDisplay, fov, aspect, near, far) {
     _classCallCheck(this, ARPerspectiveCamera);
 
@@ -273,6 +356,13 @@ var ARPerspectiveCamera = function (_THREE$PerspectiveCam) {
     return _this;
   }
 
+  /**
+   * Updates the underlying `projectionMatrix` property from
+   * the AR-enabled VRDisplay, or falls back to
+   * THREE.PerspectiveCamera.prototype.updateProjectionMatrix
+   */
+
+
   _createClass(ARPerspectiveCamera, [{
     key: "updateProjectionMatrix",
     value: function updateProjectionMatrix() {
@@ -284,6 +374,13 @@ var ARPerspectiveCamera = function (_THREE$PerspectiveCam) {
 
       this.projectionMatrix.fromArray(projMatrix);
     }
+
+    /**
+     * Gets the projection matrix from AR-enabled VRDisplay
+     * if possible.
+     * @return {!Float32Array}
+     */
+
   }, {
     key: "getProjectionMatrix",
     value: function getProjectionMatrix() {
@@ -319,37 +416,44 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
+var _ARUtils = __webpack_require__(0);
+
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
 
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; } /*
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * Copyright 2017 Google Inc. All Rights Reserved.
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * Licensed under the Apache License, Version 2.0 (the 'License');
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * you may not use this file except in compliance with the License.
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * You may obtain a copy of the License at
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                *
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                *     http://www.apache.org/licenses/LICENSE-2.0
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                *
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * Unless required by applicable law or agreed to in writing, software
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * distributed under the License is distributed on an 'AS IS' BASIS,
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * See the License for the specific language governing permissions and
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * limitations under the License.
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                */
 
-/*
- * Copyright 2017 Google Inc. All Rights Reserved.
- * Licensed under the Apache License, Version 2.0 (the 'License');
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an 'AS IS' BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+/**
+ * Class for creating a mesh that fires raycasts and lerps
+ * a 3D object along the surface
  */
-
-var model = new THREE.Matrix4();
-var tempPos = new THREE.Vector3();
-var tempPlaneDir = new THREE.Vector3();
-
 var ARReticle = function (_THREE$Mesh) {
   _inherits(ARReticle, _THREE$Mesh);
 
+  /**
+   * @param {VRDisplay} vrDisplay
+   * @param {number} innerRadius
+   * @param {number} outerRadius
+   * @param {number} color
+   * @param {number} easing
+   */
   function ARReticle(vrDisplay) {
-    var innerRadius = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 0.025;
-    var outerRadius = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 0.03;
+    var innerRadius = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 0.02;
+    var outerRadius = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 0.05;
     var color = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : 0xff0077;
     var easing = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : 0.25;
 
@@ -358,18 +462,31 @@ var ARReticle = function (_THREE$Mesh) {
     var geometry = new THREE.RingGeometry(innerRadius, outerRadius, 36, 64);
     var material = new THREE.MeshBasicMaterial({ color: color });
 
+    // Orient the geometry so it's position is flat on a horizontal surface
+    geometry.applyMatrix(new THREE.Matrix4().makeRotationX(THREE.Math.degToRad(-90)));
+
     var _this = _possibleConstructorReturn(this, (ARReticle.__proto__ || Object.getPrototypeOf(ARReticle)).call(this, geometry, material));
 
     _this.visible = false;
 
     _this.easing = easing;
+    _this.applyOrientation = true;
     _this.vrDisplay = vrDisplay;
     _this._planeDir = new THREE.Vector3();
     return _this;
   }
 
+  /**
+   * Attempt to fire a raycast from normalized screen coordinates
+   * x and y and lerp the reticle to the position.
+   *
+   * @param {number} x
+   * @param {number} y
+   */
+
+
   _createClass(ARReticle, [{
-    key: "update",
+    key: 'update',
     value: function update() {
       var x = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 0.5;
       var y = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 0.5;
@@ -381,17 +498,7 @@ var ARReticle = function (_THREE$Mesh) {
       var hit = this.vrDisplay.hitTest(x, y);
       if (hit && hit.length > 0) {
         this.visible = true;
-        model.fromArray(hit[0].modelMatrix);
-        tempPos.setFromMatrixPosition(model);
-        this.position.lerp(tempPos, this.easing);
-
-        tempPlaneDir.set(0, 1, 0);
-        tempPlaneDir.transformDirection(model);
-
-        this._planeDir.lerp(tempPlaneDir, this.easing);
-
-        tempPos.addVectors(this._planeDir, this.position);
-        this.lookAt(tempPos);
+        (0, _ARUtils.placeObjectAtHit)(this, hit[0], this.applyOrientation, this.easing);
       }
     }
   }]);
@@ -443,13 +550,18 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 /**
-* Creates and load a shader from a string, type specifies either 'vertex' or 'fragment'
-*/
+ * Creates and load a shader from a string, type specifies either 'vertex' or 'fragment'
+ *
+ * @param {WebGLRenderingContext} gl
+ * @param {string} str
+ * @param {string} type
+ * @return {!WebGLShader}
+ */
 function getShader(gl, str, type) {
-  var shader;
-  if (type == "fragment") {
+  var shader = void 0;
+  if (type == 'fragment') {
     shader = gl.createShader(gl.FRAGMENT_SHADER);
-  } else if (type == "vertex") {
+  } else if (type == 'vertex') {
     shader = gl.createShader(gl.VERTEX_SHADER);
   } else {
     return null;
@@ -468,11 +580,16 @@ function getShader(gl, str, type) {
 }
 
 /**
-* Creates a shader program from vertex and fragment shader sources
-*/
+ * Creates a shader program from vertex and fragment shader sources
+ *
+ * @param {WebGLRenderingContext} gl
+ * @param {string} vs
+ * @param {string} fs
+ * @return {!WebGLProgram}
+ */
 function getProgram(gl, vs, fs) {
-  var vertexShader = getShader(gl, vs, "vertex");
-  var fragmentShader = getShader(gl, fs, "fragment");
+  var vertexShader = getShader(gl, vs, 'vertex');
+  var fragmentShader = getShader(gl, fs, 'fragment');
   if (!fragmentShader) {
     return null;
   }
@@ -483,18 +600,21 @@ function getProgram(gl, vs, fs) {
   gl.linkProgram(shaderProgram);
 
   var result = gl.getProgramParameter(shaderProgram, gl.LINK_STATUS);
-  // alert("getProgramParameter result = " + result);
   if (!result) {
-    alert("Could not initialise arview shaders");
+    alert('Could not initialise arview shaders');
   }
 
   return shaderProgram;
 }
 
 /**
-* Calculate the correct orientation depending on the device and the camera
-* orientations.
-*/
+ * Calculate the correct orientation depending on the device and the camera
+ * orientations.
+ *
+ * @param {number} screenOrientation
+ * @param {number} seeThroughCameraOrientation
+ * @return {number}
+ */
 function combineOrientations(screenOrientation, seeThroughCameraOrientation) {
   var seeThroughCameraOrientationIndex = 0;
   switch (seeThroughCameraOrientation) {
@@ -534,13 +654,14 @@ function combineOrientations(screenOrientation, seeThroughCameraOrientation) {
 }
 
 /**
-* Renders the ar camera's video texture
-*/
+ * Renders the ar camera's video texture
+ */
 
 var ARVideoRenderer = function () {
   /**
-  * @param {VRDisplay, WebGLRenderingContext}
-  */
+   * @param {VRDisplay} vrDisplay
+   * @param {WebGLRenderingContext} gl
+   */
   function ARVideoRenderer(vrDisplay, gl) {
     _classCallCheck(this, ARVideoRenderer);
 
@@ -554,10 +675,10 @@ var ARVideoRenderer = function () {
     gl.useProgram(this.program);
 
     // Setup a quad
-    this.vertexPositionAttribute = gl.getAttribLocation(this.program, "aVertexPosition");
-    this.textureCoordAttribute = gl.getAttribLocation(this.program, "aTextureCoord");
+    this.vertexPositionAttribute = gl.getAttribLocation(this.program, 'aVertexPosition');
+    this.textureCoordAttribute = gl.getAttribLocation(this.program, 'aTextureCoord');
 
-    this.samplerUniform = gl.getUniformLocation(this.program, "uSampler");
+    this.samplerUniform = gl.getUniformLocation(this.program, 'uSampler');
 
     this.vertexPositionBuffer = gl.createBuffer();
     gl.bindBuffer(gl.ARRAY_BUFFER, this.vertexPositionBuffer);
@@ -611,8 +732,13 @@ var ARVideoRenderer = function () {
     return this;
   }
 
+  /**
+   * Renders the quad
+   */
+
+
   _createClass(ARVideoRenderer, [{
-    key: "render",
+    key: 'render',
     value: function render() {
       var gl = this.gl;
       gl.useProgram(this.program);
@@ -665,8 +791,9 @@ var ARVideoRenderer = function () {
 
 var ARView = function () {
   /**
-  * @param {VRDisplay}
-  */
+   * @param {VRDisplay} vrDisplay
+   * @param {THREE.WebGLRenderer} renderer
+   */
   function ARView(vrDisplay, renderer) {
     _classCallCheck(this, ARView);
 
@@ -682,14 +809,12 @@ var ARView = function () {
   }
 
   /**
-  * Renders the see through camera to the passed in renderer
-  *
-  * @param {THREE.WebGLRenderer}
-  */
+   * Renders the see through camera to the passed in renderer
+   */
 
 
   _createClass(ARView, [{
-    key: "render",
+    key: 'render',
     value: function render() {
       if ((0, _ARUtils.isARKit)(this.vrDisplay)) {
         return;
