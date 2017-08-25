@@ -26,6 +26,8 @@
       font-family: Monospace;
       margin: 0px;
       overflow: hidden;
+      -webkit-user-select: none;
+      user-select: none;
     }
     #info {
       color: #fff;
@@ -39,6 +41,11 @@
     }
     a {
       color: #ff0077;
+    }
+    canvas {
+      position: absolute;
+      top: 0;
+      left: 0;
     }
   </style>
 </head>
@@ -94,6 +101,7 @@ function init() {
   // Setup the three.js rendering environment
   renderer = new THREE.WebGLRenderer({ alpha: true });
   renderer.setPixelRatio(window.devicePixelRatio);
+  console.log('setRenderer size', window.innerWidth, window.innerHeight);
   renderer.setSize(window.innerWidth, window.innerHeight);
   renderer.autoClear = false;
   canvas = renderer.domElement;
@@ -178,6 +186,7 @@ function onWindowResize () {
   camera.aspect = window.innerWidth / window.innerHeight;
   camera.updateProjectionMatrix();
   renderer.setSize(window.innerWidth, window.innerHeight);
+  console.log('setRenderer size', window.innerWidth, window.innerHeight);
 }
 
 /**
