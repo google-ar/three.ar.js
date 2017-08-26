@@ -61,17 +61,10 @@
 
 var vrDisplay, vrControls, arView;
 var canvas, camera, scene, renderer;
-var RADIUS = 2;
-var BOX_SCALE = 0.3;
+var BOX_DISTANCE = 1.5;
+var BOX_SIZE = 0.25;
+var BOX_QUANTITY = 6;
 var boxesAdded = false;
-var colors = [
-  new THREE.Color( 0xffff00 ),
-  new THREE.Color( 0xff00ff ),
-  new THREE.Color( 0xff0000 ),
-  new THREE.Color( 0x00ffff ),
-  new THREE.Color( 0x00ff00 ),
-  new THREE.Color( 0x0000ff )
-];
 
 /**
  * Use the `getARDisplay()` utility to leverage the WebVR API
@@ -172,12 +165,12 @@ function onWindowResize () {
  */
 function addBoxes () {
   // Create some cubes around the origin point
-  for (var i = 0; i < colors.length; i++) {
-    var angle = Math.PI * 2 * (i / colors.length);
-    var geometry = new THREE.BoxGeometry(BOX_SCALE, BOX_SCALE, BOX_SCALE);
-    var material = new THREE.MeshBasicMaterial({ color: colors[i] });
+  for (var i = 0; i < BOX_QUANTITY; i++) {
+    var angle = Math.PI * 2 * (i / BOX_QUANTITY);
+    var geometry = new THREE.BoxGeometry(BOX_SIZE, BOX_SIZE, BOX_SIZE);
+    var material = new THREE.MeshNormalMaterial();
     var cube = new THREE.Mesh(geometry, material);
-    cube.position.set(Math.cos(angle) * RADIUS, camera.position.y, Math.sin(angle) * RADIUS);
+    cube.position.set(Math.cos(angle) * BOX_DISTANCE, camera.position.y, Math.sin(angle) * BOX_DISTANCE);
     scene.add(cube);
   }
 
