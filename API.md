@@ -23,6 +23,23 @@ and the `fov`, `aspect`, `near`, `far` properties are not applicable.
 
 If given a [VRDisplay] in constructor, generates the projection matrix from the API to match the native camera intrinsics. To use the cached projection matrix, just access the `projectionMatrix` property instead.
 
+## new THREE.ARDebug(vrDisplay)
+
+Creates an ARDebug panel to display hit and pose information. Use `getElement()` to return the element managed by the ARDebug panel to inject into your content.
+
+### THREE.ARDebug#open()
+
+Opens the ARDebug panel.
+
+### THREE.ARDebug#close()
+
+Closes the ARDebug panel.
+
+### DOMElement THREE.ARDebug#getElement()
+
+Returns the DOMElement for the debug panel to inject into the content.
+
+
 ## THREE.ARUtils
 
 Not a constructor but an object storing several utility functions listed below.
