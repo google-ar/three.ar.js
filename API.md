@@ -43,9 +43,9 @@ Opens the ARDebug panel.
 
 Closes the ARDebug panel.
 
-### DOMElement THREE.ARDebug#getElement()
+### HTMLElement THREE.ARDebug#getElement()
 
-Returns the DOMElement for the debug panel to inject into the content.
+Returns the HTMLElement for the debug panel to inject into the content.
 
 ## THREE.ARUtils
 
@@ -62,7 +62,7 @@ Takes a [VRDisplay] instance and returns a boolean whether or not this is consid
 
 ### boolean THREE.ARUtils.isTango(vrDisplay)
 
-Takes a [VRDisplay] instance and returns a boolean whether or not this is a Tango-backed Android device.
+Takes a [VRDisplay] instance and returns a boolean whether or not this is a Tango-backed/ARCore Android device.
 
 ### boolean THREE.ARUtils.isARKit(vrDisplay)
 
@@ -88,3 +88,6 @@ Generates an element and injects into the DOM a message notifying the user that 
 [THREE.Mesh]: https://threejs.org/docs/#api/objects/Mesh
 [THREE.BufferGeometry]: https://threejs.org/docs/#api/core/BufferGeometry
 [THREE.Color]: https://threejs.org/docs/#api/math/Color
+[THREE.Object3D]: https://threejs.org/docs/#api/core/Object3D
+[HTMLElement]: https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement
+[VRHit]: https://github.com/google-ar/WebARonARKit/blob/master/webvr_ar_extension.md#basic-understanding-of-the-real-world

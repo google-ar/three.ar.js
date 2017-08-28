@@ -106,7 +106,7 @@ class ARDebug {
   /**
    * Returns the root DOM element for the panel.
    *
-   * @return {DOMElement}
+   * @return {HTMLElement}
    */
   getElement() {
     return this._view.getElement();
@@ -202,7 +202,7 @@ class ARDebugView {
   /**
    * Returns the ARDebugView root element.
    *
-   * @return {DOMElement}
+   * @return {HTMLElement}
    */
   getElement() {
     return this.el;
@@ -280,7 +280,7 @@ class ARDebugRow {
   /**
    * Returns the ARDebugRow's root element.
    *
-   * @return {DOMElement}
+   * @return {HTMLElement}
    */
   getElement() {
     return this.el;
