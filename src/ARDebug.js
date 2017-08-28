@@ -19,6 +19,9 @@ const DEFAULTS = {
   showPoseStatus: true,
 };
 
+const SUCCESS_COLOR = '#00ff00';
+const FAILURE_COLOR = '#ff0077';
+
 // A cache to store original native VRDisplay methods
 // since WebARonARKit does not provide a VRDisplay.prototype[method],
 // and assuming the first time ARDebug proxies a method is the
@@ -235,6 +238,8 @@ class ARDebugRow {
     this.el.style.borderTop = '1px solid rgb(54, 54, 54)';
     this.el.style.borderBottom = '1px solid #14171A';
     this.el.style.position = 'relative';
+    this.el.style.padding = '3px 0px';
+    this.el.style.overflow = 'hidden';
 
     this._titleEl = document.createElement('span');
     this._titleEl.style.fontWeight = 'bold';
@@ -285,9 +290,11 @@ class ARDebugRow {
    * Updates the row's value.
    *
    * @param {string} value
+   * @param {boolean} isSuccess
    */
-  update(value) {
+  update(value, isSuccess) {
     this._dataElText.nodeValue = value;
+    this._dataEl.style.color = isSuccess ? SUCCESS_COLOR : FAILURE_COLOR;
   }
 }
 
@@ -342,16 +349,10 @@ class ARDebugHitTestRow extends ARDebugRow {
   _onHitTest(x, y) {
     const hits = this._nativeHitTest.call(this.vrDisplay, x, y);
 
-    const t = parseInt(performance.now(), 10);
+    const t = (parseInt(performance.now(), 10) / 1000).toFixed(1);
     const didHit = hits && hits.length;
 
-    if (didHit && this._didPreviouslyHit !== true) {
-      this.getElement().style.color = '#00ff00';
-    } else if (!didHit && this._didPreviouslyHit !== false) {
-      this.getElement().style.color = '#ff0077';
-    }
-
-    this.update(`${didHit ? this._hitToString(hits[0]) : 'MISS'} @ ${t}s`);
+    this.update(`${didHit ? this._hitToString(hits[0]) : 'MISS'} @ ${t}s`, didHit);
     this._didPreviouslyHit = didHit;
     return hits;
   }
@@ -426,20 +427,12 @@ class ARDebugPoseRow extends ARDebugRow {
     }
 
     if (isValidPose) {
-      this.update(this._poseToString(pose));
+      this.update(this._poseToString(pose), true);
     } else if (!isValidPose && this._lastPoseValid !== false) {
-      this.update(`Pose lost`);
+      this.update(`Pose lost`, false);
     }
-
-    if (isValidPose && this._lastPoseValid !== true) {
-      this.getElement().style.color = '#00ff00';
-    } else if (!isValidPose && this._lastPoseValid !== false) {
-      this.getElement().style.color = '#ff0077';
-    }
-
 
     this._lastPoseValid = isValidPose;
-
     this._initialPose = true;
 
     return results;
