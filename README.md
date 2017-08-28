@@ -38,12 +38,39 @@ $ npm install --save three three.ar.js
 If you are including three.ar.js via script tag, the additional three.ar.js features are appended to the `THREE` namespace, for example:
 
 ```js
+/**
+ * Not a full working example -- see the `examples/` directory
+ */
+THREE.ARUtils.getARDisplay().then(init);
+
+function init(display) {
+  vrDisplay = display;
+  // Set up three.js scene
+  renderer = new THREE.WebGLRenderer({ alpha: true });
+  scene = new THREE.Scene();
+
+  // ...
+
+  // Set up our ARView with ARPerspectiveCamera
+  arView = new THREE.ARView(vrDisplay, renderer);
+  camera = new THREE.ARPerspectiveCamera(vrDisplay, 60, window.innerWidth / window.innerHeight, vrDisplay.depthNear, vrDisplay.depthFar);
+  vrControls = new THREE.VRControls(camera);
+
+  update();
+}
+
+function update() {
+  // Update our controls/camera, the ARView rendering,
+  // and our three.js scene
+  vrControls.update();
+  arView.render();
+  renderer.clearDepth();
+  renderer.render(scene, camera);
+  vrDisplay.requestAnimationFrame(update);
+}
 ```
 
 For more examples, see the [examples/](examples/) directory.
-
-**TODO ADD EXAMPLE OF IMPORTING VIA REQUIRE/IMPORT AND ANY WEBPACK CONFIGURATIONS (ProvidePlugin) TO DEAL WITH THREE GLOBALS**
-
 
 ## Contributing
 
