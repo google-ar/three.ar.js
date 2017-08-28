@@ -331,6 +331,20 @@ class ARView {
 
     this.videoRenderer = new ARVideoRenderer(vrDisplay, this.gl);
     this.renderer.resetGLState();
+
+    // Cache the width/height so we're not potentially forcing
+    // a reflow if there's been a style invalidation
+    this.width = window.innerWidth;
+    this.height = window.innerHeight;
+    window.addEventListener('resize', this.onWindowResize.bind(this), false);
+  }
+
+  /**
+   * Updates the stored width/height of window on resize.
+   */
+  onWindowResize() {
+    this.width = window.innerWidth;
+    this.height = window.innerHeight;
   }
 
   /**
@@ -343,8 +357,8 @@ class ARView {
 
     let gl = this.gl;
     let dpr = window.devicePixelRatio;
-    let width = window.innerWidth * dpr;
-    let height = window.innerHeight * dpr;
+    let width = this.width * dpr;
+    let height = this.height * dpr;
 
     if (gl.viewportWidth !== width) {
       gl.viewportWidth = width;
