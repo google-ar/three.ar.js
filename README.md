@@ -12,7 +12,7 @@
 * THREE.ARReticle: a visible reticle drawn on the real surface of real world objects.
 * THREE.ARPerspectiveCamera: a camera that matches your Three.js scene to your camera's video feed.
 
-See [three.ar.js API documentataion](TODO) for details.
+See [three.ar.js API documentataion](API.md) for details.
 
 ## Installing
 
