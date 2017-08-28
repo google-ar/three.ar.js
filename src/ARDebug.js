@@ -338,7 +338,7 @@ class ARDebugHitTestRow extends ARDebugRow {
    */
   _hitToString(hit) {
     const mm = hit.modelMatrix;
-    return `<${mm[12].toFixed(2)}, ${mm[13].toFixed(2)}, ${mm[14].toFixed(2)}>`;
+    return `${mm[12].toFixed(2)}, ${mm[13].toFixed(2)}, ${mm[14].toFixed(2)}`;
   }
 
   /**
@@ -376,7 +376,7 @@ class ARDebugPoseRow extends ARDebugRow {
                                this.vrDisplay.getFrameData;
     cachedVRDisplayMethods.set('getFrameData', this._nativeGetFrameData);
 
-    this.update('Looking for pose...');
+    this.update('Looking for position...');
     this._initialPose = false;
   }
 
@@ -399,7 +399,7 @@ class ARDebugPoseRow extends ARDebugRow {
    * @return {string}
    */
   _poseToString(pose) {
-    return `<${pose[0].toFixed(2)}, ${pose[1].toFixed(2)}, ${pose[2].toFixed(2)}>`;
+    return `${pose[0].toFixed(2)}, ${pose[1].toFixed(2)}, ${pose[2].toFixed(2)}`;
   }
 
   /**
@@ -429,7 +429,7 @@ class ARDebugPoseRow extends ARDebugRow {
     if (isValidPose) {
       this.update(this._poseToString(pose), true);
     } else if (!isValidPose && this._lastPoseValid !== false) {
-      this.update(`Pose lost`, false);
+      this.update(`Position lost`, false);
     }
 
     this._lastPoseValid = isValidPose;
