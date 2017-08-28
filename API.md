@@ -1,5 +1,13 @@
 # three.ar.js API
 
+## new THREE.ARView(vrDisplay, renderer)
+
+Creates an ARView with a [VRDisplay] and a [THREE.WebGLRenderer]. Handles the pass through camera differences between ARCore and ARKit platforms, and renders the camera behind your scene.
+
+### THREE.ARView#render()
+
+Renders the pass through camera. Usually called on every frame in a render loop before rendering other objects in the scene.
+
 ## new THREE.ARReticle(vrDisplay, innerRadius, outerRadius, color, easing)
 
 Creates a [THREE.Mesh] reticle to render via hit tests with the [VRDisplay].
@@ -38,7 +46,6 @@ Closes the ARDebug panel.
 ### DOMElement THREE.ARDebug#getElement()
 
 Returns the DOMElement for the debug panel to inject into the content.
-
 
 ## THREE.ARUtils
 
