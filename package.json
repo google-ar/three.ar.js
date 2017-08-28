@@ -6,7 +6,8 @@
   "scripts": {
     "build": "webpack",
     "dev": "webpack-dev-server --port 8000",
-    "lint": "eslint src/**.*"
+    "lint": "eslint src/**.*",
+    "test": "npm run lint"
   },
   "author": "Jordan Santell <jsantell@google.com>",
   "license": "Apache-2.0",

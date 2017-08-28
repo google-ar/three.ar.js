@@ -65,6 +65,16 @@ Run `npm run build` to create a new build in `./dist`. When sending pull request
 
 Run `npm run lint` to run the linter on code in `src/`.
 
+### Testing
+
+Right now, there are only linting tests. To run the tests, execute:
+
+```
+$ npm test
+```
+
+For testing functionality, go through the examples with your changes and ensure the expected functionality.
+
 ## Examples
 
 Examples of three.ar.js are in the `/examples` directory. 
