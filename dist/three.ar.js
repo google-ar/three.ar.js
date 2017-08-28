@@ -79,7 +79,7 @@
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 6);
+/******/ 	return __webpack_require__(__webpack_require__.s = 7);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -94,22 +94,22 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.displayUnsupportedMessage = exports.placeObjectAtHit = exports.loadBlocksModel = exports.getARDisplay = exports.isARDisplay = exports.isARKit = exports.isTango = undefined;
 
-var _loaders = __webpack_require__(7);
+var _loaders = __webpack_require__(8);
 
-var LEARN_MORE_LINK = 'https://developer.google.com/ar/develop/web'; /*
-                                                                      * Copyright 2017 Google Inc. All Rights Reserved.
-                                                                      * Licensed under the Apache License, Version 2.0 (the 'License');
-                                                                      * you may not use this file except in compliance with the License.
-                                                                      * You may obtain a copy of the License at
-                                                                      *
-                                                                      *     http://www.apache.org/licenses/LICENSE-2.0
-                                                                      *
-                                                                      * Unless required by applicable law or agreed to in writing, software
-                                                                      * distributed under the License is distributed on an 'AS IS' BASIS,
-                                                                      * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-                                                                      * See the License for the specific language governing permissions and
-                                                                      * limitations under the License.
-                                                                      */
+var LEARN_MORE_LINK = 'https://developers.google.com/ar/develop/web/getting-started'; /*
+                                                                                       * Copyright 2017 Google Inc. All Rights Reserved.
+                                                                                       * Licensed under the Apache License, Version 2.0 (the 'License');
+                                                                                       * you may not use this file except in compliance with the License.
+                                                                                       * You may obtain a copy of the License at
+                                                                                       *
+                                                                                       *     http://www.apache.org/licenses/LICENSE-2.0
+                                                                                       *
+                                                                                       * Unless required by applicable law or agreed to in writing, software
+                                                                                       * distributed under the License is distributed on an 'AS IS' BASIS,
+                                                                                       * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+                                                                                       * See the License for the specific language governing permissions and
+                                                                                       * limitations under the License.
+                                                                                       */
 
 var UNSUPPORTED_MESSAGE = 'This experience requires an augmented reality\n  prototype browser. Learn more <a href="' + LEARN_MORE_LINK + '">here</a>.';
 
@@ -296,6 +296,631 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
+var _slicedToArray = function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"]) _i["return"](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError("Invalid attempt to destructure non-iterable instance"); } }; }();
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+/*
+ * Copyright 2017 Google Inc. All Rights Reserved.
+ * Licensed under the Apache License, Version 2.0 (the 'License');
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an 'AS IS' BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+var DEFAULTS = {
+  open: true,
+  showLastHit: true,
+  showPoseStatus: true
+};
+
+// A cache to store original native VRDisplay methods
+// since WebARonARKit does not provide a VRDisplay.prototype[method],
+// and assuming the first time ARDebug proxies a method is the
+// 'native' version, this caches the correct method if we proxy a method twice
+var cachedVRDisplayMethods = new Map();
+
+/**
+ * A throttle function to limit number of DOM writes
+ * in the ARDebug view.
+ *
+ * @param {Function} fn
+ * @param {number} timer
+ * @param {Object} scope
+ *
+ * @return {Function}
+ */
+function throttle(fn, timer, scope) {
+  var lastFired = void 0;
+  var timeout = void 0;
+
+  return function () {
+    for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
+      args[_key] = arguments[_key];
+    }
+
+    var current = +new Date();
+    var until = void 0;
+
+    if (lastFired) {
+      until = lastFired + timer - current;
+    }
+
+    if (until == undefined || until < 0) {
+      lastFired = current;
+      fn.apply(scope, args);
+    } else if (until >= 0) {
+      clearTimeout(timeout);
+      timeout = setTimeout(function () {
+        lastFired = current;
+        fn.apply(scope, args);
+      }, until);
+    }
+  };
+}
+/**
+ * Class for creating a mesh that fires raycasts and lerps
+ * a 3D object along the surface
+ */
+
+var ARDebug = function () {
+  /**
+   * @param {VRDisplay} vrDisplay
+   * @param {Object} config
+   * @param {boolean} config.open
+   * @param {boolean} config.showLastHit
+   * @param {boolean} config.showPoseStatus
+   */
+  function ARDebug(vrDisplay) {
+    var config = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+
+    _classCallCheck(this, ARDebug);
+
+    this.config = Object.assign({}, config, DEFAULTS);
+    this.vrDisplay = vrDisplay;
+
+    this._view = new ARDebugView({ open: this.config.open });
+
+    if (this.config.showLastHit && this.vrDisplay.hitTest) {
+      this._view.addRow('hit-test', new ARDebugHitTestRow(vrDisplay));
+    }
+
+    if (this.config.showPoseStatus && this.vrDisplay.getFrameData) {
+      this._view.addRow('pose-status', new ARDebugPoseRow(vrDisplay));
+    }
+  }
+
+  /**
+   * Opens the debug panel.
+   */
+
+
+  _createClass(ARDebug, [{
+    key: 'open',
+    value: function open() {
+      this._view.open();
+    }
+
+    /**
+     * Closes the debug panel.
+     */
+
+  }, {
+    key: 'close',
+    value: function close() {
+      this._view.close();
+    }
+
+    /**
+     * Returns the root DOM element for the panel.
+     *
+     * @return {DOMElement}
+     */
+
+  }, {
+    key: 'getElement',
+    value: function getElement() {
+      return this._view.getElement();
+    }
+  }]);
+
+  return ARDebug;
+}();
+
+/**
+ * An implementation that interfaces with the DOM, used
+ * by ARDebug
+ */
+
+
+var ARDebugView = function () {
+  /**
+   * @param {Object} config
+   * @param {boolean} config.open
+   */
+  function ARDebugView() {
+    var config = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+
+    _classCallCheck(this, ARDebugView);
+
+    this.rows = new Map();
+
+    this.el = document.createElement('div');
+    this.el.style.backgroundColor = '#333';
+    this.el.style.padding = '5px';
+    this.el.style.fontFamily = 'Roboto, Ubuntu, Arial, sans-serif';
+    this.el.style.color = 'rgb(165, 165, 165)';
+    this.el.style.position = 'absolute';
+    this.el.style.right = '20px';
+    this.el.style.top = '0px';
+    this.el.style.width = '200px';
+    this.el.style.fontSize = '12px';
+    this.el.style.zIndex = 9999;
+
+    this._rowsEl = document.createElement('div');
+    this._rowsEl.style.transitionProperty = 'max-height';
+    this._rowsEl.style.transitionDuration = '0.5s';
+    this._rowsEl.style.transitionDelay = '0s';
+    this._rowsEl.style.transitionTimingFunction = 'ease-out';
+    this._rowsEl.style.overflow = 'hidden';
+
+    this._controls = document.createElement('div');
+    this._controls.style.fontSize = '13px';
+    this._controls.style.fontWeight = 'bold';
+    this._controls.style.paddingTop = '5px';
+    this._controls.style.textAlign = 'center';
+    this._controls.style.cursor = 'pointer';
+    this._controls.addEventListener('click', this.toggleControls.bind(this));
+
+    // Initialize the view as open or closed
+    config.open ? this.open() : this.close();
+
+    this.el.appendChild(this._rowsEl);
+    this.el.appendChild(this._controls);
+  }
+
+  /**
+   * Toggles between open and close modes.
+   */
+
+
+  _createClass(ARDebugView, [{
+    key: 'toggleControls',
+    value: function toggleControls() {
+      if (this._isOpen) {
+        this.close();
+      } else {
+        this.open();
+      }
+    }
+
+    /**
+     * Opens the debugging panel.
+     */
+
+  }, {
+    key: 'open',
+    value: function open() {
+      // Use max-height with large value to transition
+      // to/from a non-specific height (like auto/100%)
+      // https://stackoverflow.com/a/8331169
+      // @TODO investigate a more complete solution with correct timing,
+      // via something like http://n12v.com/css-transition-to-from-auto/
+      this._rowsEl.style.maxHeight = '100px';
+      this._isOpen = true;
+      this._controls.textContent = 'Close ARDebug';
+      var _iteratorNormalCompletion = true;
+      var _didIteratorError = false;
+      var _iteratorError = undefined;
+
+      try {
+        for (var _iterator = this.rows[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+          var _step$value = _slicedToArray(_step.value, 2),
+              row = _step$value[1];
+
+          row.enable();
+        }
+      } catch (err) {
+        _didIteratorError = true;
+        _iteratorError = err;
+      } finally {
+        try {
+          if (!_iteratorNormalCompletion && _iterator.return) {
+            _iterator.return();
+          }
+        } finally {
+          if (_didIteratorError) {
+            throw _iteratorError;
+          }
+        }
+      }
+    }
+
+    /**
+     * Closes the debugging panel.
+     */
+
+  }, {
+    key: 'close',
+    value: function close() {
+      this._rowsEl.style.maxHeight = '0px';
+      this._isOpen = false;
+      this._controls.textContent = 'Open ARDebug';
+      var _iteratorNormalCompletion2 = true;
+      var _didIteratorError2 = false;
+      var _iteratorError2 = undefined;
+
+      try {
+        for (var _iterator2 = this.rows[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
+          var _step2$value = _slicedToArray(_step2.value, 2),
+              row = _step2$value[1];
+
+          row.disable();
+        }
+      } catch (err) {
+        _didIteratorError2 = true;
+        _iteratorError2 = err;
+      } finally {
+        try {
+          if (!_iteratorNormalCompletion2 && _iterator2.return) {
+            _iterator2.return();
+          }
+        } finally {
+          if (_didIteratorError2) {
+            throw _iteratorError2;
+          }
+        }
+      }
+    }
+
+    /**
+     * Returns the ARDebugView root element.
+     *
+     * @return {DOMElement}
+     */
+
+  }, {
+    key: 'getElement',
+    value: function getElement() {
+      return this.el;
+    }
+
+    /**
+     * Adds a row to the ARDebugView.
+     *
+     * @param {string} id
+     * @param {ARDebugRow} row
+     */
+
+  }, {
+    key: 'addRow',
+    value: function addRow(id, row) {
+      this.rows.set(id, row);
+
+      if (this._isOpen) {
+        row.enable();
+      }
+
+      this._rowsEl.appendChild(row.getElement());
+    }
+  }]);
+
+  return ARDebugView;
+}();
+
+/**
+ * A class that implements features being a row in the ARDebugView.
+ */
+
+
+var ARDebugRow = function () {
+  /**
+   * @param {string} title
+   */
+  function ARDebugRow(title) {
+    _classCallCheck(this, ARDebugRow);
+
+    this.el = document.createElement('div');
+    this.el.style.width = '100%';
+    this.el.style.borderTop = '1px solid rgb(54, 54, 54)';
+    this.el.style.borderBottom = '1px solid #14171A';
+    this.el.style.position = 'relative';
+
+    this._titleEl = document.createElement('span');
+    this._titleEl.style.fontWeight = 'bold';
+    this._titleEl.textContent = title;
+
+    this._dataEl = document.createElement('span');
+    this._dataEl.style.position = 'absolute';
+    this._dataEl.style.left = '40px';
+
+    // Create a text element to update so we can avoid
+    // forced reflows when updating
+    // https://stackoverflow.com/a/17203046
+    this._dataElText = document.createTextNode('');
+    this._dataEl.appendChild(this._dataElText);
+
+    this.el.appendChild(this._titleEl);
+    this.el.appendChild(this._dataEl);
+
+    this.update = throttle(this.update, 500, this);
+  }
+
+  /**
+   * Enables the proxying and inspection functionality of
+   * this row. Should be implemented by child class.
+   */
+
+
+  _createClass(ARDebugRow, [{
+    key: 'enable',
+    value: function enable() {
+      throw new Error('Implement in child class');
+    }
+
+    /**
+     * Disables the proxying and inspection functionality of
+     * this row. Should be implemented by child class.
+     */
+
+  }, {
+    key: 'disable',
+    value: function disable() {
+      throw new Error('Implement in child class');
+    }
+
+    /**
+     * Returns the ARDebugRow's root element.
+     *
+     * @return {DOMElement}
+     */
+
+  }, {
+    key: 'getElement',
+    value: function getElement() {
+      return this.el;
+    }
+
+    /**
+     * Updates the row's value.
+     *
+     * @param {string} value
+     */
+
+  }, {
+    key: 'update',
+    value: function update(value) {
+      this._dataElText.nodeValue = value;
+    }
+  }]);
+
+  return ARDebugRow;
+}();
+
+/**
+ * The ARDebugRow subclass for displaying hit information
+ * by wrapping `vrDisplay.hitTest` and displaying the results.
+ */
+
+
+var ARDebugHitTestRow = function (_ARDebugRow) {
+  _inherits(ARDebugHitTestRow, _ARDebugRow);
+
+  /**
+   * @param {VRDisplay} vrDisplay
+   */
+  function ARDebugHitTestRow(vrDisplay) {
+    _classCallCheck(this, ARDebugHitTestRow);
+
+    var _this = _possibleConstructorReturn(this, (ARDebugHitTestRow.__proto__ || Object.getPrototypeOf(ARDebugHitTestRow)).call(this, 'Hit'));
+
+    _this.vrDisplay = vrDisplay;
+    _this._onHitTest = _this._onHitTest.bind(_this);
+
+    // Store the native hit test, or proxy the native `hitTest` call with our own
+    _this._nativeHitTest = cachedVRDisplayMethods.get('hitTest') || _this.vrDisplay.hitTest;
+    cachedVRDisplayMethods.set('hitTest', _this._nativeHitTest);
+
+    _this._didPreviouslyHit = null;
+    return _this;
+  }
+
+  /**
+   * Enables the tracking of hit test information.
+   */
+
+
+  _createClass(ARDebugHitTestRow, [{
+    key: 'enable',
+    value: function enable() {
+      this.vrDisplay.hitTest = this._onHitTest;
+    }
+
+    /**
+     * Disables the tracking of hit test information.
+     */
+
+  }, {
+    key: 'disable',
+    value: function disable() {
+      this.vrDisplay.hitTest = this._nativeHitTest;
+    }
+
+    /**
+     * @param {VRHit} hit
+     * @return {string}
+     */
+
+  }, {
+    key: '_hitToString',
+    value: function _hitToString(hit) {
+      var mm = hit.modelMatrix;
+      return '<' + mm[12].toFixed(2) + ', ' + mm[13].toFixed(2) + ', ' + mm[14].toFixed(2) + '>';
+    }
+
+    /**
+     * @param {number} x
+     * @param {number} y
+     * @return {VRHit?}
+     */
+
+  }, {
+    key: '_onHitTest',
+    value: function _onHitTest(x, y) {
+      var hits = this._nativeHitTest.call(this.vrDisplay, x, y);
+
+      var t = parseInt(performance.now(), 10);
+      var didHit = hits && hits.length;
+
+      if (didHit && this._didPreviouslyHit !== true) {
+        this.getElement().style.color = '#00ff00';
+      } else if (!didHit && this._didPreviouslyHit !== false) {
+        this.getElement().style.color = '#ff0077';
+      }
+
+      this.update((didHit ? this._hitToString(hits[0]) : 'MISS') + ' @ ' + t + 's');
+      this._didPreviouslyHit = didHit;
+      return hits;
+    }
+  }]);
+
+  return ARDebugHitTestRow;
+}(ARDebugRow);
+
+/**
+ * The ARDebugRow subclass for displaying pose information
+ * by wrapping `vrDisplay.getFrameData` and displaying the results.
+ */
+
+
+var ARDebugPoseRow = function (_ARDebugRow2) {
+  _inherits(ARDebugPoseRow, _ARDebugRow2);
+
+  /**
+   * @param {VRDisplay} vrDisplay
+   */
+  function ARDebugPoseRow(vrDisplay) {
+    _classCallCheck(this, ARDebugPoseRow);
+
+    var _this2 = _possibleConstructorReturn(this, (ARDebugPoseRow.__proto__ || Object.getPrototypeOf(ARDebugPoseRow)).call(this, 'Pose'));
+
+    _this2.vrDisplay = vrDisplay;
+    _this2._onGetFrameData = _this2._onGetFrameData.bind(_this2);
+
+    // Store the native hit test, or proxy the native `hitTest` call with our own
+    _this2._nativeGetFrameData = cachedVRDisplayMethods.get('getFrameData') || _this2.vrDisplay.getFrameData;
+    cachedVRDisplayMethods.set('getFrameData', _this2._nativeGetFrameData);
+
+    _this2.update('Looking for pose...');
+    _this2._initialPose = false;
+    return _this2;
+  }
+
+  /**
+   * Enables displaying and pulling getFrameData
+   */
+
+
+  _createClass(ARDebugPoseRow, [{
+    key: 'enable',
+    value: function enable() {
+      this.vrDisplay.getFrameData = this._onGetFrameData;
+    }
+
+    /**
+     * Disables displaying and pulling getFrameData
+     */
+
+  }, {
+    key: 'disable',
+    value: function disable() {
+      this.vrDisplay.getFrameData = this._nativeGetFrameData;
+    }
+
+    /**
+     * @param {VRPose} pose
+     * @return {string}
+     */
+
+  }, {
+    key: '_poseToString',
+    value: function _poseToString(pose) {
+      return '<' + pose[0].toFixed(2) + ', ' + pose[1].toFixed(2) + ', ' + pose[2].toFixed(2) + '>';
+    }
+
+    /**
+     * Wrapper around getFrameData
+     *
+     * @param {VRFrameData} frameData
+     * @return {boolean}
+     */
+
+  }, {
+    key: '_onGetFrameData',
+    value: function _onGetFrameData(frameData) {
+      var results = this._nativeGetFrameData.call(this.vrDisplay, frameData);
+      var pose = frameData && frameData.pose && frameData.pose.position;
+      // Ensure we have a valid pose; while the pose SHOULD be null when not
+      // provided by the VRDisplay, on WebARonARCore, the xyz values of position
+      // are all 0 -- mark this as an invalid pose
+      var isValidPose = pose && typeof pose[0] === 'number' && typeof pose[1] === 'number' && typeof pose[2] === 'number' && !(pose[0] === 0 && pose[1] === 0 && pose[2] === 0);
+
+      // If we haven't received a pose yet, and still don't have a valid pose
+      // leave the message how it is
+      if (!this._initialPose && !isValidPose) {
+        return results;
+      }
+
+      if (isValidPose) {
+        this.update(this._poseToString(pose));
+      } else if (!isValidPose && this._lastPoseValid !== false) {
+        this.update('Pose lost');
+      }
+
+      if (isValidPose && this._lastPoseValid !== true) {
+        this.getElement().style.color = '#00ff00';
+      } else if (!isValidPose && this._lastPoseValid !== false) {
+        this.getElement().style.color = '#ff0077';
+      }
+
+      this._lastPoseValid = isValidPose;
+
+      this._initialPose = true;
+
+      return results;
+    }
+  }]);
+
+  return ARDebugPoseRow;
+}(ARDebugRow);
+
+THREE.ARDebug = ARDebug;
+exports.default = ARDebug;
+
+/***/ }),
+/* 2 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
@@ -404,7 +1029,7 @@ THREE.ARPerspectiveCamera = ARPerspectiveCamera;
 exports.default = ARPerspectiveCamera;
 
 /***/ }),
-/* 2 */
+/* 3 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -510,7 +1135,7 @@ THREE.ARReticle = ARReticle;
 exports.default = ARReticle;
 
 /***/ }),
-/* 3 */
+/* 4 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -537,11 +1162,11 @@ var _createClass = function () { function defineProperties(target, props) { for 
 
 var _ARUtils = __webpack_require__(0);
 
-var _arview = __webpack_require__(5);
+var _arview = __webpack_require__(6);
 
 var _arview2 = _interopRequireDefault(_arview);
 
-var _arview3 = __webpack_require__(4);
+var _arview3 = __webpack_require__(5);
 
 var _arview4 = _interopRequireDefault(_arview3);
 
@@ -806,14 +1431,31 @@ var ARView = function () {
 
     this.videoRenderer = new ARVideoRenderer(vrDisplay, this.gl);
     this.renderer.resetGLState();
+
+    // Cache the width/height so we're not potentially forcing
+    // a reflow if there's been a style invalidation
+    this.width = window.innerWidth;
+    this.height = window.innerHeight;
+    window.addEventListener('resize', this.onWindowResize.bind(this), false);
   }
 
   /**
-   * Renders the see through camera to the passed in renderer
+   * Updates the stored width/height of window on resize.
    */
 
 
   _createClass(ARView, [{
+    key: 'onWindowResize',
+    value: function onWindowResize() {
+      this.width = window.innerWidth;
+      this.height = window.innerHeight;
+    }
+
+    /**
+     * Renders the see through camera to the passed in renderer
+     */
+
+  }, {
     key: 'render',
     value: function render() {
       if ((0, _ARUtils.isARKit)(this.vrDisplay)) {
@@ -822,8 +1464,8 @@ var ARView = function () {
 
       var gl = this.gl;
       var dpr = window.devicePixelRatio;
-      var width = window.innerWidth * dpr;
-      var height = window.innerHeight * dpr;
+      var width = this.width * dpr;
+      var height = this.height * dpr;
 
       if (gl.viewportWidth !== width) {
         gl.viewportWidth = width;
@@ -846,7 +1488,7 @@ THREE.ARView = ARView;
 exports.default = ARView;
 
 /***/ }),
-/* 4 */
+/* 5 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -855,7 +1497,7 @@ exports.default = ARView;
 module.exports = "// Copyright 2017 Google Inc. All Rights Reserved.\n// Licensed under the Apache License, Version 2.0 (the 'License');\n// you may not use this file except in compliance with the License.\n// You may obtain a copy of the License at\n//\n// http://www.apache.org/licenses/LICENSE-2.0\n//\n// Unless required by applicable law or agreed to in writing, software\n// distributed under the License is distributed on an 'AS IS' BASIS,\n// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n// See the License for the specific language governing permissions and\n// limitations under the License.\n\n#extension GL_OES_EGL_image_external : require\n\nprecision mediump float;\n#define GLSLIFY 1\n\nvarying vec2 vTextureCoord;\n\nuniform samplerExternalOES uSampler;\n\nvoid main(void) {\n  gl_FragColor = texture2D(uSampler, vTextureCoord);\n}\n";
 
 /***/ }),
-/* 5 */
+/* 6 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -864,17 +1506,21 @@ module.exports = "// Copyright 2017 Google Inc. All Rights Reserved.\n// License
 module.exports = "#define GLSLIFY 1\n// Copyright 2017 Google Inc. All Rights Reserved.\n// Licensed under the Apache License, Version 2.0 (the 'License');\n// you may not use this file except in compliance with the License.\n// You may obtain a copy of the License at\n//\n// http://www.apache.org/licenses/LICENSE-2.0\n//\n// Unless required by applicable law or agreed to in writing, software\n// distributed under the License is distributed on an 'AS IS' BASIS,\n// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n// See the License for the specific language governing permissions and\n// limitations under the License.\n\nattribute vec3 aVertexPosition;\nattribute vec2 aTextureCoord;\n\nvarying vec2 vTextureCoord;\n\nvoid main(void) {\n  gl_Position = vec4(aVertexPosition, 1.0);\n  vTextureCoord = aTextureCoord;\n}\n";
 
 /***/ }),
-/* 6 */
+/* 7 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var _ARPerspectiveCamera = __webpack_require__(1);
+var _ARDebug = __webpack_require__(1);
+
+var _ARDebug2 = _interopRequireDefault(_ARDebug);
+
+var _ARPerspectiveCamera = __webpack_require__(2);
 
 var _ARPerspectiveCamera2 = _interopRequireDefault(_ARPerspectiveCamera);
 
-var _ARReticle = __webpack_require__(2);
+var _ARReticle = __webpack_require__(3);
 
 var _ARReticle2 = _interopRequireDefault(_ARReticle);
 
@@ -882,14 +1528,14 @@ var _ARUtils = __webpack_require__(0);
 
 var _ARUtils2 = _interopRequireDefault(_ARUtils);
 
-var _ARView = __webpack_require__(3);
+var _ARView = __webpack_require__(4);
 
 var _ARView2 = _interopRequireDefault(_ARView);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 /***/ }),
-/* 7 */
+/* 8 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
