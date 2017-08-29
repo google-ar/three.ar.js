@@ -16,8 +16,7 @@
 import { loadMtl, loadObj } from './loaders';
 
 const LEARN_MORE_LINK = 'https://developers.google.com/ar/develop/web/getting-started';
-const UNSUPPORTED_MESSAGE = `This experience requires an augmented reality
-  prototype browser. Learn more <a href="${LEARN_MORE_LINK}">here</a>.`;
+const UNSUPPORTED_MESSAGE = `This augmented reality experience requires WebARonARCore or WebARonARKit: experimental browsers from Google, available Android and iOS. Learn more <a href="${LEARN_MORE_LINK}">here</a>.`;
 
 THREE.ARUtils = Object.create(null);
 
