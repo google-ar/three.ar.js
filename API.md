@@ -1,5 +1,13 @@
 # three.ar.js API
 
+## new THREE.ARView(vrDisplay, renderer)
+
+Creates an ARView with a [VRDisplay] and a [THREE.WebGLRenderer]. Handles the pass through camera differences between ARCore and ARKit platforms, and renders the camera behind your scene.
+
+### THREE.ARView#render()
+
+Renders the pass through camera. Usually called on every frame in a render loop before rendering other objects in the scene.
+
 ## new THREE.ARReticle(vrDisplay, innerRadius, outerRadius, color, easing)
 
 Creates a [THREE.Mesh] reticle to render via hit tests with the [VRDisplay].
@@ -23,6 +31,22 @@ and the `fov`, `aspect`, `near`, `far` properties are not applicable.
 
 If given a [VRDisplay] in constructor, generates the projection matrix from the API to match the native camera intrinsics. To use the cached projection matrix, just access the `projectionMatrix` property instead.
 
+## new THREE.ARDebug(vrDisplay)
+
+Creates an ARDebug panel to display hit and pose information. Use `getElement()` to return the element managed by the ARDebug panel to inject into your content.
+
+### THREE.ARDebug#open()
+
+Opens the ARDebug panel.
+
+### THREE.ARDebug#close()
+
+Closes the ARDebug panel.
+
+### HTMLElement THREE.ARDebug#getElement()
+
+Returns the HTMLElement for the debug panel to inject into the content.
+
 ## THREE.ARUtils
 
 Not a constructor but an object storing several utility functions listed below.
@@ -38,7 +62,7 @@ Takes a [VRDisplay] instance and returns a boolean whether or not this is consid
 
 ### boolean THREE.ARUtils.isTango(vrDisplay)
 
-Takes a [VRDisplay] instance and returns a boolean whether or not this is a Tango-backed Android device.
+Takes a [VRDisplay] instance and returns a boolean whether or not this is a Tango-backed/ARCore Android device.
 
 ### boolean THREE.ARUtils.isARKit(vrDisplay)
 
@@ -64,3 +88,6 @@ Generates an element and injects into the DOM a message notifying the user that 
 [THREE.Mesh]: https://threejs.org/docs/#api/objects/Mesh
 [THREE.BufferGeometry]: https://threejs.org/docs/#api/core/BufferGeometry
 [THREE.Color]: https://threejs.org/docs/#api/math/Color
+[THREE.Object3D]: https://threejs.org/docs/#api/core/Object3D
+[HTMLElement]: https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement
+[VRHit]: webvr_ar_extension.idl

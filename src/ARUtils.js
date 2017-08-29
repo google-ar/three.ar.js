@@ -15,7 +15,7 @@
 
 import { loadMtl, loadObj } from './loaders';
 
-const LEARN_MORE_LINK = 'https://developer.google.com/ar/develop/web';
+const LEARN_MORE_LINK = 'https://developers.google.com/ar/develop/web/getting-started';
 const UNSUPPORTED_MESSAGE = `This experience requires an augmented reality
   prototype browser. Learn more <a href="${LEARN_MORE_LINK}">here</a>.`;
 

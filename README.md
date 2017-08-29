@@ -7,12 +7,12 @@
 
 **A helper three.js library for building AR web experiences that run in WebARonARKit and WebARonARCore.**
 
-[WebARonARKit] and [WebARonARCore] are experimental apps for iOS and Android that let developers create Augmented Reality (AR) experiences using web technologies. Three.ar.js makes it easier to create these experiences by providing helper classes and utilities on top of the [three.js framework](https://threejs.org/). For example:
+[WebARonARKit] and [WebARonARCore] are experimental apps for iOS and Android that let developers create Augmented Reality (AR) experiences using web technologies. three.ar.js makes it easier to create these experiences by providing helper classes and utilities on top of the [three.js] 3D library, which interfaces with the [WebVR Extension for AR] exposed by [WebARonARKit] and [WebARonARCore]. For example:
 
 * THREE.ARReticle: a visible reticle drawn on the real surface of real world objects.
-* THREE.ARPerspectiveCamera: a camera that matches your Three.js scene to your camera's video feed.
+* THREE.ARPerspectiveCamera: a camera that matches your [three.js] scene to your camera's video feed.
 
-See [three.ar.js API documentataion](TODO) for details.
+See [three.ar.js API documentataion](API.md) for details.
 
 ## Installing
 
@@ -38,12 +38,41 @@ $ npm install --save three three.ar.js
 If you are including three.ar.js via script tag, the additional three.ar.js features are appended to the `THREE` namespace, for example:
 
 ```js
+/**
+ * Not a full working example -- see the `examples/` directory
+ */
+THREE.ARUtils.getARDisplay().then(init);
+
+function init(display) {
+  vrDisplay = display;
+  // Set up three.js scene
+  renderer = new THREE.WebGLRenderer({ alpha: true });
+  scene = new THREE.Scene();
+
+  // ...
+
+  // Set up our ARView with ARPerspectiveCamera
+  arView = new THREE.ARView(vrDisplay, renderer);
+  camera = new THREE.ARPerspectiveCamera(vrDisplay, 60, window.innerWidth / window.innerHeight, vrDisplay.depthNear, vrDisplay.depthFar);
+  vrControls = new THREE.VRControls(camera);
+
+  update();
+}
+
+function update() {
+  // Update our controls/camera, the ARView rendering,
+  // and our three.js scene
+  vrControls.update();
+  arView.render();
+  renderer.clearDepth();
+  renderer.render(scene, camera);
+  vrDisplay.requestAnimationFrame(update);
+}
 ```
 
+To view the additional APIs implemented by [WebARonARKit] and [WebARonARCore], view the [WebVR Extension for AR] document.
+
 For more examples, see the [examples/](examples/) directory.
-
-**TODO ADD EXAMPLE OF IMPORTING VIA REQUIRE/IMPORT AND ANY WEBPACK CONFIGURATIONS (ProvidePlugin) TO DEAL WITH THREE GLOBALS**
-
 
 ## Contributing
 
@@ -65,6 +94,16 @@ Run `npm run build` to create a new build in `./dist`. When sending pull request
 
 Run `npm run lint` to run the linter on code in `src/`.
 
+### Testing
+
+Right now, there are only linting tests. To run the tests, execute:
+
+```
+$ npm test
+```
+
+For testing functionality, go through the examples with your changes and ensure the expected functionality.
+
 ## Examples
 
 Examples of three.ar.js are in the `/examples` directory. 
@@ -82,3 +121,4 @@ Apache License Version 2.0 (see the `LICENSE` file inside this repo).
 [WebARonARKit]: https://github.com/google-ar/WebARonARKit
 [WebARonARCore]: https://github.com/google-ar/WebARonARCore
 [developers.google.com]: https://developers.google.com/ar/develop/web/getting-started#examples
+[WebVR Extension for AR] webvr_ar_extension.md
