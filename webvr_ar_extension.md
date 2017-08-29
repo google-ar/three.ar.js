@@ -60,21 +60,43 @@ As the extension API is built on top of WebVR, please refer to the [WebVR 1.1 AP
 
 ### Detecting an AR-capable VRDisplay
 
-The WebVR API provides a mechanism to list all the available devices. Here is a code example [LINK] to learn how to detect an AR-capable display specifically.
+The WebVR API provides a mechanism to list all the available devices via [getVRDisplays]. An AR-capable [VRDisplay] will have a [VRDisplayCapabilities] boolean flag for `hasPassThroughCamera`.
+
+```js
+navigator.getVRDisplays().then(displays => {
+  for (let display of displays) {
+    if (display.capabilities.hasPassThroughCamera) {
+      init(display);
+    }
+  }
+});
+```
 
 ### Obtaining the camera pose and projection information
 
-The WebVR API provides a mechanism to obtain both the position/orientation of the camera and the correct projection matrix needed to render the virtual elements. Check out this code [LINK] example to learn how this information is retrieved and used.
+The WebVR API provides a mechanism to obtain both the position and orientation of the camera and the correct projection matrix needed to render the virtual elements. Updating the [VRFrameData] will populate the [VRPose] with `position` and `orientation` properties, and the [VRFrameData] will contain a `leftProjectionMatrix` and `rightProjectionMatrix`, which are identical in the smartphone AR scenario. The pose orientation and position may lose tracking temporarily if the underlying AR engine is unable to detect visual features.
+
+Using the pose information is no different than native WebVR experiences, like the Daydream, which provides pose orientation, or the HTC Vive, which provides both orientation and position. The [VRControls] utility maps the frame data to our [three.js] camera.
+
+```js
+display.getFrameData(frameData);
+frameData.pose.position; // Float32Array(3) (x, y, z) vector3
+frameData.pose.orientation; // Float32Array(4) (x, y, z, w) quaternion
+frameData.leftProjectionMatrix; // Float32Array(16)
+```
 
 ### Placing a virtual object in the real world
-The AR extension on top of WebVR allows to cast a ray from the camera to the real world and obtain a list of hits (if any). This code example [LINK] shows how to make that call and process the resulting information.
+
+The AR extension on top of WebVR allows to cast a ray from the camera to the real world and obtain a list of hits (if any). [This code example](https://github.com/google-ar/three.ar.js/blob/e871fe9ed806ef3be233fd9cc86ffc5a6a7a1382/examples/spawn-at-surface.html#L232-L248) shows how to make that call and process the resulting information.
 
 [WebVR 1.1 API]: https://w3c.github.io/webvr/spec/1.1/
 [WebVR 2.0 API]: https://github.com/w3c/webvr/blob/master/explainer.md
 [6DOF]: https://en.wikipedia.org/wiki/Six_degrees_of_freedom
-[VRFrameData]: https://w3c.github.io/webvr/spec/1.1/#interface-vrframedata
-[VRDisplayCapabilities]: https://w3c.github.io/webvr/spec/1.1/#interface-vrdisplaycapabilities
-[VRDisplay]: https://w3c.github.io/webvr/spec/1.1/#interface-vrdisplay
+[VRFrameData]: https://developer.mozilla.org/en-US/docs/Web/API/VRFrameData
+[VRFrameData]: https://developer.mozilla.org/en-US/docs/Web/API/VRPose
+[VRDisplayCapabilities]: https://developer.mozilla.org/en-US/docs/Web/API/VRDisplayCapabilities
+[VRDisplay]: https://developer.mozilla.org/en-US/docs/Web/API/VRDisplay
+[getVRDisplays]: https://developer.mozilla.org/en-US/docs/Web/API/Navigator/getVRDisplays
 [three.js]: https://threejs.org/
-
+[VRControls]: https://github.com/google-ar/three.ar.js/blob/e871fe9ed806ef3be233fd9cc86ffc5a6a7a1382/third_party/three.js/VRControls.js#L87
 
