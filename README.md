@@ -7,6 +7,8 @@
 
 **A helper three.js library for building AR web experiences that run in WebARonARKit and WebARonARCore.**
 
+<img alt="Spawn-at-Surface example, for ARCore" src="examples/screencaps/20170829-arcore-spawnAtSurface-1.gif" style="float: left; object-fit: cover; width: 45%; height: 20em; margin-right: 1em; "><img alt="Spawn-at-Camera example, for ARKit" src="examples/screencaps/20170829-arkit-spawnAtCamera-1.gif" style="width: 45%; height: 20em; object-fit: cover;">
+
 [WebARonARKit] and [WebARonARCore] are experimental apps for iOS and Android that let developers create Augmented Reality (AR) experiences using web technologies. three.ar.js makes it easier to create these experiences by providing helper classes and utilities on top of the [three.js] 3D library, which interfaces with the [WebVR Extension for AR] exposed by [WebARonARKit] and [WebARonARCore]. For example:
 
 * THREE.ARReticle: a visible reticle drawn on the real surface of real world objects.
