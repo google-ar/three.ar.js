@@ -111,7 +111,7 @@ var LEARN_MORE_LINK = 'https://developers.google.com/ar/develop/web/getting-star
                                                                                        * limitations under the License.
                                                                                        */
 
-var UNSUPPORTED_MESSAGE = 'This experience requires an augmented reality\n  prototype browser. Learn more <a href="' + LEARN_MORE_LINK + '">here</a>.';
+var UNSUPPORTED_MESSAGE = 'This augmented reality experience requires WebARonARCore or WebARonARKit: experimental browsers from Google, available Android and iOS. Learn more <a href="' + LEARN_MORE_LINK + '">here</a>.';
 
 THREE.ARUtils = Object.create(null);
 
@@ -430,7 +430,7 @@ var ARDebug = function () {
     /**
      * Returns the root DOM element for the panel.
      *
-     * @return {DOMElement}
+     * @return {HTMLElement}
      */
 
   }, {
@@ -592,7 +592,7 @@ var ARDebugView = function () {
     /**
      * Returns the ARDebugView root element.
      *
-     * @return {DOMElement}
+     * @return {HTMLElement}
      */
 
   }, {
@@ -690,7 +690,7 @@ var ARDebugRow = function () {
     /**
      * Returns the ARDebugRow's root element.
      *
-     * @return {DOMElement}
+     * @return {HTMLElement}
      */
 
   }, {
@@ -775,7 +775,7 @@ var ARDebugHitTestRow = function (_ARDebugRow) {
     key: '_hitToString',
     value: function _hitToString(hit) {
       var mm = hit.modelMatrix;
-      return '<' + mm[12].toFixed(2) + ', ' + mm[13].toFixed(2) + ', ' + mm[14].toFixed(2) + '>';
+      return mm[12].toFixed(2) + ', ' + mm[13].toFixed(2) + ', ' + mm[14].toFixed(2);
     }
 
     /**
@@ -825,7 +825,7 @@ var ARDebugPoseRow = function (_ARDebugRow2) {
     _this2._nativeGetFrameData = cachedVRDisplayMethods.get('getFrameData') || _this2.vrDisplay.getFrameData;
     cachedVRDisplayMethods.set('getFrameData', _this2._nativeGetFrameData);
 
-    _this2.update('Looking for pose...');
+    _this2.update('Looking for position...');
     _this2._initialPose = false;
     return _this2;
   }
@@ -859,7 +859,7 @@ var ARDebugPoseRow = function (_ARDebugRow2) {
   }, {
     key: '_poseToString',
     value: function _poseToString(pose) {
-      return '<' + pose[0].toFixed(2) + ', ' + pose[1].toFixed(2) + ', ' + pose[2].toFixed(2) + '>';
+      return pose[0].toFixed(2) + ', ' + pose[1].toFixed(2) + ', ' + pose[2].toFixed(2);
     }
 
     /**
@@ -888,7 +888,7 @@ var ARDebugPoseRow = function (_ARDebugRow2) {
       if (isValidPose) {
         this.update(this._poseToString(pose), true);
       } else if (!isValidPose && this._lastPoseValid !== false) {
-        this.update('Pose lost', false);
+        this.update('Position lost', false);
       }
 
       this._lastPoseValid = isValidPose;
