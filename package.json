@@ -1,7 +1,7 @@
 {
-  "name": "three-ar",
-  "version": "0.0.1",
-  "description": "Helper three.js classes for WebAR prototyping",
+  "name": "three.ar.js",
+  "version": "0.1.0",
+  "description": "A helper three.js library for building AR web experiences that run in WebARonARKit and WebARonARCore",
   "main": "./dist/three.ar.js",
   "scripts": {
     "build": "webpack",
@@ -22,5 +22,16 @@
     "raw-loader": "^0.5.1",
     "webpack": "^2.6.1",
     "webpack-dev-server": "^2.5.0"
-  }
+  },
+  "keywords": [
+    "webar",
+    "webvr",
+    "webxr",
+    "arcore",
+    "arkit",
+    "webaronarcore",
+    "webaronarkit",
+    "augmented reality"
+  ],
+  "repository": "https://github.com/google-ar/three.ar.js"
 }
