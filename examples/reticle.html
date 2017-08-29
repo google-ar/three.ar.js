@@ -138,6 +138,10 @@ function init() {
  * our scene and rendering.
  */
 function update() {
+  // Update our camera projection matrix in the event that
+  // the near or far planes have updated
+  camera.updateProjectionMatrix();
+
   // Update our ARReticle's position, and provide normalized
   // screen coordinates to send the hit test -- in this case, (0.5, 0.5)
   // is the middle of our screen

@@ -135,6 +135,10 @@ function init() {
  * our scene and rendering.
  */
 function update() {
+  // Update our camera projection matrix in the event that
+  // the near or far planes have updated
+  camera.updateProjectionMatrix();
+
   // Update our perspective camera's positioning
   vrControls.update();
 
