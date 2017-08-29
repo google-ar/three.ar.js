@@ -113,7 +113,7 @@ A [list of examples](https://developers.google.com/ar/develop/web/getting-starte
 ## License
 Apache License Version 2.0 (see the `LICENSE` file inside this repo).
 
-[three.js]: threejs.org/
+[three.js]: https://threejs.org/
 [adb]: https://developer.android.com/studio/command-line/adb.html
 [npm]: https://www.npmjs.com
 [browserify]: http://browserify.org/
