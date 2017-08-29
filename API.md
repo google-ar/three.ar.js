@@ -90,4 +90,4 @@ Generates an element and injects into the DOM a message notifying the user that 
 [THREE.Color]: https://threejs.org/docs/#api/math/Color
 [THREE.Object3D]: https://threejs.org/docs/#api/core/Object3D
 [HTMLElement]: https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement
-[VRHit]: https://github.com/google-ar/WebARonARKit/blob/master/webvr_ar_extension.md#basic-understanding-of-the-real-world
+[VRHit]: webvr_ar_extension.idl

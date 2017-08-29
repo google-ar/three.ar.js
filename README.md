@@ -7,10 +7,10 @@
 
 **A helper three.js library for building AR web experiences that run in WebARonARKit and WebARonARCore.**
 
-[WebARonARKit] and [WebARonARCore] are experimental apps for iOS and Android that let developers create Augmented Reality (AR) experiences using web technologies. Three.ar.js makes it easier to create these experiences by providing helper classes and utilities on top of the [three.js framework](https://threejs.org/). For example:
+[WebARonARKit] and [WebARonARCore] are experimental apps for iOS and Android that let developers create Augmented Reality (AR) experiences using web technologies. three.ar.js makes it easier to create these experiences by providing helper classes and utilities on top of the [three.js] 3D library, which interfaces with the [WebVR Extension for AR] exposed by [WebARonARKit] and [WebARonARCore]. For example:
 
 * THREE.ARReticle: a visible reticle drawn on the real surface of real world objects.
-* THREE.ARPerspectiveCamera: a camera that matches your Three.js scene to your camera's video feed.
+* THREE.ARPerspectiveCamera: a camera that matches your [three.js] scene to your camera's video feed.
 
 See [three.ar.js API documentataion](API.md) for details.
 
@@ -70,6 +70,8 @@ function update() {
 }
 ```
 
+To view the additional APIs implemented by [WebARonARKit] and [WebARonARCore], view the [WebVR Extension for AR] document.
+
 For more examples, see the [examples/](examples/) directory.
 
 ## Contributing
@@ -119,3 +121,4 @@ Apache License Version 2.0 (see the `LICENSE` file inside this repo).
 [WebARonARKit]: https://github.com/google-ar/WebARonARKit
 [WebARonARCore]: https://github.com/google-ar/WebARonARCore
 [developers.google.com]: https://developers.google.com/ar/develop/web/getting-started#examples
+[WebVR Extension for AR] webvr_ar_extension.md
