@@ -83,6 +83,8 @@ var colors = [
   new THREE.Color( 0x000000 )
 ];
 
+var BOX_SCALE = 0.3;
+
 /**
  * Use the `getARDisplay()` utility to leverage the WebVR API
  * to see if there are any AR-capable WebVR VRDisplays. Returns
@@ -138,7 +140,7 @@ function init() {
   // Create the cube geometry and add it to the scene. Set the position
   // to (Infinity, Infinity, Infinity) so that it won't appear visible
   // until the first hit is found, and move it there
-  var geometry = new THREE.BoxGeometry( 0.05, 0.05, 0.05 );
+  var geometry = new THREE.BoxGeometry(BOX_SCALE, BOX_SCALE, BOX_SCALE);
   var faceIndices = ['a', 'b', 'c'];
   for (var i = 0; i < geometry.faces.length; i++) {
     var f  = geometry.faces[i];
@@ -149,6 +151,10 @@ function init() {
   }
   var material = new THREE.MeshBasicMaterial({ vertexColors: THREE.VertexColors });
   cube = new THREE.Mesh(geometry, material);
+
+  // Place the cube very far to initialize
+  cube.position.set(10000, 10000, 10000);
+
   scene.add(cube);
 
   // Bind our event handlers
