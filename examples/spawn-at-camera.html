@@ -25,7 +25,6 @@
     body {
       font-family: Monospace;
       margin: 0px;
-      overflow: hidden;
       position: fixed;
       height: 100%;
       width: 100%;
@@ -186,10 +185,10 @@ function update() {
  * projection matrix provided from the device
  */
 function onWindowResize () {
+  console.log('setRenderer size', window.innerWidth, window.innerHeight);
   camera.aspect = window.innerWidth / window.innerHeight;
   camera.updateProjectionMatrix();
   renderer.setSize(window.innerWidth, window.innerHeight);
-  console.log('setRenderer size', window.innerWidth, window.innerHeight);
 }
 
 /**
