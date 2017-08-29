@@ -121,4 +121,4 @@ Apache License Version 2.0 (see the `LICENSE` file inside this repo).
 [WebARonARKit]: https://github.com/google-ar/WebARonARKit
 [WebARonARCore]: https://github.com/google-ar/WebARonARCore
 [developers.google.com]: https://developers.google.com/ar/develop/web/getting-started#examples
-[WebVR Extension for AR] webvr_ar_extension.md
+[WebVR Extension for AR]: webvr_ar_extension.md
