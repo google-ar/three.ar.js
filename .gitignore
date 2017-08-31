@@ -2,3 +2,5 @@ node_modules
 package-lock.json
 **/*.sw*
 .DS_Store
+.idea
+*.iml
