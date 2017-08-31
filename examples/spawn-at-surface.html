@@ -183,15 +183,16 @@ function init() {
  * our scene and rendering.
  */
 function update() {
+  // Render the device's camera stream on screen first of all.
+  // It allows to get the right pose synchronized with the right frame.
+  arView.render();
+
   // Update our camera projection matrix in the event that
   // the near or far planes have updated
   camera.updateProjectionMatrix();
 
   // Update our perspective camera's positioning
   vrControls.update();
-
-  // Render the device's camera stream on screen
-  arView.render();
 
   // Render our three.js virtual scene
   renderer.clearDepth();
