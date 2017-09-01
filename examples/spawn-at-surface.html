@@ -96,7 +96,7 @@ var colors = [
   new THREE.Color( 0x000000 )
 ];
 
-var BOX_SCALE = 0.3;
+var BOX_SIZE = 0.2;
 
 /**
  * Use the `getARDisplay()` utility to leverage the WebVR API
@@ -153,7 +153,7 @@ function init() {
   // Create the cube geometry and add it to the scene. Set the position
   // to (Infinity, Infinity, Infinity) so that it won't appear visible
   // until the first hit is found, and move it there
-  var geometry = new THREE.BoxGeometry(BOX_SCALE, BOX_SCALE, BOX_SCALE);
+  var geometry = new THREE.BoxGeometry(BOX_SIZE, BOX_SIZE, BOX_SIZE);
   var faceIndices = ['a', 'b', 'c'];
   for (var i = 0; i < geometry.faces.length; i++) {
     var f  = geometry.faces[i];
@@ -162,6 +162,12 @@ function init() {
       f.vertexColors[j] = colors[vertexIndex];
     }
   }
+  // Shift the cube geometry vertices upwards, so that the "pivot" of
+  // the cube is at it's base. When the cube is added to the scene,
+  // this will help make it appear to be sitting on top of the real-
+  // world surface.
+  // geometry.applyMatrix( new THREE.Matrix4().setTranslation( 0, BOX_SIZE / 2, 0 ) );
+  geometry.translate( 0, BOX_SIZE / 2, 0 );
   var material = new THREE.MeshBasicMaterial({ vertexColors: THREE.VertexColors });
   cube = new THREE.Mesh(geometry, material);
 
