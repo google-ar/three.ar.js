@@ -1424,7 +1424,7 @@ var ARView = function () {
     this.gl = renderer.context;
 
     this.videoRenderer = new ARVideoRenderer(vrDisplay, this.gl);
-    this.renderer.resetGLState();
+    this.renderer.state.reset();
 
     // Cache the width/height so we're not potentially forcing
     // a reflow if there's been a style invalidation
@@ -1471,7 +1471,7 @@ var ARView = function () {
 
       this.gl.viewport(0, 0, gl.viewportWidth, gl.viewportHeight);
       this.videoRenderer.render();
-      this.renderer.resetGLState();
+      this.renderer.state.reset();
     }
   }]);
 
