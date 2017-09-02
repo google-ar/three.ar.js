@@ -18,7 +18,7 @@
 <html lang="en">
 
 <head>
-    <title>three.ar.js - Boilerplate</title>
+    <title>three.ar.js - draggable cubes</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, user-scalable=no,
   minimum-scale=1.0, maximum-scale=1.0">
@@ -202,14 +202,37 @@
          */
         function addBoxes() {
             // Create some cubes around the origin point
-            for (var i = 0; i < BOX_QUANTITY; i++) {
-                var angle = Math.PI * 2 * (i / BOX_QUANTITY);
-                var geometry = new THREE.BoxGeometry(BOX_SIZE, BOX_SIZE, BOX_SIZE);
-                var material = new THREE.MeshNormalMaterial();
-                var cube = new THREE.Mesh(geometry, material);
-                cube.position.set(Math.cos(angle) * BOX_DISTANCE, camera.position.y - 0.25, Math.sin(angle) * BOX_DISTANCE);
-                scene.add(cube);
+            // for (var i = 0; i < BOX_QUANTITY; i++) {
+            //     var angle = Math.PI * 2 * (i / BOX_QUANTITY);
+            //     var geometry = new THREE.BoxGeometry(BOX_SIZE, BOX_SIZE, BOX_SIZE);
+            //     var material = new THREE.MeshNormalMaterial();
+            //     var cube = new THREE.Mesh(geometry, material);
+            //     cube.position.set(Math.cos(angle) * BOX_DISTANCE, camera.position.y - 0.25, Math.sin(angle) * BOX_DISTANCE);
+            //     scene.add(cube);
+            // }
+
+            for (var i = 0; i < 200; i++) {
+
+                var object = new THREE.Mesh(geometry, new THREE.MeshLambertMaterial({ color: Math.random() * 0xffffff }));
+
+                object.position.x = Math.random() * 1000 - 500;
+                object.position.y = Math.random() * 600 - 300;
+                object.position.z = Math.random() * 800 - 400;
+
+                object.rotation.x = Math.random() * 2 * Math.PI;
+                object.rotation.y = Math.random() * 2 * Math.PI;
+                object.rotation.z = Math.random() * 2 * Math.PI;
+
+                object.scale.x = Math.random() * 2 + 1;
+                object.scale.y = Math.random() * 2 + 1;
+                object.scale.z = Math.random() * 2 + 1;
+
+                object.castShadow = true;
+                object.receiveShadow = true;
+
+                scene.add(object);
             }
+
 
             // Flip this switch so that we only perform this once
             boxesAdded = true;

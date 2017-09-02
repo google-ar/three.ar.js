@@ -1,37 +1,37 @@
 {
-  "name": "three.ar.js",
-  "version": "0.1.1",
-  "description": "A helper three.js library for building AR web experiences that run in WebARonARKit and WebARonARCore",
-  "main": "./dist/three.ar.js",
-  "scripts": {
-    "build": "webpack",
-    "dev": "webpack-dev-server --port 8000",
-    "lint": "eslint src/**.*",
-    "test": "npm run lint"
-  },
-  "author": "Jordan Santell <jsantell@google.com>",
-  "license": "Apache-2.0",
-  "devDependencies": {
-    "babel-core": "^6.24.1",
-    "babel-loader": "^7.0.0",
-    "babel-preset-latest": "^6.24.1",
-    "eslint": "^4.5.0",
-    "eslint-config-google": "^0.9.1",
-    "glsl-y-hsv": "^1.0.0",
-    "glslify-loader": "^1.0.2",
-    "raw-loader": "^0.5.1",
-    "webpack": "^2.6.1",
-    "webpack-dev-server": "^2.5.0"
-  },
-  "keywords": [
-    "webar",
-    "webvr",
-    "webxr",
-    "arcore",
-    "arkit",
-    "webaronarcore",
-    "webaronarkit",
-    "augmented reality"
-  ],
-  "repository": "https://github.com/google-ar/three.ar.js"
+    "name": "three.ar.js",
+    "version": "0.1.1",
+    "description": "A helper three.js library for building AR web experiences that run in WebARonARKit and WebARonARCore",
+    "main": "./dist/three.ar.js",
+    "scripts": {
+        "build": "webpack",
+        "dev": "webpack-dev-server --port 8000",
+        "lint": "eslint src/**.*",
+        "test": "npm run lint"
+    },
+    "author": "Jordan Santell <jsantell@google.com>",
+    "license": "Apache-2.0",
+    "devDependencies": {
+        "babel-core": "^6.24.1",
+        "babel-loader": "^7.0.0",
+        "babel-preset-latest": "^6.24.1",
+        "eslint": "^4.5.0",
+        "eslint-config-google": "^0.9.1",
+        "glsl-y-hsv": "^1.0.0",
+        "glslify-loader": "^1.0.2",
+        "raw-loader": "^0.5.1",
+        "webpack": "^2.6.1",
+        "webpack-dev-server": "^2.5.0"
+    },
+    "keywords": [
+        "webar",
+        "webvr",
+        "webxr",
+        "arcore",
+        "arkit",
+        "webaronarcore",
+        "webaronarkit",
+        "augmented reality"
+    ],
+    "repository": "https://github.com/google-ar/three.ar.js"
 }
