@@ -214,6 +214,7 @@
 
             for (var i = 0; i < 200; i++) {
 
+                var geometry = new THREE.BoxGeometry(BOX_SIZE, BOX_SIZE, BOX_SIZE);
                 var object = new THREE.Mesh(geometry, new THREE.MeshLambertMaterial({ color: Math.random() * 0xffffff }));
 
                 object.position.x = Math.random() * 1000 - 500;
