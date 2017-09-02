@@ -23,58 +23,58 @@ let frameData;
  * parameters.
  */
 class ARPerspectiveCamera extends THREE.PerspectiveCamera {
-  /**
-   * @param {VRDisplay} vrDisplay
-   * @param {number} fov
-   * @param {number} aspect
-   * @param {number} near
-   * @param {number} far
-   */
-  constructor(vrDisplay, fov, aspect, near, far) {
-    super(fov, aspect, near, far);
-    this.isARPerpsectiveCamera = true;
-    this.vrDisplay = vrDisplay;
-    this.updateProjectionMatrix();
+    /**
+     * @param {VRDisplay} vrDisplay
+     * @param {number} fov
+     * @param {number} aspect
+     * @param {number} near
+     * @param {number} far
+     */
+    constructor(vrDisplay, fov, aspect, near, far) {
+        super(fov, aspect, near, far);
+        this.isARPerpsectiveCamera = true;
+        this.vrDisplay = vrDisplay;
+        this.updateProjectionMatrix();
 
-    if (!vrDisplay || !vrDisplay.capabilities.hasPassThroughCamera) {
-      console.warn(`ARPerspectiveCamera does not a VRDisplay with
+        if (!vrDisplay || !vrDisplay.capabilities.hasPassThroughCamera) {
+            console.warn(`ARPerspectiveCamera does not a VRDisplay with
                     a pass through camera. Using supplied values and defaults
                     instead of device camera intrinsics`);
-    }
-  }
-
-  /**
-   * Updates the underlying `projectionMatrix` property from
-   * the AR-enabled VRDisplay, or falls back to
-   * THREE.PerspectiveCamera.prototype.updateProjectionMatrix
-   */
-  updateProjectionMatrix() {
-    const projMatrix = this.getProjectionMatrix();
-    if (!projMatrix) {
-      super.updateProjectionMatrix();
-      return;
+        }
     }
 
-    this.projectionMatrix.fromArray(projMatrix);
-  }
+    /**
+     * Updates the underlying `projectionMatrix` property from
+     * the AR-enabled VRDisplay, or falls back to
+     * THREE.PerspectiveCamera.prototype.updateProjectionMatrix
+     */
+    updateProjectionMatrix() {
+        const projMatrix = this.getProjectionMatrix();
+        if (!projMatrix) {
+            super.updateProjectionMatrix();
+            return;
+        }
 
-  /**
-   * Gets the projection matrix from AR-enabled VRDisplay
-   * if possible.
-   * @return {!Float32Array}
-   */
-  getProjectionMatrix() {
-    if (this.vrDisplay && this.vrDisplay.getFrameData) {
-      if (!frameData) {
-        frameData = new VRFrameData();
-      }
-      this.vrDisplay.getFrameData(frameData);
-
-      // Can use either left or right projection matrix
-      return frameData.leftProjectionMatrix;
+        this.projectionMatrix.fromArray(projMatrix);
     }
-    return null;
-  }
+
+    /**
+     * Gets the projection matrix from AR-enabled VRDisplay
+     * if possible.
+     * @return {!Float32Array}
+     */
+    getProjectionMatrix() {
+        if (this.vrDisplay && this.vrDisplay.getFrameData) {
+            if (!frameData) {
+                frameData = new VRFrameData();
+            }
+            this.vrDisplay.getFrameData(frameData);
+
+            // Can use either left or right projection matrix
+            return frameData.leftProjectionMatrix;
+        }
+        return null;
+    }
 }
 
 THREE.ARPerspectiveCamera = ARPerspectiveCamera;

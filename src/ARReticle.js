@@ -13,60 +13,64 @@
  * limitations under the License.
  */
 
-import { placeObjectAtHit } from './ARUtils';
+import {
+    placeObjectAtHit
+} from './ARUtils';
 
 /**
  * Class for creating a mesh that fires raycasts and lerps
  * a 3D object along the surface
  */
 class ARReticle extends THREE.Mesh {
-  /**
-   * @param {VRDisplay} vrDisplay
-   * @param {number} innerRadius
-   * @param {number} outerRadius
-   * @param {number} color
-   * @param {number} easing
-   */
-  constructor(
-    vrDisplay,
-    innerRadius = 0.02,
-    outerRadius = 0.05,
-    color = 0xff0077,
-    easing = 0.25
-  ) {
-    const geometry = new THREE.RingGeometry(innerRadius, outerRadius, 36, 64);
-    const material = new THREE.MeshBasicMaterial({ color });
+    /**
+     * @param {VRDisplay} vrDisplay
+     * @param {number} innerRadius
+     * @param {number} outerRadius
+     * @param {number} color
+     * @param {number} easing
+     */
+    constructor(
+        vrDisplay,
+        innerRadius = 0.02,
+        outerRadius = 0.05,
+        color = 0xff0077,
+        easing = 0.25
+    ) {
+        const geometry = new THREE.RingGeometry(innerRadius, outerRadius, 36, 64);
+        const material = new THREE.MeshBasicMaterial({
+            color
+        });
 
-    // Orient the geometry so it's position is flat on a horizontal surface
-    geometry.applyMatrix(new THREE.Matrix4().makeRotationX(THREE.Math.degToRad(-90)));
+        // Orient the geometry so it's position is flat on a horizontal surface
+        geometry.applyMatrix(new THREE.Matrix4().makeRotationX(THREE.Math.degToRad(-90)));
 
-    super(geometry, material);
-    this.visible = false;
+        super(geometry, material);
+        this.visible = false;
 
-    this.easing = easing;
-    this.applyOrientation = true;
-    this.vrDisplay = vrDisplay;
-    this._planeDir = new THREE.Vector3();
-  }
-
-  /**
-   * Attempt to fire a raycast from normalized screen coordinates
-   * x and y and lerp the reticle to the position.
-   *
-   * @param {number} x
-   * @param {number} y
-   */
-  update(x = 0.5, y = 0.5) {
-    if (!this.vrDisplay || !this.vrDisplay.hitTest) {
-      return;
+        this.easing = easing;
+        this.applyOrientation = true;
+        this.vrDisplay = vrDisplay;
+        this._planeDir = new THREE.Vector3();
     }
 
-    const hit = this.vrDisplay.hitTest(x, y);
-    if (hit && hit.length > 0) {
-      this.visible = true;
-      placeObjectAtHit(this, hit[0], this.applyOrientation, this.easing);
+    /**
+     * Attempt to fire a raycast from normalized screen coordinates
+     * x and y and lerp the reticle to the position.
+     *
+     * @param {number} x
+     * @param {number} y
+     */
+    update(x = 0.5, y = 0.5) {
+        if (!this.vrDisplay || !this.vrDisplay.hitTest) {
+            return;
+        }
+
+        const hit = this.vrDisplay.hitTest(x, y);
+        if (hit && hit.length > 0) {
+            this.visible = true;
+            placeObjectAtHit(this, hit[0], this.applyOrientation, this.easing);
+        }
     }
-  }
 }
 
 THREE.ARReticle = ARReticle;

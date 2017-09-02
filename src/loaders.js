@@ -21,22 +21,22 @@
 const noop = function() {};
 
 export const loadObj = (objPath, materials) => new Promise((resolve, reject) => {
-  const loader = new THREE.OBJLoader();
+    const loader = new THREE.OBJLoader();
 
-  if (materials) {
-    loader.setMaterials(materials);
-  }
+    if (materials) {
+        loader.setMaterials(materials);
+    }
 
-  loader.load(objPath, resolve, noop, reject);
+    loader.load(objPath, resolve, noop, reject);
 });
 
 export const loadMtl = mtlPath => new Promise((resolve, reject) => {
-  const loader = new THREE.MTLLoader();
-  const pathChunks = mtlPath.split('/');
+    const loader = new THREE.MTLLoader();
+    const pathChunks = mtlPath.split('/');
 
-  if (pathChunks.length >= 2) {
-    loader.setTexturePath(pathChunks[pathChunks.length - 2]);
-  }
+    if (pathChunks.length >= 2) {
+        loader.setTexturePath(pathChunks[pathChunks.length - 2]);
+    }
 
-  loader.load(mtlPath, resolve, noop, reject);
+    loader.load(mtlPath, resolve, noop, reject);
 });
