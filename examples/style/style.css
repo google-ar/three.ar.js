@@ -1,0 +1,152 @@
+body {
+    margin: 0;
+    padding: 0;
+}
+
+img {
+    vertical-align: top;
+}
+
+h1,
+h2,
+h3 {
+    text-align: center;
+}
+
+.viewport {
+    width: 100%;
+    overflow: hidden;
+    margin: 0 auto;
+    padding: 30px 0;
+    -webkit-transform: translateZ(0);
+}
+
+.flipsnap {
+    width: 2575px;
+    /*230px(item) * 5 + 45px(padding) */
+    padding-left: 45px;
+}
+
+.flipsnap:after {
+    content: '';
+    display: block;
+    clear: both;
+    height: 0;
+}
+
+.item {
+    width: 200px;
+    margin: 0 10px;
+    font-size: 50px;
+    text-align: center;
+    padding: 50px 0;
+    background: #EFEFEF;
+    border: 5px solid #999;
+    float: left;
+    color: #666;
+}
+
+.pointer {
+    text-align: center;
+}
+
+.pointer span {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    border-radius: 8px;
+    border: 1px solid #000;
+}
+
+.pointer span.current {
+    background: #FC0;
+}
+
+.controls {
+    text-align: center;
+    margin: 0 0 15px 0;
+}
+
+.controls .num {
+    width: 60px;
+}
+
+#demo-simple .flipsnap,
+#demo-threshold .flipsnap {
+    width: 960px;
+    padding: 0;
+}
+
+#demo-simple .item,
+#demo-threshold .item {
+    width: 310px;
+    margin: 0;
+}
+
+#demo-img .flipsnap {
+    width: 960px;
+    padding: 0;
+}
+
+#demo-img .item {
+    margin: 0;
+    padding: 0;
+    border: none;
+    width: auto;
+    height: auto;
+}
+
+#demo-maxPoint .flipsnap {
+    width: 800px;
+    /* 80px(item) * 10 */
+    padding: 0;
+}
+
+#demo-maxPoint .item {
+    width: 50px;
+    font-size: 20px;
+    padding: 10px 0;
+}
+
+#demo-touchevents .log {
+    width: 280px;
+    margin: 0 auto;
+}
+
+#demo-touchevents pre.detail {
+    background: #EFEFEF;
+    padding: 5px;
+    border: 1px solid #CCC;
+    height: 80px;
+    font-size: 12px;
+}
+
+#demo-refresh .flipsnap {
+    width: 270px;
+}
+
+#demo-link .item {
+    padding: 0;
+}
+
+#demo-link .item a {
+    width: 200px;
+    height: 180px;
+    display: table-cell;
+    vertical-align: middle;
+    text-align: center;
+    color: #00F;
+    font-size: 18px;
+}
+
+#demo-moveToPoint .flipsnap {
+    width: 2345px;
+}
+
+.sample p {
+    text-align: center;
+}
+
+.sample pre {
+    display: none;
+}
