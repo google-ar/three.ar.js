@@ -215,7 +215,7 @@
             for (var i = 0; i < 200; i++) {
 
                 var geometry = new THREE.BoxGeometry(10, 10, 10);
-                var object = new THREE.Mesh(geometry, new THREE.MeshLambertMaterial({ color: Math.random() * 0xffffff }));
+                var object = new THREE.Mesh(geometry, new THREE.MeshBasicMaterial({ color: Math.random() * 0xffffff }));
 
                 object.position.x = Math.random() * 1000 - 500;
                 object.position.y = Math.random() * 600 - 300;
