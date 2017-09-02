@@ -26,17 +26,17 @@
 </head>
 <body>
     <div id="container">
-        <a href="reticle.html">reticle.html</a>
-        <a href="boilerplate.html">boilerplate.html</a>
-        <a href="spawn-at-camera.html">spawn-at-camera.html</a>
-        <a href="spawn-at-surface.html">spawn-at-surface.html</a>
-        <a href="beach.html">beach.html</a>
-        <a href="draggablecubes.html">draggablecubes.html</a>
+        <a data-h="reticle.html">reticle.html</a>
+        <a data-h="boilerplate.html">boilerplate.html</a>
+        <a data-h="spawn-at-camera.html">spawn-at-camera.html</a>
+        <a data-h="spawn-at-surface.html">spawn-at-surface.html</a>
+        <a data-h="beach.html">beach.html</a>
+        <a data-h="draggablecubes.html">draggablecubes.html</a>
     </div>
     <script type="text/javascript">
         var aa =  document.getElementsByTagName('a');
         for(var i = 0,len = aa.length; i <len; i++){
-            aa[i].href += "?t=" +Date.now();
+            aa[i].href += aa[i].getAttribute("data-h") +　"?t=" +Date.now();
         }
     </script>
 </body>
