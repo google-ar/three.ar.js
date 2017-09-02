@@ -33,6 +33,11 @@
         <a href="beach.html">beach.html</a>
         <a href="draggablecubes.html">draggablecubes.html</a>
     </div>
-    
+    <script type="text/javascript">
+        var aa =  document.getElementsByTagName('a');
+        for(var i = 0,len = aa.length; i <len; i++){
+            aa[i].href += "?t=" +Date.now();
+        }
+    </script>
 </body>
 </html>
