@@ -1,31 +1,34 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <title>ARcore demos</title>
     <style type="text/css">
+    body,
+    html {
+        padding: 0;
+        margin: 0;
+    }
 
-        body,html{
-            padding: 0;
-            margin: 0;
-        }
+    #container {
+        width: 80%;
+        margin: 0 auto;
+        padding: 20px;
+    }
 
-        #container{
-            width: 80%;
-            margin: 0 auto;
-            padding: 20px;
-        }
-
-        a{
-            text-decoration: none;
-            font-size: 24px;
-            display: block;
-        }
+    a {
+        text-decoration: none;
+        font-size: 24px;
+        display: block;
+    }
     </style>
 </head>
+
 <body>
     <div id="container">
+        <a href="javascript:window.location.reload()" style="color: red">ReLoad</a>
         <a data-h="reticle.html">reticle.html</a>
         <a data-h="boilerplate.html">boilerplate.html</a>
         <a data-h="spawn-at-camera.html">spawn-at-camera.html</a>
@@ -34,10 +37,12 @@
         <a data-h="draggablecubes.html">draggablecubes.html</a>
     </div>
     <script type="text/javascript">
-        var aa =  document.getElementsByTagName('a');
-        for(var i = 0,len = aa.length; i <len; i++){
-            aa[i].href += aa[i].getAttribute("data-h") +　"?t=" +Date.now();
-        }
+    var aa = document.getElementsByTagName('a');
+    for (var i = 0, len = aa.length; i < len; i++) {
+        if (aa[i].getAttribute("data-h") != null)
+            aa[i].href += aa[i].getAttribute("data-h") + 　"?t=" + Date.now();
+    }
     </script>
 </body>
+
 </html>
