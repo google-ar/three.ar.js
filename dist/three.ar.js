@@ -1324,6 +1324,9 @@ var ARVideoRenderer = function () {
             var v = this.passThroughCamera.height / this.passThroughCamera.textureHeight;
             textureCoords = [[0.0, 0.0, 0.0, v, u, 0.0, u, v], [u, 0.0, 0.0, 0.0, u, v, 0.0, v], [u, v, u, 0.0, 0.0, v, 0.0, 0.0], [0.0, v, u, v, 0.0, 0.0, u, 0.0]];
         } else {
+
+            console.log("passThroughCamera　width and height:" + this.passThroughCamera.width + ";" + this.passThroughCamera.height);
+
             textureCoords = [[0.0, 0.0, 0.0, 1.0, 1.0, 0.0, 1.0, 1.0], [1.0, 0.0, 0.0, 0.0, 1.0, 1.0, 0.0, 1.0], [1.0, 1.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0], [0.0, 1.0, 1.0, 1.0, 0.0, 0.0, 1.0, 0.0]];
         }
 

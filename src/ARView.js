@@ -191,6 +191,10 @@ class ARVideoRenderer {
                 [0.0, v, u, v, 0.0, 0.0, u, 0.0],
             ];
         } else {
+
+            console.log("passThroughCamera　width and height:" + 　this.passThroughCamera.width + ";" + this.passThroughCamera.height);
+
+
             textureCoords = [
                 [0.0, 0.0, 0.0, 1.0, 1.0, 0.0, 1.0, 1.0],
                 [1.0, 0.0, 0.0, 0.0, 1.0, 1.0, 0.0, 1.0],
@@ -241,7 +245,7 @@ class ARVideoRenderer {
     /**
      * Renders the quad
      */
-   
+
     render() {
         let gl = this.gl;
         gl.useProgram(this.program);
