@@ -79,8 +79,6 @@
 precision mediump float;
 precision mediump int;
 
-uniform vec3 color;
-
 varying vec3 vPosition;
 varying vec3 vNormal;
 varying vec2 vUv;
@@ -90,14 +88,15 @@ void main()	{
   vec2 uv = vUv;
   uv *= 2.0;
   uv -= 1.0;
-  float value = 1.0 - abs( uv.y );
-  value = smoothstep( 0.0, 0.05, value );
-	gl_FragColor = vec4(color, value);
+  float aa = 1.0 - abs( uv.y );
+  aa = smoothstep( 0.0, 0.05, aa );
+  gl_FragColor = vec4( vNormal, aa );
 }
 </script>
 <script id="vertexShader" type="shader">
   uniform mat4 modelViewMatrix;
   uniform mat4 projectionMatrix;
+  uniform mat3 normalMatrix;
 
   attribute vec3 position;
   attribute vec3 normal;
@@ -130,35 +129,33 @@ var camera;
 var scene;
 var renderer;
 
-var reticle;
-var light;
-
 // Drawing constants.
-var MINIMIM_POINT_DISTANCE = 0.01;
+var MINIMIM_POINT_DISTANCE = 0.001;
 var MINIMUM_STROKE_POINTS = 2;
-var STROKE_DISTANCE = 0.2;
+var MINIMUM_BRUSH_POINTS = 3;
+
+var STROKE_DISTANCE = 0.1;
 var STROKE_WIDTH_EASING = 0.05;
 var STROKE_WIDTH_MODIFIER = 1.6;
+
+var STROKE_POSITION_EASING = 0.5;
+var STROKE_NORMAL_EASING = 0.5;
 
 // Setup drawing variables.
 var drawing = false;
 var stroke = [];
 var strokes = [];
 var strokeIndex = 0;
-//var drawMaterial = new THREE.MeshLambertMaterial( { color: 0xff00ff, side: THREE.DoubleSide } );
 
-var drawMaterial = new THREE.RawShaderMaterial(
-    {
-      vertexShader: document.getElementById( 'vertexShader' ).textContent,
-      fragmentShader: document.getElementById( 'fragmentShader' ).textContent,
-      side: THREE.DoubleSide,
-      transparent: true,
-      uniforms: {
-        color: {
-          value: new THREE.Color(0xff00ff)
-        }
-      }
-    });
+var brush;
+var brushStroke = [];
+
+var drawMaterial = new THREE.RawShaderMaterial({
+  vertexShader: document.getElementById( 'vertexShader' ).textContent,
+  fragmentShader: document.getElementById( 'fragmentShader' ).textContent,
+  side: THREE.DoubleSide,
+  transparent: true
+});
 
 // Create a color picker for doing different colored strokes.
 var colorPicker = document.getElementById('picker');
@@ -166,7 +163,6 @@ colorPicker.addEventListener('change', watchColorPicker, false);
 function watchColorPicker(event) {
   drawMaterial = drawMaterial.clone();
   drawMaterial.uniforms.color.value = new THREE.Color(event.target.value);
-  reticle.material = drawMaterial;
 }
 
 /**
@@ -218,19 +214,6 @@ function init() {
   // Bind our event handlers
   window.addEventListener('resize', onWindowResize, false);
 
-  // Create a drawing reticle, which will be positioned in front of the device.
-  var reticleGeometry = new THREE.SphereGeometry(0.01, 32, 32);
-  reticle = new THREE.Mesh(reticleGeometry, drawMaterial);
-  scene.add(reticle);
-
-  // Create a light for the scene. We will position the light on the camera
-  // and have it target the reticle, so the device acts like a flashlight into
-  // the 3D scene.
-  light = new THREE.DirectionalLight( 0xffffff );
-  light.position.set( 0, 0, 1 );
-  light.target = reticle;
-  scene.add(light);
-  
   // Start drawing when the user touches the screen.
   renderer.domElement.addEventListener('touchstart', function(event) {
     drawing = true;
@@ -268,30 +251,19 @@ var getDrawPoint = (function() {
 })();
 
 var strokeWidth = 0;
+var position = new THREE.Vector3();
 var previousPosition = new THREE.Vector3();
+var normal = new THREE.Vector3(0, 0, 1);
+var previousNormal = new THREE.Vector3(0, 0, 1);
 var velocity = new THREE.Vector3();
-function processDraw() {
-  var position = new THREE.Vector3();
-  getDrawPoint(position);
 
-  // Don't use positions if they aren't far enough away from the previous point.
+function processDraw() {
   if(stroke.length > MINIMUM_STROKE_POINTS && position.distanceTo(stroke[stroke.length - 1].position) < MINIMIM_POINT_DISTANCE) {
     return;
   }
 
-  var normal = new THREE.Vector3(0, 0, 1);
-  normal.applyQuaternion(camera.quaternion);
-  //normal.subVectors(camera.position, position);
-  normal.normalize();
-
   // Add the draw point to the current stroke.
-  stroke.push(
-      {
-        position: position,
-        normal: normal,
-        velocity: new THREE.Vector3(velocity.x, velocity.y, velocity.z),
-        width: strokeWidth
-      });
+  stroke.push(getStroke());
 
   // Don't start drawing until there are enough points.
   if (stroke.length < MINIMUM_STROKE_POINTS) {
@@ -303,21 +275,50 @@ function processDraw() {
     scene.remove(strokes[strokeIndex]);
   }
 
-  /*
-  // Generate a stroke from the current list of draw points.
-  var spline = new THREE.CatmullRomCurve3(stroke);
-  var geometry = new THREE.TubeBufferGeometry( spline, 100, 0.01, 3, false );
-  */
+  strokes[strokeIndex] = generateStroke(stroke);
+  scene.add(strokes[strokeIndex]);
+}
 
-  var positions = new Float32Array(stroke.length * 2 * 3);
-  var normals = new Float32Array(stroke.length * 2 * 3);
-  var uvs = new Float32Array(stroke.length * 2 * 2);
-  var velocities = new Float32Array(stroke.length * 2 * 3);
+function getStroke()
+{
+  return {
+    position: new THREE.Vector3(position.x, position.y, position.z),
+    normal: new THREE.Vector3(normal.x, normal.y, normal.z),
+    velocity: new THREE.Vector3(velocity.x, velocity.y, velocity.z),
+    width: strokeWidth
+  };
+}
+
+function processDrawBrush() {
+  // Add the draw point to the current stroke.
+  brushStroke.push(getStroke());
+
+  // Don't use positions if they aren't far enough away from the previous point.
+  if(brushStroke.length < MINIMUM_BRUSH_POINTS && position.distanceTo(brushStroke[brushStroke.length - 1].position) < MINIMIM_POINT_DISTANCE) {
+    return;
+  }
+
+  // Remove the old stroke from the scene so we can regenerate the stroke.
+  if (brush) {
+    brushStroke.shift();
+    scene.remove(brush);
+  }
+
+  brush = generateStroke(brushStroke);
+  scene.add(brush);
+}
+
+
+function generateStroke(strokeData) {
+  var positions = new Float32Array(strokeData.length * 2 * 3);
+  var normals = new Float32Array(strokeData.length * 2 * 3);
+  var uvs = new Float32Array(strokeData.length * 2 * 2);
+  var velocities = new Float32Array(strokeData.length * 2 * 3);
   var v = new THREE.Vector3();
   var p1 = new THREE.Vector3();
   var p2 = new THREE.Vector3();
-  for (var i = 0; i < stroke.length; i++) {
-    var entry = stroke[i];
+  for (var i = 0; i < strokeData.length; i++) {
+    var entry = strokeData[i];
     v.crossVectors(entry.normal, entry.velocity);
     v.normalize();
     v.multiplyScalar(entry.width);
@@ -348,9 +349,9 @@ function processDraw() {
     velocities[index + 5] = entry.velocity.z;
 
     index = i * 2 * 2;
-    uvs[index] = i / (stroke.length - 1);
+    uvs[index] = i / (strokeData.length - 1);
     uvs[index + 1] = 0;
-    uvs[index + 2] = i / (stroke.length - 1);
+    uvs[index + 2] = i / (strokeData.length - 1);
     uvs[index + 3] = 1;
   }
 
@@ -362,9 +363,9 @@ function processDraw() {
   geometry.addAttribute('velocity', new THREE.BufferAttribute(velocities, 3).onUpload(disposeArray));
   geometry.computeBoundingSphere();
 
-  strokes[strokeIndex] = new THREE.Mesh(geometry, drawMaterial);
-  strokes[strokeIndex].drawMode = THREE.TriangleStripDrawMode;
-  scene.add(strokes[strokeIndex]);
+  var mesh = new THREE.Mesh(geometry, drawMaterial);
+  mesh.drawMode = THREE.TriangleStripDrawMode;
+  return mesh;
 }
 
 /**
@@ -383,23 +384,29 @@ function update() {
   // Update our perspective camera's positioning
   vrControls.update();
 
-  // Update the light pose to match the current device pose (the light acts
-  // like a flashlight on the strokes).
-  light.position.copy(camera.position);
-  light.quaternion.copy(camera.quaternion);
+  // Cache previous positions & normals
+  previousPosition.copy(position);
+  previousNormal.copy(normal);
 
-  previousPosition.copy(reticle.position);
-  // Update the reticle based on the current draw point.
-  getDrawPoint(reticle.position);
+  // Update Drawing Stroke Position
+  getDrawPoint(position);
+  position.lerpVectors(previousPosition, position, STROKE_POSITION_EASING);
 
-  velocity.subVectors(reticle.position, previousPosition);
+  // Update Drawing Stroke Normal
+  normal.set(0, 0, 1);
+  normal.applyQuaternion(camera.quaternion);
+  normal.normalize();
+  normal.lerpVectors(previousNormal, normal, STROKE_NORMAL_EASING);
+
+  // Update Drawing Stroke
+  velocity.subVectors(position, previousPosition);
   strokeWidth = THREE.Math.lerp(strokeWidth, velocity.length() * STROKE_WIDTH_MODIFIER, STROKE_WIDTH_EASING);
-  //reticle.scale.set(1 + (strokeWidth * 100), 1 + (strokeWidth * 100), 1 + (strokeWidth * 100));
 
   // Update the current graffiti stroke.
   if (drawing) {
     processDraw();
   }
+  processDrawBrush();
 
   // Render our three.js virtual scene
   renderer.clearDepth();
