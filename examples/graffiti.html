@@ -70,8 +70,8 @@
 <div id="info">
     <a href="https://github.com/google-ar/three.ar.js">three.ar.js</a><span class="title">Graffiti Example</span>
     <p><span class="title">Touch and hold to draw in 3D space</span></p>
+    <p><span class="title">Shake to undo</span></p>
 </div>
-<input style="z-index: 100; position: absolute; left: 10px; top: 10px; width:10%; height:10%" id="picker" type="color" value="#ff00ff">
 <script src="../third_party/three.js/three.js"></script>
 <script src="../third_party/three.js/VRControls.js"></script>
 <script src="../dist/three.ar.js"></script>
@@ -136,10 +136,18 @@ var MINIMUM_BRUSH_POINTS = 3;
 
 var STROKE_DISTANCE = 0.1;
 var STROKE_WIDTH_EASING = 0.05;
-var STROKE_WIDTH_MODIFIER = 1.6;
+var STROKE_WIDTH_MINIMUM = 0.00125;
+var STROKE_WIDTH_MAXIMUM = 0.1;
+var STROKE_WIDTH_MODIFIER = 1.25;
 
 var STROKE_POSITION_EASING = 0.5;
-var STROKE_NORMAL_EASING = 0.5;
+var STROKE_VELOCITY_EASING = 0.5;
+var STROKE_ORTHOGONAL_EASING = 0.5;
+var STROKE_NORMAL_EASING = 0.95;
+var STROKE_NORMAL_QUAT_EASING = 0.5;
+
+var MINIMIM_ERASE_ENERGY = 0.005;
+var MINIMIM_ERASE_ENERGY_FRAMES = 15;
 
 // Setup drawing variables.
 var drawing = false;
@@ -156,14 +164,6 @@ var drawMaterial = new THREE.RawShaderMaterial({
   side: THREE.DoubleSide,
   transparent: true
 });
-
-// Create a color picker for doing different colored strokes.
-var colorPicker = document.getElementById('picker');
-colorPicker.addEventListener('change', watchColorPicker, false);
-function watchColorPicker(event) {
-  drawMaterial = drawMaterial.clone();
-  drawMaterial.uniforms.color.value = new THREE.Color(event.target.value);
-}
 
 /**
  * Use the `getARDisplay()` utility to leverage the WebVR API
@@ -250,23 +250,35 @@ var getDrawPoint = (function() {
   }
 })();
 
-var strokeWidth = 0;
+var strokeWidth = STROKE_WIDTH_MINIMUM;
+
 var position = new THREE.Vector3();
 var previousPosition = new THREE.Vector3();
+
+var normalQuat = new THREE.Quaternion();
+var previousNormalQuat = new THREE.Quaternion();
+
 var normal = new THREE.Vector3(0, 0, 1);
 var previousNormal = new THREE.Vector3(0, 0, 1);
+
 var velocity = new THREE.Vector3();
+var previousVelocity = new THREE.Vector3();
+
+var acceleration = new THREE.Vector3();
 
 function processDraw() {
-  if(stroke.length > MINIMUM_STROKE_POINTS && position.distanceTo(stroke[stroke.length - 1].position) < MINIMIM_POINT_DISTANCE) {
-    return;
-  }
-
   // Add the draw point to the current stroke.
   stroke.push(getStroke());
 
-  // Don't start drawing until there are enough points.
-  if (stroke.length < MINIMUM_STROKE_POINTS) {
+  if(stroke.length < MINIMUM_STROKE_POINTS) {
+    return;
+  }
+
+  var s0 = stroke[stroke.length - 2];
+  var s1 = stroke[stroke.length - 1];
+
+  if(s0.position.distanceTo(s1.position) < MINIMIM_POINT_DISTANCE) {
+    stroke.pop();
     return;
   }
 
@@ -294,7 +306,7 @@ function processDrawBrush() {
   brushStroke.push(getStroke());
 
   // Don't use positions if they aren't far enough away from the previous point.
-  if(brushStroke.length < MINIMUM_BRUSH_POINTS && position.distanceTo(brushStroke[brushStroke.length - 1].position) < MINIMIM_POINT_DISTANCE) {
+  if(brushStroke.length < MINIMUM_BRUSH_POINTS) {
     return;
   }
 
@@ -302,6 +314,13 @@ function processDrawBrush() {
   if (brush) {
     brushStroke.shift();
     scene.remove(brush);
+  }
+
+  var b0 = brushStroke[brushStroke.length - 2];
+  var b1 = brushStroke[brushStroke.length - 1];
+
+  if(b0.position.distanceTo(b1.position) < MINIMIM_POINT_DISTANCE) {
+    return;
   }
 
   brush = generateStroke(brushStroke);
@@ -315,15 +334,38 @@ function generateStroke(strokeData) {
   var uvs = new Float32Array(strokeData.length * 2 * 2);
   var velocities = new Float32Array(strokeData.length * 2 * 3);
   var v = new THREE.Vector3();
+  var lastVelocity;
   var p1 = new THREE.Vector3();
   var p2 = new THREE.Vector3();
+  var flip = false;
+
   for (var i = 0; i < strokeData.length; i++) {
     var entry = strokeData[i];
+
     v.crossVectors(entry.normal, entry.velocity);
     v.normalize();
     v.multiplyScalar(entry.width);
-    p1.addVectors(entry.position, v);
-    p2.subVectors(entry.position, v);
+
+    if( lastVelocity ) {
+      var directionChange = lastVelocity.dot( entry.velocity );
+      if( directionChange < 0 ) {
+        flip = !flip;
+      }
+    }
+    else {
+      lastVelocity = new THREE.Vector3();
+    }
+    lastVelocity.copy( entry.velocity );
+
+    if( flip ) {
+      p1.addVectors(entry.position, v);
+      p2.subVectors(entry.position, v);
+    }
+    else {
+      p1.subVectors(entry.position, v);
+      p2.addVectors(entry.position, v);
+    }
+
     var index = i * 2 * 3;
     positions[index] = p1.x;
     positions[index + 1] = p1.y;
@@ -368,6 +410,83 @@ function generateStroke(strokeData) {
   return mesh;
 }
 
+var accelerationArray = [];
+function checkForShake()
+{
+  accelerationArray.push(acceleration.length());
+  var len = accelerationArray.length;
+  if( len > MINIMIM_ERASE_ENERGY_FRAMES ) {
+    var energy = 0;
+    for(var i = 0; i < len; i++) {
+      energy += accelerationArray[i];
+    }
+    if( energy > MINIMIM_ERASE_ENERGY * MINIMIM_ERASE_ENERGY_FRAMES ) {
+      accelerationArray.length = 0;
+      clearLastStroke();
+    }
+    else {
+      accelerationArray.shift();
+    }
+  }
+}
+
+function clearStrokes()
+{
+  drawing = false;
+  stroke.length = 0;
+  strokeIndex = 0;
+
+  var len = strokes.length;
+  for( var i = 0; i < len; i++ ) {
+    scene.remove(strokes[i]);
+  }
+}
+
+function clearLastStroke()
+{
+  if( drawing ) {
+    drawing = false;
+    scene.remove(strokes[strokeIndex]);
+    stroke.length = 0;
+  }
+  strokeIndex -= 1;
+  scene.remove(strokes[strokeIndex]);
+}
+
+/**
+ * update physics function, called once per frame. Handles updating and
+ * smoothing out rough input data from AR Session
+ */
+function updatePhysics()
+{
+  // Cache previous positions & normals
+  previousPosition.copy(position);
+  previousNormal.copy(normal);
+  previousNormalQuat.copy(normalQuat);
+  previousVelocity.copy(velocity);
+
+  // Update Drawing Stroke Position
+  getDrawPoint(position);
+  position.lerpVectors(previousPosition, position, STROKE_POSITION_EASING);
+
+  normalQuat.slerp(camera.quaternion, STROKE_NORMAL_QUAT_EASING);
+
+  // Update Drawing Stroke Normal
+  normal.set(0, 0, 1);
+  normal.applyQuaternion(normalQuat);
+  normal.normalize();
+  normal.lerpVectors(previousNormal, normal, STROKE_NORMAL_EASING);
+
+  velocity.subVectors(position, previousPosition);
+  velocity.lerpVectors(previousVelocity, velocity, STROKE_VELOCITY_EASING);
+
+  acceleration.subVectors(velocity, previousVelocity);
+
+  // Update Drawing Stroke Width
+  strokeWidth = THREE.Math.lerp(strokeWidth, velocity.length() * STROKE_WIDTH_MODIFIER, STROKE_WIDTH_EASING);
+  strokeWidth = Math.min( Math.max( strokeWidth, STROKE_WIDTH_MINIMUM ), STROKE_WIDTH_MAXIMUM );
+}
+
 /**
  * The render loop, called once per frame. Handles updating
  * our scene and rendering.
@@ -384,23 +503,11 @@ function update() {
   // Update our perspective camera's positioning
   vrControls.update();
 
-  // Cache previous positions & normals
-  previousPosition.copy(position);
-  previousNormal.copy(normal);
+  // Update Physics
+  updatePhysics();
 
-  // Update Drawing Stroke Position
-  getDrawPoint(position);
-  position.lerpVectors(previousPosition, position, STROKE_POSITION_EASING);
-
-  // Update Drawing Stroke Normal
-  normal.set(0, 0, 1);
-  normal.applyQuaternion(camera.quaternion);
-  normal.normalize();
-  normal.lerpVectors(previousNormal, normal, STROKE_NORMAL_EASING);
-
-  // Update Drawing Stroke
-  velocity.subVectors(position, previousPosition);
-  strokeWidth = THREE.Math.lerp(strokeWidth, velocity.length() * STROKE_WIDTH_MODIFIER, STROKE_WIDTH_EASING);
+  // Check for shake to undo functionality
+  checkForShake();
 
   // Update the current graffiti stroke.
   if (drawing) {
