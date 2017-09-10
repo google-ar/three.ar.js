@@ -93,7 +93,7 @@ The AR extension on top of WebVR allows to cast a ray from the camera to the rea
 [WebVR 2.0 API]: https://github.com/w3c/webvr/blob/master/explainer.md
 [6DOF]: https://en.wikipedia.org/wiki/Six_degrees_of_freedom
 [VRFrameData]: https://developer.mozilla.org/en-US/docs/Web/API/VRFrameData
-[VRFrameData]: https://developer.mozilla.org/en-US/docs/Web/API/VRPose
+[VRPose]: https://developer.mozilla.org/en-US/docs/Web/API/VRPose
 [VRDisplayCapabilities]: https://developer.mozilla.org/en-US/docs/Web/API/VRDisplayCapabilities
 [VRDisplay]: https://developer.mozilla.org/en-US/docs/Web/API/VRDisplay
 [getVRDisplays]: https://developer.mozilla.org/en-US/docs/Web/API/Navigator/getVRDisplays
