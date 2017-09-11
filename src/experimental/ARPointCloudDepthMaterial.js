@@ -17,11 +17,11 @@ import fragmentShader from './shaders/point-cloud-depth.frag';
 import vertexShader from './shaders/point-cloud-depth.vert';
 
 const DEFAULT_CONFIG = {
-  size: 10.0,
-  nearColor: new THREE.Color(0xff0000),
-  farColor: new THREE.Color(0x0000ff),
-  range: 5.0,
-  useHSVInterpolation: true,
+    size: 10.0,
+    nearColor: new THREE.Color(0xff0000),
+    farColor: new THREE.Color(0x0000ff),
+    range: 5.0,
+    useHSVInterpolation: true,
 };
 
 /**
@@ -29,35 +29,35 @@ const DEFAULT_CONFIG = {
  * in a VRPointCloud based on depth.
  */
 class ARPointCloudDepthMaterial extends THREE.RawShaderMaterial {
-  /**
-   * @param {Object} config
-   */
-  constructor(config) {
-    config = Object.assign({}, DEFAULT_CONFIG, config);
-    super({
-      vertexShader,
-      fragmentShader,
-      uniforms: {
-        nearColor: {
-          value: config.nearColor,
-        },
-        farColor: {
-          value: config.farColor,
-        },
-        range: {
-          value: config.range,
-        },
-        size: {
-          value: config.size,
-        },
-        useHSVInterpolation: {
-          value: config.useHSVInterpolation,
-        },
-      },
-    });
+    /**
+     * @param {Object} config
+     */
+    constructor(config) {
+        config = Object.assign({}, DEFAULT_CONFIG, config);
+        super({
+            vertexShader,
+            fragmentShader,
+            uniforms: {
+                nearColor: {
+                    value: config.nearColor,
+                },
+                farColor: {
+                    value: config.farColor,
+                },
+                range: {
+                    value: config.range,
+                },
+                size: {
+                    value: config.size,
+                },
+                useHSVInterpolation: {
+                    value: config.useHSVInterpolation,
+                },
+            },
+        });
 
-    this.depthWrite = false;
-  }
+        this.depthWrite = false;
+    }
 }
 
 THREE.ARPointCloudDepthMaterial = ARPointCloudDepthMaterial;
