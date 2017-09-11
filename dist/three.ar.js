@@ -79,7 +79,7 @@
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 7);
+/******/ 	return __webpack_require__(__webpack_require__.s = 8);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -94,7 +94,7 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.displayUnsupportedMessage = exports.placeObjectAtHit = exports.loadBlocksModel = exports.getARDisplay = exports.isARDisplay = exports.isARKit = exports.isTango = undefined;
 
-var _loaders = __webpack_require__(8);
+var _loaders = __webpack_require__(9);
 
 var LEARN_MORE_LINK = 'https://developers.google.com/ar/develop/web/getting-started'; /*
                                                                                        * Copyright 2017 Google Inc. All Rights Reserved.
@@ -111,7 +111,7 @@ var LEARN_MORE_LINK = 'https://developers.google.com/ar/develop/web/getting-star
                                                                                        * limitations under the License.
                                                                                        */
 
-var UNSUPPORTED_MESSAGE = 'This augmented reality experience requires WebARonARCore or WebARonARKit: experimental browsers from Google, available Android and iOS. Learn more <a href="' + LEARN_MORE_LINK + '">here</a>.';
+var UNSUPPORTED_MESSAGE = 'This augmented reality experience requires\n  WebARonARCore or WebARonARKit, experimental browsers from Google \n  for Android and iOS. Learn more at<a href="' + LEARN_MORE_LINK + '">developers.google.com</a>.';
 
 THREE.ARUtils = Object.create(null);
 
@@ -1135,6 +1135,73 @@ exports.default = ARReticle;
 "use strict";
 
 
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
+
+(function () {
+  if (window.webarSpeechRecognitionInstance) {
+    var addEventHandlingToObject = function addEventHandlingToObject(object) {
+      object.listeners = {};
+      object.addEventListener = function (eventType, callback) {
+        if (!callback) return this;
+        var listeners = this.listeners[eventType];
+        if (!listeners) {
+          listeners = [];
+          this.listeners[eventType] = listeners;
+        }
+        if (listeners.indexOf(callback) < 0) {
+          listeners.push(callback);
+        }
+        return this;
+      };
+      object.removeEventListener = function (eventType, callback) {
+        if (!callback) return this;
+        var listeners = this.listeners[eventType];
+        if (listeners) {
+          var i = listeners.indexOf(callback);
+          if (i >= 0) {
+            this.listeners[eventType] = listeners.splice(i, 1);
+          }
+        }
+        return this;
+      };
+      object.callEventListeners = function (eventType, event) {
+        if (!event) event = { target: this };
+        if (!event.target) event.target = this;
+        event.type = eventType;
+        var onEventType = 'on' + eventType;
+        if (typeof this[onEventType] === 'function') {
+          this[onEventType](event);
+        }
+        var listeners = this.listeners[eventType];
+        if (listeners) {
+          for (var i = 0; i < listeners.length; i++) {
+            var typeofListener = _typeof(listeners[i]);
+            if (typeofListener === "object") {
+              listeners[i].handleEvent(event);
+            } else if (typeofListener === "function") {
+              listeners[i](event);
+            }
+          }
+        }
+        return this;
+      };
+    };
+
+    addEventHandlingToObject(window.webarSpeechRecognitionInstance);
+    var originalWebKitSpeechRecognition = window.webkitSpeechRecognition;
+    window.webkitSpeechRecognition = function () {
+      return window.webarSpeechRecognitionInstance;
+    };
+  }
+})();
+
+/***/ }),
+/* 5 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
@@ -1156,11 +1223,11 @@ var _createClass = function () { function defineProperties(target, props) { for 
 
 var _ARUtils = __webpack_require__(0);
 
-var _arview = __webpack_require__(6);
+var _arview = __webpack_require__(7);
 
 var _arview2 = _interopRequireDefault(_arview);
 
-var _arview3 = __webpack_require__(5);
+var _arview3 = __webpack_require__(6);
 
 var _arview4 = _interopRequireDefault(_arview3);
 
@@ -1482,7 +1549,7 @@ THREE.ARView = ARView;
 exports.default = ARView;
 
 /***/ }),
-/* 5 */
+/* 6 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1491,7 +1558,7 @@ exports.default = ARView;
 module.exports = "// Copyright 2017 Google Inc. All Rights Reserved.\n// Licensed under the Apache License, Version 2.0 (the 'License');\n// you may not use this file except in compliance with the License.\n// You may obtain a copy of the License at\n//\n// http://www.apache.org/licenses/LICENSE-2.0\n//\n// Unless required by applicable law or agreed to in writing, software\n// distributed under the License is distributed on an 'AS IS' BASIS,\n// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n// See the License for the specific language governing permissions and\n// limitations under the License.\n\n#extension GL_OES_EGL_image_external : require\n\nprecision mediump float;\n#define GLSLIFY 1\n\nvarying vec2 vTextureCoord;\n\nuniform samplerExternalOES uSampler;\n\nvoid main(void) {\n  gl_FragColor = texture2D(uSampler, vTextureCoord);\n}\n";
 
 /***/ }),
-/* 6 */
+/* 7 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1500,7 +1567,7 @@ module.exports = "// Copyright 2017 Google Inc. All Rights Reserved.\n// License
 module.exports = "#define GLSLIFY 1\n// Copyright 2017 Google Inc. All Rights Reserved.\n// Licensed under the Apache License, Version 2.0 (the 'License');\n// you may not use this file except in compliance with the License.\n// You may obtain a copy of the License at\n//\n// http://www.apache.org/licenses/LICENSE-2.0\n//\n// Unless required by applicable law or agreed to in writing, software\n// distributed under the License is distributed on an 'AS IS' BASIS,\n// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n// See the License for the specific language governing permissions and\n// limitations under the License.\n\nattribute vec3 aVertexPosition;\nattribute vec2 aTextureCoord;\n\nvarying vec2 vTextureCoord;\n\nvoid main(void) {\n  gl_Position = vec4(aVertexPosition, 1.0);\n  vTextureCoord = aTextureCoord;\n}\n";
 
 /***/ }),
-/* 7 */
+/* 8 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1522,14 +1589,16 @@ var _ARUtils = __webpack_require__(0);
 
 var _ARUtils2 = _interopRequireDefault(_ARUtils);
 
-var _ARView = __webpack_require__(4);
+var _ARView = __webpack_require__(5);
 
 var _ARView2 = _interopRequireDefault(_ARView);
+
+__webpack_require__(4);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 /***/ }),
-/* 8 */
+/* 9 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
