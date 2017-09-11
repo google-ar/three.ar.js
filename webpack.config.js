@@ -20,38 +20,42 @@ var licensePath = path.join(__dirname, 'build', 'license.js');
 var license = fs.readFileSync(licensePath, 'utf8');
 
 module.exports = {
-  entry: {
-    "three.ar": "./src/index.js",
-    "three.ar.min": "./src/index.js"
-  },
-  output: {
-    path: path.join(__dirname, "dist"),
-    filename: "[name].js"
-  },
-  module: {
-    rules: [
-      { test: /\.js/, exclude: /node_modules/, use: ["babel-loader"] },
-      {
-        test: /\.(glsl|frag|vert)$/,
-        exclude: /node_modules/,
-        use: ["raw-loader", "glslify-loader"]
-      }
+    entry: {
+        "three.ar": "./src/index.js",
+        "three.ar.min": "./src/index.js"
+    },
+    output: {
+        path: path.join(__dirname, "dist"),
+        filename: "[name].js"
+    },
+    module: {
+        rules: [{
+            test: /\.js/,
+            exclude: /node_modules/,
+            use: ["babel-loader"]
+        }, {
+            test: /\.(glsl|frag|vert)$/,
+            exclude: /node_modules/,
+            use: ["raw-loader", "glslify-loader"]
+        }]
+    },
+    resolve: {
+        extensions: [".js"]
+    },
+    // https://webpack.github.io/docs/webpack-dev-server.html
+    devServer: {
+        publicPath: "/dist",
+        contentBase: [path.resolve(__dirname)],
+        host: "0.0.0.0",
+        disableHostCheck: true
+    },
+    plugins: [
+        new webpack.optimize.UglifyJsPlugin({
+            include: /\.min\.js$/
+        }),
+        new webpack.BannerPlugin({
+            banner: license,
+            raw: true
+        }),
     ]
-  },
-  resolve: {
-    extensions: [".js"]
-  },
-  // https://webpack.github.io/docs/webpack-dev-server.html
-  devServer: {
-    publicPath: "/dist",
-    contentBase: [path.resolve(__dirname)],
-    host: "0.0.0.0",
-    disableHostCheck: true
-  },
-  plugins: [
-    new webpack.optimize.UglifyJsPlugin({
-      include: /\.min\.js$/
-    }),
-    new webpack.BannerPlugin({ banner: license, raw: true }),
-  ]
 };

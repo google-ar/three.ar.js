@@ -11,18 +11,19 @@ h1,
 h2,
 h3 {
     text-align: center;
+    color: red;
 }
 
 .viewport {
     width: 100%;
     overflow: hidden;
     margin: 0 auto;
-    padding: 30px 0;
+    padding: 10px 0;
     -webkit-transform: translateZ(0);
 }
 
 .flipsnap {
-    width: 2575px;
+    width: 1285px;
     /*230px(item) * 5 + 45px(padding) */
     padding-left: 45px;
 }
@@ -35,13 +36,13 @@ h3 {
 }
 
 .item {
-    width: 200px;
+    width: 100px;
     margin: 0 10px;
     font-size: 50px;
     text-align: center;
-    padding: 50px 0;
+    padding: 30px 0;
     background: #EFEFEF;
-    border: 5px solid #999;
+    border: 2px solid #999;
     float: left;
     color: #666;
 }

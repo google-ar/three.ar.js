@@ -176,6 +176,10 @@ class ARVideoRenderer {
         // orientations of the device depending if there is a VRDisplay or not
         let textureCoords = null;
         if (this.vrDisplay) {
+
+            console.log("passThroughCamera　width and height:" + 　this.passThroughCamera.width + ";" + this.passThroughCamera.height);
+
+
             let u =
                 this.passThroughCamera.width / this.passThroughCamera.textureWidth;
             let v =
@@ -187,6 +191,10 @@ class ARVideoRenderer {
                 [0.0, v, u, v, 0.0, 0.0, u, 0.0],
             ];
         } else {
+
+            console.log("passThroughCamera　width and height:" + 　this.passThroughCamera.width + ";" + this.passThroughCamera.height);
+
+
             textureCoords = [
                 [0.0, 0.0, 0.0, 1.0, 1.0, 0.0, 1.0, 1.0],
                 [1.0, 0.0, 0.0, 0.0, 1.0, 1.0, 0.0, 1.0],
@@ -199,6 +207,7 @@ class ARVideoRenderer {
         for (let i = 0; i < textureCoords.length; i++) {
             this.f32TextureCoords.push(new Float32Array(textureCoords[i]));
         }
+        weweq
         // Store the current combined orientation to check if it has changed
         // during the update calls and use the correct texture coordinates.
         this.combinedOrientation = combineOrientations(
@@ -236,6 +245,7 @@ class ARVideoRenderer {
     /**
      * Renders the quad
      */
+
     render() {
         let gl = this.gl;
         gl.useProgram(this.program);
