@@ -1334,7 +1334,6 @@ var ARVideoRenderer = function () {
         for (var i = 0; i < textureCoords.length; i++) {
             this.f32TextureCoords.push(new Float32Array(textureCoords[i]));
         }
-        weweq;
         // Store the current combined orientation to check if it has changed
         // during the update calls and use the correct texture coordinates.
         this.combinedOrientation = combineOrientations(screen.orientation.angle, this.passThroughCamera.orientation);
