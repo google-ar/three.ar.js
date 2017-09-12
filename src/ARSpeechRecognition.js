@@ -20,11 +20,12 @@
     function addEventHandlingToObject(object) {
       object.listeners = { };
       object.addEventListener = function(eventType, callback) {
-        if (!callback) return this;
+        if (!callback) {
+          return this;
+        }
         var listeners = this.listeners[eventType];
         if (!listeners) {
-          listeners = [];
-          this.listeners[eventType] = listeners;
+          this.listeners[eventType] = listeners = [];
         }
         if (listeners.indexOf(callback) < 0) {
           listeners.push(callback);
@@ -32,7 +33,9 @@
         return this;
       };
       object.removeEventListener = function(eventType, callback) {
-        if (!callback) return this;
+        if (!callback) {
+          return this;
+        }
         var listeners = this.listeners[eventType];
         if (listeners) {
           var i = listeners.indexOf(callback);
@@ -43,8 +46,12 @@
         return this;
       };
       object.callEventListeners = function(eventType, event) {
-        if (!event) event = { target : this };
-        if (!event.target) event.target = this;
+        if (!event) {
+          event = { target : this };
+        }
+        if (!event.target) {
+          event.target = this;
+        }
         event.type = eventType;
         var onEventType = 'on' + eventType;
         if (typeof(this[onEventType]) === 'function') {
@@ -54,10 +61,10 @@
         if (listeners) {
           for (var i = 0; i < listeners.length; i++) {
             var typeofListener = typeof(listeners[i]);
-            if (typeofListener === "object") {
+            if (typeofListener === 'object') {
               listeners[i].handleEvent(event);
             }
-            else if (typeofListener === "function") {
+            else if (typeofListener === 'function') {
               listeners[i](event);
             }
           }
