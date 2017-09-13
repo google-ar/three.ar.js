@@ -112,6 +112,8 @@ Examples of three.ar.js are in the `/examples` directory.
 
 A [list of examples](https://developers.google.com/ar/develop/web/getting-started#examples) that are compatible with [WebARonARKit] and [WebARonARCore] is also available at [developers.google.com].
 
+Created a cool example or want to see more from the community? Check out [this gist](https://gist.github.com/jsantell/871d7e709e5007533f3bf07c35434e29) with some links. Leave a comment to add yours!
+
 ## License
 Apache License Version 2.0 (see the `LICENSE` file inside this repo).
 
