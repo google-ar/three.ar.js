@@ -33,31 +33,26 @@
       user-select: none;
     }
     #info {
-      position: absolute;
-      left: 50%;
+      background-color: rgba(40, 40, 40, 0.4);
       bottom: 0;
-      transform: translate(-50%, 0);
-      margin: 1em;
-      z-index: 10;
-      display: block;
-      width: 100%;
-      line-height: 2em;
+      box-sizing: border-box;
+      color: rgba(255, 255, 255, 0.7);
+      left: 50%;
+      line-height: 1.3em;
+      padding: 0.75em;
+      position: absolute;
       text-align: center;
+      transform: translate(-50%, 0);
+      width: 100%;
+      z-index: 10;
     }
-    #info a, #info .title {
-      padding: 0.4em 0.6em;
-      border-radius: 0.1em;
+    .divider {
+      color: rgba(255, 255, 255, 0.2);
+      padding: 0 0.5em;
     }
     #info a {
-      color: rgba(255, 255, 255, 0.8);
-      background-color: rgba(40, 40, 40, 0.6);
-      font-weight: bold;
       text-decoration: none;
-    }
-    .title {
-      color: rgba(255, 255, 255, 0.9);
-      background-color: rgba(40, 40, 40, 0.4);
-      margin-left: 0.2em;
+      color: white;
     }
     canvas {
       position: absolute;
@@ -68,9 +63,7 @@
 </head>
 <body>
 <div id="info">
-    <a href="https://github.com/google-ar/three.ar.js">three.ar.js</a><span class="title">Graffiti Example</span>
-    <p><span class="title">Touch and hold to draw in 3D space</span></p>
-    <p><span class="title">Shake to undo</span></p>
+    <a href="https://github.com/google-ar/three.ar.js">three.ar.js</a><span class="divider">|</span>Touch and hold to draw. Shake to undo.
 </div>
 <script src="../third_party/three.js/three.js"></script>
 <script src="../third_party/three.js/VRControls.js"></script>
@@ -619,10 +612,11 @@ function update() {
   checkForShake();
 
   // Update the current graffiti stroke.
-  processDrawBrush();
   if (drawing) {
     processDraw();
   }
+  // Uncomment to draw brush reticle
+  // processDrawBrush();
 
   // Render our three.js virtual scene
   renderer.clearDepth();
