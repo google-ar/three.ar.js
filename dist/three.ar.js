@@ -1514,7 +1514,7 @@ var ARView = function () {
     this.gl = renderer.context;
 
     this.videoRenderer = new ARVideoRenderer(vrDisplay, this.gl);
-    this.renderer.resetGLState();
+    this._resetGLState();
 
     // Cache the width/height so we're not potentially forcing
     // a reflow if there's been a style invalidation
@@ -1561,7 +1561,23 @@ var ARView = function () {
 
       this.gl.viewport(0, 0, gl.viewportWidth, gl.viewportHeight);
       this.videoRenderer.render();
-      this.renderer.resetGLState();
+      this._resetGLState();
+    }
+
+    /**
+     * Resets the GL state in the THREE.WebGLRenderer.
+     */
+
+  }, {
+    key: '_resetGLState',
+    value: function _resetGLState() {
+      if (typeof this.renderer.resetGLState === 'function') {
+        // If using three.js <= r86
+        this.renderer.resetGLState();
+      } else {
+        // If using three.js >= r87
+        this.renderer.state.reset();
+      }
     }
   }]);
 
