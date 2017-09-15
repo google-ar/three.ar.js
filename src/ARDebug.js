@@ -13,14 +13,18 @@
  * limitations under the License.
  */
 
+import ARPlanes from './ARPlanes';
+
 const DEFAULTS = {
   open: true,
   showLastHit: true,
   showPoseStatus: true,
+  showPlanes: false,
 };
 
 const SUCCESS_COLOR = '#00ff00';
 const FAILURE_COLOR = '#ff0077';
+const PLANES_POLLING_TIMER = 500;
 
 // A cache to store original native VRDisplay methods
 // since WebARonARKit does not provide a VRDisplay.prototype[method],
@@ -69,13 +73,21 @@ function throttle(fn, timer, scope) {
 class ARDebug {
   /**
    * @param {VRDisplay} vrDisplay
+   * @param {THREE.Scene?} scene
    * @param {Object} config
    * @param {boolean} config.open
    * @param {boolean} config.showLastHit
    * @param {boolean} config.showPoseStatus
+   * @param {boolean} config.showPlanes
    */
-  constructor(vrDisplay, config={}) {
-    this.config = Object.assign({}, config, DEFAULTS);
+  constructor(vrDisplay, scene, config) {
+    // Make `scene` optional
+    if (typeof config === 'undefined' && scene && scene.type !== 'Scene') {
+      config = scene;
+      scene = null;
+    }
+
+    this.config = Object.assign({}, DEFAULTS, config);
     this.vrDisplay = vrDisplay;
 
     this._view = new ARDebugView({ open: this.config.open });
@@ -86,6 +98,16 @@ class ARDebug {
 
     if (this.config.showPoseStatus && this.vrDisplay.getFrameData) {
       this._view.addRow('pose-status', new ARDebugPoseRow(vrDisplay));
+    }
+
+    if (this.config.showPlanes && this.vrDisplay.getPlanes) {
+      if (!scene) {
+        console.warn('ARDebug `{ showPlanes: true }` option requires ' +
+                     'passing in a THREE.Scene as the second parameter ' +
+                     'in the constructor.');
+      } else {
+        this._view.addRow('show-planes', new ARDebugPlanesRow(vrDisplay, scene));
+      }
     }
   }
 
@@ -436,6 +458,63 @@ class ARDebugPoseRow extends ARDebugRow {
     this._initialPose = true;
 
     return results;
+  }
+}
+
+/**
+ * The ARDebugRow subclass for displaying planes information
+ * by wrapping polling getPlanes, and rendering.
+ */
+class ARDebugPlanesRow extends ARDebugRow {
+  /**
+   * @param {VRDisplay} vrDisplay
+   * @param {THREE.Scene} scene
+   */
+  constructor(vrDisplay, scene) {
+    super('Planes');
+    this.vrDisplay = vrDisplay;
+    this.planes = new ARPlanes(this.vrDisplay);
+    this._onPoll = this._onPoll.bind(this);
+    this.update('Looking for planes...');
+    if (scene) {
+      scene.add(this.planes);
+    }
+  }
+
+  /**
+   * Enables displaying and pulling getFrameData
+   */
+  enable() {
+    if (this._timer) {
+      this.disable();
+    }
+    this._timer = setInterval(this._onPoll, PLANES_POLLING_TIMER);
+  }
+
+  /**
+   * Disables displaying and pulling getFrameData
+   */
+  disable() {
+    clearInterval(this._timer);
+    this._timer = null;
+    this.planes.clear();
+  }
+
+  /**
+   * @param {number} count
+   * @return {string}
+   */
+  _planesToString(count) {
+    return `${count} plane${count === 1 ? '' : 's'} found`;
+  }
+
+  /**
+   * Polling callback while enabled, used to fetch and orchestrate
+   * plane rendering.
+   */
+  _onPoll() {
+    const planeCount = this.planes.update();
+    this.update(this._planesToString(planeCount), planeCount > 0);
   }
 }
 
