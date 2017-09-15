@@ -15,6 +15,24 @@
 
 import { loadMtl, loadObj } from './loaders';
 
+const colors = [
+  '#F44336',
+  '#E91E63',
+  '#9C27B0',
+  '#673AB7',
+  '#3F51B5',
+  '#2196F3',
+  '#03A9F4',
+  '#00BCD4',
+  '#009688',
+  '#4CAF50',
+  '#8BC34A',
+  '#CDDC39',
+  '#FFEB3B',
+  '#FFC107',
+  '#FF9800',
+].map(hex => new THREE.Color(hex));
+
 const LEARN_MORE_LINK = 'https://developers.google.com/ar/develop/web/getting-started';
 const UNSUPPORTED_MESSAGE = `This augmented reality experience requires
   WebARonARCore or WebARonARKit, experimental browsers from Google
@@ -138,6 +156,15 @@ THREE.ARUtils.placeObjectAtHit = (object, hit, easing=1, applyOrientation=false)
   }
 };
 export const placeObjectAtHit = THREE.ARUtils.placeObjectAtHit;
+
+/**
+ * Returns a random color from the stored palette.
+ * @return {THREE.Color}
+ */
+THREE.ARUtils.getRandomPaletteColor = () => {
+  return colors[Math.floor(Math.random() * colors.length)];
+};
+export const getRandomPaletteColor = THREE.ARUtils.getRandomPaletteColor;
 
 /**
  * Injects a DOM element into the current page prompting the user that

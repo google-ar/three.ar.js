@@ -31,9 +31,19 @@ and the `fov`, `aspect`, `near`, `far` properties are not applicable.
 
 If given a [VRDisplay] in constructor, generates the projection matrix from the API to match the native camera intrinsics. To use the cached projection matrix, just access the `projectionMatrix` property instead.
 
-## new THREE.ARDebug(vrDisplay)
+## new THREE.ARDebug(vrDisplay, scene?, config)
 
-Creates an ARDebug panel to display hit and pose information. Use `getElement()` to return the element managed by the ARDebug panel to inject into your content.
+Creates an ARDebug panel to display hit and pose information. Use `getElement()` to return the element managed by the ARDebug panel to inject into your content. Optionally takes [THREE.Scene] `scene`, needed for rendering of planes via `showPlanes: true`.
+
+`config` is defined with defaults as follows:
+
+```js
+config = {
+  showPoseStatus: true,
+  showLastHit: true,
+  showPlanes: false,
+};
+```
 
 ### THREE.ARDebug#open()
 
@@ -84,6 +94,7 @@ Generates an element and injects into the DOM a message notifying the user that 
 [VRDisplay]: https://developer.mozilla.org/en-US/docs/Web/API/VRDisplay
 [THREE.WebGLRenderer]: https://threejs.org/docs/#api/renderers/WebGLRenderer
 [THREE.PerspectiveCamera]: https://threejs.org/docs/#api/cameras/PerspectiveCamera
+[THREE.Scene]: https://threejs.org/docs/#api/scenes/Scene
 [THREE.Material]: https://threejs.org/docs/#api/materials/Material
 [THREE.Mesh]: https://threejs.org/docs/#api/objects/Mesh
 [THREE.BufferGeometry]: https://threejs.org/docs/#api/core/BufferGeometry

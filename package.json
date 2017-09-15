@@ -15,6 +15,7 @@
     "babel-core": "^6.24.1",
     "babel-loader": "^7.0.0",
     "babel-preset-latest": "^6.24.1",
+    "base64-image-loader": "^1.2.0",
     "eslint": "^4.5.0",
     "eslint-config-google": "^0.9.1",
     "glsl-y-hsv": "^1.0.0",

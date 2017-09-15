@@ -35,7 +35,12 @@ module.exports = {
         test: /\.(glsl|frag|vert)$/,
         exclude: /node_modules/,
         use: ["raw-loader", "glslify-loader"]
-      }
+      },
+      {
+        test: /\.(png)$/,
+        exclude: /node_modules/,
+        use: ["base64-image-loader"],
+      },
     ]
   },
   resolve: {
