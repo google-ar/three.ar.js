@@ -1,5 +1,6 @@
 import glslify from '@shotamatsuda/rollup-plugin-glslify';
 import resolve from 'rollup-plugin-node-resolve';
+import babel from 'rollup-plugin-babel';
 
 const glsl = () => {
   return {
@@ -26,8 +27,9 @@ export default {
   indent: '\t',
   sourcemap: true,
   plugins: [
-    glsl(),
     glslify(),
+    babel(),
+    glsl(),
     resolve({
       module: true,
       jsnext: true,
