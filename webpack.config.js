@@ -13,45 +13,48 @@
  * limitations under the License.
  */
 
-var fs = require("fs");
-var path = require("path");
-var webpack = require("webpack");
-var licensePath = path.join(__dirname, 'build', 'license.js');
-var license = fs.readFileSync(licensePath, 'utf8');
+/* global require __dirname module */
+
+const fs = require('fs');
+const path = require('path');
+const webpack = require('webpack');
+const licensePath = path.join(__dirname, 'build', 'license.js');
+const license = fs.readFileSync(licensePath, 'utf8');
 
 module.exports = {
   entry: {
-    "three.ar": "./src/index.js",
-    "three.ar.min": "./src/index.js"
+    'three.ar': './src/index.js',
+    'three.module.ar': './src/index.module.js',
+    'three.ar.min': './src/index.js',
   },
   output: {
-    path: path.join(__dirname, "dist"),
-    filename: "[name].js"
+    path: path.join(__dirname, 'dist'),
+    filename: '[name].js',
   },
   module: {
     rules: [
-      { test: /\.js/, exclude: /node_modules/, use: ["babel-loader"] },
+      { test: /\.js/, exclude: /node_modules/, use: ['babel-loader'] },
       {
         test: /\.(glsl|frag|vert)$/,
         exclude: /node_modules/,
-        use: ["raw-loader", "glslify-loader"]
-      }
-    ]
+        use: ['raw-loader', 'glslify-loader'],
+      },
+    ],
   },
   resolve: {
-    extensions: [".js"]
+    extensions: ['.js'],
   },
   // https://webpack.github.io/docs/webpack-dev-server.html
   devServer: {
-    publicPath: "/dist",
+    publicPath: '/dist',
     contentBase: [path.resolve(__dirname)],
-    host: "0.0.0.0",
-    disableHostCheck: true
+    host: '0.0.0.0',
+    disableHostCheck: true,
   },
   plugins: [
     new webpack.optimize.UglifyJsPlugin({
-      include: /\.min\.js$/
+      include: /\.min\.js$/,
     }),
     new webpack.BannerPlugin({ banner: license, raw: true }),
-  ]
+  ],
 };

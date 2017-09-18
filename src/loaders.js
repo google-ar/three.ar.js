@@ -13,6 +13,8 @@
  * limitations under the License.
  */
 
+import { OBJLoader, MTLLoader } from 'three';
+
 /**
  * This module contains promisified loaders for internal use for
  * exposed ARUtils.
@@ -21,7 +23,7 @@
 const noop = function() {};
 
 export const loadObj = (objPath, materials) => new Promise((resolve, reject) => {
-  const loader = new THREE.OBJLoader();
+  const loader = new OBJLoader();
 
   if (materials) {
     loader.setMaterials(materials);
@@ -31,7 +33,7 @@ export const loadObj = (objPath, materials) => new Promise((resolve, reject) => 
 });
 
 export const loadMtl = mtlPath => new Promise((resolve, reject) => {
-  const loader = new THREE.MTLLoader();
+  const loader = new MTLLoader();
   const pathChunks = mtlPath.split('/');
 
   if (pathChunks.length >= 2) {

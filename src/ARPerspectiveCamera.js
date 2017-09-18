@@ -13,6 +13,9 @@
  * limitations under the License.
  */
 
+import { PerspectiveCamera } from 'three';
+console.log(PerspectiveCamera);
+
 // Reuse the frame data for getting the projection matrix
 let frameData;
 
@@ -22,7 +25,7 @@ let frameData;
  * VRDisplay. If no AR-enabled VRDisplay found, uses provided
  * parameters.
  */
-class ARPerspectiveCamera extends THREE.PerspectiveCamera {
+class ARPerspectiveCamera extends PerspectiveCamera {
   /**
    * @param {VRDisplay} vrDisplay
    * @param {number} fov
@@ -77,5 +80,6 @@ class ARPerspectiveCamera extends THREE.PerspectiveCamera {
   }
 }
 
-THREE.ARPerspectiveCamera = ARPerspectiveCamera;
-export default ARPerspectiveCamera;
+
+// THREE.ARPerspectiveCamera = ARPerspectiveCamera;
+export { ARPerspectiveCamera };

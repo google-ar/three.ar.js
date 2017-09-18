@@ -387,5 +387,6 @@ class ARView {
   }
 }
 
-THREE.ARView = ARView;
-export default ARView;
+
+// THREE.ARView = ARView;
+export { ARView };
