@@ -1,0 +1,24 @@
+{
+  "name": "three-ar-js-example-es6",
+  "version": "1.0.0",
+  "description": "Three.ar.js example using ES6 modules",
+  "main": "index.js",
+  "scripts": {
+    "start": "budo index.js:bundle.js --dir . --base . --live --pushstate -- -t [ babelify ]",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Silvio Paganini <silvio@fluuu.id>",
+  "license": "ISC",
+  "dependencies": {
+    "babelify": "^7.3.0",
+    "three": "^0.87.1",
+    "three-vrcontrols": "^1.0.0",
+    "three-vrcontrols-module": "^2.0.1",
+    "three.ar.js": "../../"
+  },
+  "devDependencies": {
+    "babel-preset-latest": "^6.24.1",
+    "browserify": "^14.4.0",
+    "budo": "^10.0.4"
+  }
+}

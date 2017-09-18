@@ -14,7 +14,6 @@
  */
 
 import { PerspectiveCamera } from 'three';
-console.log(PerspectiveCamera);
 
 // Reuse the frame data for getting the projection matrix
 let frameData;
