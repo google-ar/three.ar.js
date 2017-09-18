@@ -23,8 +23,6 @@ const glsl = () => {
   };
 };
 
-console.log(process.env);
-
 export default {
   input: 'src/index.js',
   indent: '\t',
