@@ -27,9 +27,10 @@ class ARViewMock {
   constructor(camera) {
     this.scene = new Scene();
     this.camera = camera || new PerspectiveCamera(60,
-                                                        window.innerWidth / window.innerHeight,
-                                                        0.01,
-                                                        100);
+      window.innerWidth / window.innerHeight,
+      0.01,
+      100
+    );
     this.axis = new AxisHelper(1);
     this.grid = new GridHelper(20, 20);
     this.scene.add(this.axis);

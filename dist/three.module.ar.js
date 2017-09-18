@@ -456,8 +456,6 @@ class ARDebugPoseRow extends ARDebugRow {
  * limitations under the License.
  */
 
-console.log(PerspectiveCamera);
-
 // Reuse the frame data for getting the projection matrix
 let frameData;
 
