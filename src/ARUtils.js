@@ -78,10 +78,10 @@ export const getARDisplay = ARUtils.getARDisplay;
  * @return {THREE.Mesh}
  */
 ARUtils.loadBlocksModel = (objPath, mtlPath) => new Promise((resolve, reject) => {
-  if (!THREE.OBJLoader || !THREE.MTLLoader) {
-    reject(new Error('Must include THREE.OBJLoader and THREE.MTLLoader'));
-    return;
-  }
+  // if (!THREE.OBJLoader || !THREE.MTLLoader) {
+  //   reject(new Error('Must include THREE.OBJLoader and THREE.MTLLoader'));
+  //   return;
+  // }
 
   let p = Promise.resolve();
 

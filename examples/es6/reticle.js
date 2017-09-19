@@ -77,11 +77,10 @@ const init = () => {
   );
 
   reticle = new ARReticle(vrDisplay,
-                                1.03, // innerRadius
-                                1.04, // outerRadius
+                                0.03, // innerRadius
+                                0.04, // outerRadius
                                 0xff0077, // color
                                 0.25); // easing
-
   scene.add(reticle);
 
   vrControls = new VRControls(camera);
