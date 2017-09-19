@@ -11,9 +11,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-float map( float value, float inMin, float inMax, float outMin, float outMax ) 
-{
+float map( float value, float inMin, float inMax, float outMin, float outMax ) {
     return ( (value - inMin) / ( inMax - inMin ) * ( outMax - outMin ) ) + outMin; 
 }
-
-#pragma glslify: export(map)

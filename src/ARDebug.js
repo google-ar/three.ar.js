@@ -439,5 +439,6 @@ class ARDebugPoseRow extends ARDebugRow {
   }
 }
 
-THREE.ARDebug = ARDebug;
-export default ARDebug;
+
+// THREE.ARDebug = ARDebug;
+export { ARDebug };

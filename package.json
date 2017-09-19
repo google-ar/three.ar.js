@@ -1,27 +1,35 @@
 {
   "name": "three.ar.js",
-  "version": "0.1.3",
+  "version": "0.1.4",
   "description": "A helper three.js library for building AR web experiences that run in WebARonARKit and WebARonARCore",
   "main": "./dist/three.ar.js",
+  "module": "./dist/three.module.ar.js",
   "scripts": {
-    "build": "webpack",
-    "dev": "webpack-dev-server --port 8000",
+    "build": "rollup -c rollup.config.build.js && uglifyjs dist/three.ar.js -cm > dist/three.ar.min.js",
+    "dev": "rollup -c rollup.config.dev.js -w -m inline",
     "lint": "eslint src/**.*",
     "test": "npm run lint"
   },
   "author": "Jordan Santell <jsantell@google.com>",
   "license": "Apache-2.0",
   "devDependencies": {
+    "@shotamatsuda/rollup-plugin-glslify": "^0.1.0",
     "babel-core": "^6.24.1",
     "babel-loader": "^7.0.0",
-    "babel-preset-latest": "^6.24.1",
+    "babel-plugin-external-helpers": "^6.22.0",
+    "babel-preset-es2015": "^6.24.1",
     "eslint": "^4.5.0",
     "eslint-config-google": "^0.9.1",
     "glsl-y-hsv": "^1.0.0",
     "glslify-loader": "^1.0.2",
     "raw-loader": "^0.5.1",
-    "webpack": "^2.6.1",
-    "webpack-dev-server": "^2.5.0"
+    "rollup": "^0.49.3",
+    "rollup-plugin-babel": "^3.0.2",
+    "rollup-plugin-livereload": "^0.6.0",
+    "rollup-plugin-node-resolve": "^3.0.0",
+    "rollup-plugin-serve": "^0.4.2",
+    "rollup-watch": "^4.3.1",
+    "uglify-js": "^3.1.0"
   },
   "keywords": [
     "webar",
@@ -33,5 +41,12 @@
     "webaronarkit",
     "augmented reality"
   ],
-  "repository": "https://github.com/google-ar/three.ar.js"
+  "repository": "https://github.com/google-ar/three.ar.js",
+  "peerDependencies": {
+    "three": "^0.87.1"
+  },
+  "dependencies": {
+    "three": "^0.87.1",
+    "three-obj-loader": "^1.1.2"
+  }
 }

@@ -103,19 +103,19 @@ var colors = [
  * a valid display if found. Otherwise, display the unsupported
  * browser message.
  */
-THREE.ARUtils.getARDisplay().then(function (display) {
+THREEAR.ARUtils.getARDisplay().then(function (display) {
   if (display) {
     vrFrameData = new VRFrameData();
     vrDisplay = display;
     init();
   } else {
-    THREE.ARUtils.displayUnsupportedMessage();
+    THREEAR.ARUtils.displayUnsupportedMessage();
   }
 });
 
 function init() {
   // Turn on the debugging panel
-  var arDebug = new THREE.ARDebug(vrDisplay);
+  var arDebug = new THREEAR.ARDebug(vrDisplay);
   document.body.appendChild(arDebug.getElement());
 
   // Setup the three.js rendering environment
@@ -131,14 +131,14 @@ function init() {
   // Creating the ARView, which is the object that handles
   // the rendering of the camera stream behind the three.js
   // scene
-  arView = new THREE.ARView(vrDisplay, renderer);
+  arView = new THREEAR.ARView(vrDisplay, renderer);
 
   // The ARPerspectiveCamera is very similar to THREE.PerspectiveCamera,
   // except when using an AR-capable browser, the camera uses
   // the projection matrix provided from the device, so that the
   // perspective camera's depth planes and field of view matches
   // the physical camera on the device.
-  camera = new THREE.ARPerspectiveCamera(
+  camera = new THREEAR.ARPerspectiveCamera(
     vrDisplay,
     60,
     window.innerWidth / window.innerHeight,
