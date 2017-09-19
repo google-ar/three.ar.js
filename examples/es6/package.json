@@ -4,7 +4,11 @@
   "description": "Three.ar.js example using ES6 modules",
   "main": "index.js",
   "scripts": {
-    "start": "budo index.js:bundle.js --dir . --base . --live --pushstate -- -t [ babelify ]",
+    "boilerplate": "budo boilerplate.js:bundle.js --dir . --base . --live --pushstate -- -t [ babelify ]",
+    "graffiti": "budo graffiti.js:bundle.js --dir . --base . --live --pushstate -- -t [ babelify ]",
+    "reticle": "budo reticle.js:bundle.js --dir . --base . --live --pushstate -- -t [ babelify ]",
+    "spawn-camera": "budo spawn-at-camera.js:bundle.js --dir . --base . --live --pushstate -- -t [ babelify ]",
+    "spawn-surface": "budo spawn-at-surface.js:bundle.js --dir . --base . --live --pushstate -- -t [ babelify ]",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Silvio Paganini <silvio@fluuu.id>",

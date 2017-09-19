@@ -1,17 +1,16 @@
 // using ES6 modules for three.ar.js 
-import { ARUtils, ARView, ARPerspectiveCamera } from 'three.ar.js';
+import {
+  ARUtils,
+  ARView,
+  ARPerspectiveCamera,
+  ARDebug,
+  ARReticle,
+} from 'three.ar.js';
 import {
   WebGLRenderer,
   Scene,
-  BoxGeometry,
-  MeshNormalMaterial,
-  Mesh,
 } from 'three';
 import VRControls from 'three-vrcontrols-module';
-
-const BOX_DISTANCE = 1.5;
-const BOX_SIZE = 0.25;
-const BOX_QUANTITY = 6;
 
 let vrDisplay = null;
 let renderer = null;
@@ -19,7 +18,9 @@ let arView = null;
 let scene = null;
 let camera = null;
 let vrControls = null;
-let boxesAdded = false;
+let reticle;
+
+document.querySelector('.title').innerText = 'Reticle ES6';
 
 ARUtils.getARDisplay().then(display => {
   if (display) {
@@ -29,24 +30,6 @@ ARUtils.getARDisplay().then(display => {
     ARUtils.displayUnsupportedMessage();
   }
 });
-
-const addBoxes = () => {
-  // Create some cubes around the origin point
-  for (let i = 0; i < BOX_QUANTITY; i++) {
-    const angle = Math.PI * 2 * (i / BOX_QUANTITY);
-    const geometry = new BoxGeometry(BOX_SIZE, BOX_SIZE, BOX_SIZE);
-    const material = new MeshNormalMaterial();
-    const cube = new Mesh(geometry, material);
-    cube.position.set(
-      Math.cos(angle) * BOX_DISTANCE,
-      camera.position.y - 0.25,
-      Math.sin(angle) * BOX_DISTANCE);
-    scene.add(cube);
-  }
-
-  // Flip this switch so that we only perform this once
-  boxesAdded = true;
-};
 
 const onWindowResize = () => {
   camera.aspect = window.innerWidth / window.innerHeight;
@@ -59,11 +42,12 @@ const update = () => {
 
   camera.updateProjectionMatrix();
 
-  vrControls.update();
+  // Update our ARReticle's position, and provide normalized
+  // screen coordinates to send the hit test -- in this case, (0.5, 0.5)
+  // is the middle of our screen
+  reticle.update(0.5, 0.5);
 
-  if (!boxesAdded && !camera.position.y) {
-    addBoxes();
-  }
+  vrControls.update();
 
   renderer.clearDepth();
   renderer.render(scene, camera);
@@ -72,6 +56,9 @@ const update = () => {
 };
 
 const init = () => {
+  const arDebug = new ARDebug(vrDisplay);
+  document.body.appendChild(arDebug.getElement());
+
   renderer = new WebGLRenderer({ alpha: true });
   renderer.setPixelRatio(window.devicePixelRatio);
   renderer.setSize(window.innerWidth, window.innerHeight);
@@ -88,6 +75,14 @@ const init = () => {
     vrDisplay.depthNear,
     vrDisplay.depthFar
   );
+
+  reticle = new ARReticle(vrDisplay,
+                                1.03, // innerRadius
+                                1.04, // outerRadius
+                                0xff0077, // color
+                                0.25); // easing
+
+  scene.add(reticle);
 
   vrControls = new VRControls(camera);
 
