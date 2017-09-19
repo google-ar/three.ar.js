@@ -13,7 +13,8 @@
  * limitations under the License.
  */
 
-import { OBJLoader, MTLLoader } from 'three';
+import OBJLoader from './loaders/OBJLoader';
+import MTLLoader from './loaders/MTLLoader';
 
 /**
  * This module contains promisified loaders for internal use for

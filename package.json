@@ -46,6 +46,7 @@
     "three": "^0.87.1"
   },
   "dependencies": {
-    "three": "^0.87.1"
+    "three": "^0.87.1",
+    "three-obj-loader": "^1.1.2"
   }
 }
