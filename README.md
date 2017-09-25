@@ -35,6 +35,12 @@ If you're using a build tool, like [browserify] or [webpack], install it via [np
 $ npm install --save three three.ar.js
 ```
 
+### CDN
+
+```
+<script href="https://cdn.jsdelivr.net/npm/three.ar.js@0.1.4/dist/three.ar.js"></script>
+```
+
 ## Using
 
 If you are including three.ar.js via script tag, the additional three.ar.js features are appended to the `THREE` namespace, for example:
