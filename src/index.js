@@ -14,7 +14,6 @@
  */
 
 /* eslint no-unused-vars: "off" */
-/* eslint no-undef: "off" */
 import ARDebug from './ARDebug';
 import ARPerspectiveCamera from './ARPerspectiveCamera';
 import ARReticle from './ARReticle';

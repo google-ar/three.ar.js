@@ -21,7 +21,7 @@
 const noop = function() {};
 
 export const loadObj = (objPath, materials) => new Promise((resolve, reject) => {
-  const loader = new THREE.OBJLoader();
+  const loader = new global.THREE.OBJLoader();
 
   if (materials) {
     loader.setMaterials(materials);
@@ -31,7 +31,7 @@ export const loadObj = (objPath, materials) => new Promise((resolve, reject) => 
 });
 
 export const loadMtl = mtlPath => new Promise((resolve, reject) => {
-  const loader = new THREE.MTLLoader();
+  const loader = new global.THREE.MTLLoader();
   const pathChunks = mtlPath.split('/');
 
   if (pathChunks.length >= 2) {
