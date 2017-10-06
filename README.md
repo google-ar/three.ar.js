@@ -37,6 +37,17 @@ $ npm install --save three three.ar.js
 
 ## Using
 
+Accessing three.ar.js depends on the environment you're working in. Below are examples of importing
+the code via script tag, as well as a module bundler like [browserify] or [webpack].
+
+To view the additional APIs implemented by [WebARonARKit] and [WebARonARCore], view the [WebVR Extension for AR] document.
+
+To view the additional APIs implemented by [WebARonARKit] and [WebARonARCore], view the [WebVR Extension for AR] document.
+
+For more examples, see the [examples/](examples/) directory.
+
+### Script
+
 If you are including three.ar.js via script tag, the additional three.ar.js features are appended to the `THREE` namespace, for example:
 
 ```js
@@ -72,9 +83,23 @@ function update() {
 }
 ```
 
-To view the additional APIs implemented by [WebARonARKit] and [WebARonARCore], view the [WebVR Extension for AR] document.
+### Modules
 
-For more examples, see the [examples/](examples/) directory.
+If you're in a [browserify] or [webpack] like environment, three.ar.js uses [three.js]
+as a peer dependency. This means you can import both packages separately.
+
+```js
+import { Scene, WebGLRenderer } from 'three';
+import { ARUtils, ARPerspectiveCamera, ARView } from 'three.ar.js';
+
+async function init() {
+  const display = await ARUtils.getARDisplay();
+  const renderer = new WebGLRenderer({ alpha: true });
+  const arView = new ARView(display, renderer);
+
+  // And so forth...
+}
+```
 
 ## Contributing
 
@@ -108,7 +133,7 @@ For testing functionality, go through the examples with your changes and ensure 
 
 ## Examples
 
-Examples of three.ar.js are in the `/examples` directory. 
+Examples of three.ar.js are in the `/examples` directory.
 
 A [list of examples](https://developers.google.com/ar/develop/web/getting-started#examples) that are compatible with [WebARonARKit] and [WebARonARCore] is also available at [developers.google.com].
 

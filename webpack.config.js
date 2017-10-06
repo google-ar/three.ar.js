@@ -26,6 +26,7 @@ module.exports = {
     "three.ar.min": "./src/index.js"
   },
   output: {
+    libraryTarget: 'umd',
     path: path.join(__dirname, "dist"),
     filename: "[name].js"
   },
@@ -43,6 +44,14 @@ module.exports = {
         use: ["base64-image-loader"],
       },
     ]
+  },
+  externals: {
+    three: {
+      commonjs: 'three',
+      commonjs2: 'three',
+      amd: 'three',
+      root: 'THREE',
+    },
   },
   resolve: {
     extensions: [".js"]
@@ -64,8 +73,8 @@ module.exports = {
     // https://github.com/webpack/webpack-dev-server/issues/1101
     // https://github.com/webpack/webpack-dev-server/tree/ee7231baf9f41082435832e6df3e57f4dafee013#caveats
     new UglifyJSPlugin({
-    // new webpack.optimizeUglifyJsPlugin({
-      include: /\.min\.js$/
+      // The unbundled plugin also needs 'test' instead of 'include' (?),
+      test: /\.min\.js$/
     }),
     new webpack.BannerPlugin({ banner: license, raw: true }),
   ]
