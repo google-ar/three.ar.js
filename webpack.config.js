@@ -16,6 +16,7 @@
 var fs = require("fs");
 var path = require("path");
 var webpack = require("webpack");
+var UglifyJSPlugin = require("uglifyjs-webpack-plugin")
 var licensePath = path.join(__dirname, 'build', 'license.js');
 var license = fs.readFileSync(licensePath, 'utf8');
 
@@ -54,7 +55,16 @@ module.exports = {
     disableHostCheck: true
   },
   plugins: [
-    new webpack.optimize.UglifyJsPlugin({
+    // Use beta build of UglifyJSPlugin directly
+    // due to webpack-dev-server's using let/const in the
+    // injection code, which cannot be minified by the built in
+    // version of Uglify. Can remove this once the fix is out
+    // of uglifyjs-webpack-plugin beta
+    //
+    // https://github.com/webpack/webpack-dev-server/issues/1101
+    // https://github.com/webpack/webpack-dev-server/tree/ee7231baf9f41082435832e6df3e57f4dafee013#caveats
+    new UglifyJSPlugin({
+    // new webpack.optimizeUglifyJsPlugin({
       include: /\.min\.js$/
     }),
     new webpack.BannerPlugin({ banner: license, raw: true }),

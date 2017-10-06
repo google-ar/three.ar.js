@@ -21,6 +21,7 @@
     "glsl-y-hsv": "^1.0.0",
     "glslify-loader": "^1.0.2",
     "raw-loader": "^0.5.1",
+    "uglifyjs-webpack-plugin": "1.0.0-beta.2",
     "webpack": "^2.6.1",
     "webpack-dev-server": "^2.5.0"
   },
