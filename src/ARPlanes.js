@@ -21,6 +21,7 @@ import {
   Geometry,
   Vector3,
   Face3,
+  Mesh,
 } from 'three';
 
 import { getRandomPaletteColor } from './ARUtils';
@@ -159,7 +160,7 @@ class ARPlanes extends Object3D {
         this.materialMap.set(id, material);
       }
 
-      const plane = new THREE.Mesh(geo, material);
+      const plane = new Mesh(geo, material);
       planeObj.add(plane);
     }
 

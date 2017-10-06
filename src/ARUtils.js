@@ -93,7 +93,7 @@ export const getARDisplay = ARUtils.getARDisplay;
  * @return {THREE.Mesh}
  */
 ARUtils.loadBlocksModel = (objPath, mtlPath) => new Promise((resolve, reject) => {
-  if (!THREE.OBJLoader || !THREE.MTLLoader) {
+  if (!global.THREE || !global.THREE.OBJLoader || !global.THREE.MTLLoader) {
     reject(new Error('Must include THREE.OBJLoader and THREE.MTLLoader'));
     return;
   }

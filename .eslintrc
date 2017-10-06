@@ -11,7 +11,7 @@
     "es6": true
   },
   "globals": {
-    "THREE": false,
+    "global": false,
     "VRFrameData": false
   },
   "parserOptions": {
