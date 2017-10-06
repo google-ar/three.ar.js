@@ -14,33 +14,43 @@
  */
 
 import {
-  MirroredRepeatWrapping, DoubleSide,
-  Color, Object3D, RawShaderMaterial, TextureLoader,
-  Geometry, Vector3, Face3,
-} from 'three';
+  MirroredRepeatWrapping,
+  DoubleSide,
+  Color,
+  Object3D,
+  RawShaderMaterial,
+  TextureLoader,
+  Geometry,
+  Vector3,
+  Face3
+} from "three";
 
-import { getRandomPaletteColor } from './ARUtils';
-import vertexShader from './shaders/arplanes.vert';
-import fragmentShader from './shaders/arplanes.frag';
-import textureURL from './textures/plane.png';
-
-const texture = new TextureLoader().load(textureURL);
-texture.wrapS = MirroredRepeatWrapping;
-texture.wrapT = MirroredRepeatWrapping;
+import { getRandomPaletteColor } from "./ARUtils";
+import vertexShader from "./shaders/arplanes.vert";
+import fragmentShader from "./shaders/arplanes.frag";
 
 const DEFAULT_MATERIAL = new RawShaderMaterial({
   side: DoubleSide,
   transparent: true,
   uniforms: {
-    uTexture: {
-      value: texture,
+    dotColor: {
+      value: new THREE.Color(0xffffff)
     },
-    uColor: {
-      value: new Color(0x000000),
+    lineColor: {
+      value: new THREE.Color(0x707070)
     },
+    backgroundColor: {
+      value: new THREE.Color(0x404040)
+    },
+    dotRadius: {
+      value: 0.006666666667
+    },
+    alpha: {
+      value: 0.4
+    }
   },
   vertexShader,
-  fragmentShader,
+  fragmentShader
 });
 
 /**
@@ -99,10 +109,23 @@ class ARPlanes extends Object3D {
       const mm = anchor.modelMatrix;
       planeObj.matrixAutoUpdate = false;
       planeObj.matrix.set(
-        mm[0], mm[4], mm[8], mm[12],
-        mm[1], mm[5], mm[9], mm[13],
-        mm[2], mm[6], mm[10], mm[14],
-        mm[3], mm[7], mm[11], mm[15]);
+        mm[0],
+        mm[4],
+        mm[8],
+        mm[12],
+        mm[1],
+        mm[5],
+        mm[9],
+        mm[13],
+        mm[2],
+        mm[6],
+        mm[10],
+        mm[14],
+        mm[3],
+        mm[7],
+        mm[11],
+        mm[15]
+      );
 
       this.add(planeObj);
       this.planes.push(planeObj);
@@ -111,9 +134,12 @@ class ARPlanes extends Object3D {
       // generate vertices
       for (let pt = 0; pt < anchor.vertices.length / 3; pt++) {
         geo.vertices.push(
-          new Vector3(anchor.vertices[pt * 3],
-                            anchor.vertices[(pt * 3) + 1],
-                            anchor.vertices[(pt * 3) + 2]));
+          new Vector3(
+            anchor.vertices[pt * 3],
+            anchor.vertices[pt * 3 + 1],
+            anchor.vertices[pt * 3 + 2]
+          )
+        );
       }
 
       // generate faces
@@ -121,7 +147,6 @@ class ARPlanes extends Object3D {
         // this makes a triangle fan, from the first +Y point around
         geo.faces.push(new Face3(0, face + 1, face + 2));
       }
-
 
       let material;
       if (this.materialMap.has(id)) {
@@ -132,8 +157,7 @@ class ARPlanes extends Object3D {
         // this plane's ID
         const color = getRandomPaletteColor();
         material = DEFAULT_MATERIAL.clone();
-        material.uniforms.uColor.value = color;
-        material.uniforms.uTexture.value = texture;
+        material.uniforms.backgroundColor.value = color;
         this.materialMap.set(id, material);
       }
 
