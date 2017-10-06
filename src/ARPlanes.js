@@ -13,24 +13,30 @@
  * limitations under the License.
  */
 
+import {
+  MirroredRepeatWrapping, DoubleSide,
+  Color, Object3D, RawShaderMaterial, TextureLoader,
+  Geometry, Vector3, Face3,
+} from 'three';
+
 import { getRandomPaletteColor } from './ARUtils';
 import vertexShader from './shaders/arplanes.vert';
 import fragmentShader from './shaders/arplanes.frag';
 import textureURL from './textures/plane.png';
 
-const texture = new THREE.TextureLoader().load(textureURL);
-texture.wrapS = THREE.MirroredRepeatWrapping;
-texture.wrapT = THREE.MirroredRepeatWrapping;
+const texture = new TextureLoader().load(textureURL);
+texture.wrapS = MirroredRepeatWrapping;
+texture.wrapT = MirroredRepeatWrapping;
 
-const DEFAULT_MATERIAL = new THREE.RawShaderMaterial({
-  side: THREE.DoubleSide,
+const DEFAULT_MATERIAL = new RawShaderMaterial({
+  side: DoubleSide,
   transparent: true,
   uniforms: {
     uTexture: {
       value: texture,
     },
     uColor: {
-      value: new THREE.Color(0x000000),
+      value: new Color(0x000000),
     },
   },
   vertexShader,
@@ -41,7 +47,7 @@ const DEFAULT_MATERIAL = new THREE.RawShaderMaterial({
  * The ARDebugRow subclass for displaying planes information
  * by wrapping polling getPlanes, and rendering.
  */
-class ARPlanes extends THREE.Object3D {
+class ARPlanes extends Object3D {
   /**
    * @param {VRDisplay} vrDisplay
    */
@@ -89,7 +95,7 @@ class ARPlanes extends THREE.Object3D {
       }
 
       const id = anchor.identifier;
-      const planeObj = new THREE.Object3D();
+      const planeObj = new Object3D();
       const mm = anchor.modelMatrix;
       planeObj.matrixAutoUpdate = false;
       planeObj.matrix.set(
@@ -101,11 +107,11 @@ class ARPlanes extends THREE.Object3D {
       this.add(planeObj);
       this.planes.push(planeObj);
 
-      const geo = new THREE.Geometry();
+      const geo = new Geometry();
       // generate vertices
       for (let pt = 0; pt < anchor.vertices.length / 3; pt++) {
         geo.vertices.push(
-          new THREE.Vector3(anchor.vertices[pt * 3],
+          new Vector3(anchor.vertices[pt * 3],
                             anchor.vertices[(pt * 3) + 1],
                             anchor.vertices[(pt * 3) + 2]));
       }
@@ -113,7 +119,7 @@ class ARPlanes extends THREE.Object3D {
       // generate faces
       for (let face = 0; face < geo.vertices.length - 2; face++) {
         // this makes a triangle fan, from the first +Y point around
-        geo.faces.push(new THREE.Face3(0, face + 1, face + 2));
+        geo.faces.push(new Face3(0, face + 1, face + 2));
       }
 
 
@@ -139,5 +145,4 @@ class ARPlanes extends THREE.Object3D {
   }
 }
 
-THREE.ARPlanes = ARPlanes;
 export default ARPlanes;

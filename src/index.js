@@ -14,9 +14,29 @@
  */
 
 /* eslint no-unused-vars: "off" */
+/* eslint no-undef: "off" */
 import ARDebug from './ARDebug';
 import ARPerspectiveCamera from './ARPerspectiveCamera';
 import ARReticle from './ARReticle';
 import ARUtils from './ARUtils';
 import ARView from './ARView';
 import './ARSpeechRecognition';
+
+// If including three.ar.js as a standalone script tag,
+// we'll need to expose these objects directly by attaching
+// them on the THREE global
+if (typeof global.THREE === 'object') {
+  global.THREE.ARDebug = ARDebug;
+  global.THREE.ARPerspectiveCamera = ARPerspectiveCamera;
+  global.THREE.ARReticle = ARReticle;
+  global.THREE.ARUtils = ARUtils;
+  global.THREE.ARView = ARView;
+}
+
+export {
+  ARDebug,
+  ARPerspectiveCamera,
+  ARReticle,
+  ARUtils,
+  ARView,
+};

@@ -518,5 +518,4 @@ class ARDebugPlanesRow extends ARDebugRow {
   }
 }
 
-THREE.ARDebug = ARDebug;
 export default ARDebug;
