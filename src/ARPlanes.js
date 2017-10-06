@@ -14,43 +14,41 @@
  */
 
 import {
-  MirroredRepeatWrapping,
   DoubleSide,
   Color,
   Object3D,
   RawShaderMaterial,
-  TextureLoader,
   Geometry,
   Vector3,
-  Face3
-} from "three";
+  Face3,
+} from 'three';
 
-import { getRandomPaletteColor } from "./ARUtils";
-import vertexShader from "./shaders/arplanes.vert";
-import fragmentShader from "./shaders/arplanes.frag";
+import { getRandomPaletteColor } from './ARUtils';
+import vertexShader from './shaders/arplanes.vert';
+import fragmentShader from './shaders/arplanes.frag';
 
 const DEFAULT_MATERIAL = new RawShaderMaterial({
   side: DoubleSide,
   transparent: true,
   uniforms: {
     dotColor: {
-      value: new THREE.Color(0xffffff)
+      value: new Color(0xffffff),
     },
     lineColor: {
-      value: new THREE.Color(0x707070)
+      value: new Color(0x707070),
     },
     backgroundColor: {
-      value: new THREE.Color(0x404040)
+      value: new Color(0x404040),
     },
     dotRadius: {
-      value: 0.006666666667
+      value: 0.006666666667,
     },
     alpha: {
-      value: 0.4
-    }
+      value: 0.4,
+    },
   },
   vertexShader,
-  fragmentShader
+  fragmentShader,
 });
 
 /**
