@@ -38,5 +38,8 @@
   "peerDependencies": {
     "three": "*"
   },
-  "repository": "https://github.com/google-ar/three.ar.js"
+  "repository": "https://github.com/google-ar/three.ar.js",
+  "dependencies": {
+    "gl-preserve-state": "^1.0.0"
+  }
 }
