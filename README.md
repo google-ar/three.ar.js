@@ -18,6 +18,14 @@ See [three.ar.js API documentataion](API.md) for details.
 
 ## Installing
 
+### CDN
+
+```html
+<script href="https://cdn.jsdelivr.net/npm/three.ar.js@latest/dist/three.ar.js"></script>
+<!-- or the minified version -->
+<script href="https://cdn.jsdelivr.net/npm/three.ar.js@latest/dist/three.ar.min.js"></script>
+```
+
 ### Script
 
 Download the build at [dist/three.ar.js](dist/three.ar.js) and include it as a script tag in a web page. You must include [three.js] as well, and three.ar.js must be included after.
@@ -33,12 +41,6 @@ If you're using a build tool, like [browserify] or [webpack], install it via [np
 
 ```
 $ npm install --save three three.ar.js
-```
-
-### CDN
-
-```
-<script href="https://cdn.jsdelivr.net/npm/three.ar.js@0.1.4/dist/three.ar.js"></script>
 ```
 
 ## Using
