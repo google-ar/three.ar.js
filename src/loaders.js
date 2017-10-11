@@ -33,7 +33,7 @@ export const loadObj = (objPath, materials) => new Promise((resolve, reject) => 
 export const loadMtl = mtlPath => new Promise((resolve, reject) => {
   const loader = new global.THREE.MTLLoader();
 
-  loader.setTexturePath(mtlPath.substring(0, mtlPath.lastIndexOf("/") + 1));
+  loader.setTexturePath(mtlPath.substring(0, mtlPath.lastIndexOf('/') + 1));
 
   loader.load(mtlPath, resolve, noop, reject);
 });
