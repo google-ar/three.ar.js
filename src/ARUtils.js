@@ -88,6 +88,10 @@ export const getARDisplay = ARUtils.getARDisplay;
  * texture and returns a promise resolving to a THREE.Mesh loaded with
  * the appropriate material. Can be used on downloaded models from Blocks.
  *
+ * NOTE: loading function will remap materials in the .mtl file whose specular,
+ * diffuse, or ambient contribution is (0, 0, 0) to (1, 1, 1). As well as materials
+ * whose dissolve is 0 (which becomes an opacity of 0) to 1.
+ *
  * @param {string} objPath
  * @param {string} mtlPath
  * @return {THREE.Mesh}
@@ -104,11 +108,11 @@ ARUtils.loadBlocksModel = (objPath, mtlPath) => new Promise((resolve, reject) =>
     p = loadMtl(mtlPath);
   }
 
-  p.then(materials => {
-    if (materials) {
-      materials.preload();
+  p.then(materialCreator => {
+    if (materialCreator) {
+      materialCreator.preload();
     }
-    return loadObj(objPath, materials);
+    return loadObj(objPath, materialCreator);
   }).then(obj => {
     const model = obj.children[0];
     model.geometry.applyMatrix(
