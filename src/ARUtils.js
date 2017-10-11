@@ -172,8 +172,10 @@ export const getRandomPaletteColor = ARUtils.getRandomPaletteColor;
 /**
  * Injects a DOM element into the current page prompting the user that
  * their browser does not support these AR features.
+ *
+ * @param {string} customMessage 
  */
-ARUtils.displayUnsupportedMessage = () => {
+ARUtils.displayUnsupportedMessage = customMessage => {
   const element = document.createElement('div');
   element.id = 'webgl-error-message';
   element.style.fontFamily = 'monospace';
@@ -186,7 +188,7 @@ ARUtils.displayUnsupportedMessage = () => {
   element.style.padding = '1.5em';
   element.style.width = '400px';
   element.style.margin = '5em auto 0';
-  element.innerHTML = UNSUPPORTED_MESSAGE;
+  element.innerHTML = typeof(customMessage) === 'string' ? customMessage : UNSUPPORTED_MESSAGE;
   document.body.appendChild(element);
 };
 export const displayUnsupportedMessage = ARUtils.displayUnsupportedMessage;

@@ -110,7 +110,7 @@ var renderer;
 var clone;
 var shapes = [];
 
-var audioContext = new AudioContext();
+var audioContext = window.AudioContext ? new AudioContext() : null;
 
 var AMBISONIC_ORDER = 2;
 var SONGBIRD_OPTIONS = {
@@ -124,8 +124,12 @@ var currentAudioElementOrientation;
 
 var audioElements = [];
 
-// Create a (2nd-order Ambisonic) Songbird scene.
-var songbird = new Songbird(audioContext, SONGBIRD_OPTIONS);
+var songbird;
+
+var LEARN_MORE_LINK = 'https://developers.google.com/ar/develop/web/getting-started#examples';
+var AUDIO_UNSUPPORTED_MESSAGE = `This augmented reality experience requires getUserMedia(), 
+    which is not supported on this browser. See other demos on the 
+    <a href="${LEARN_MORE_LINK}">Google Developers site</a>.`;
 
 /**
  * Use the `getARDisplay()` utility to leverage the WebVR API
@@ -134,7 +138,9 @@ var songbird = new Songbird(audioContext, SONGBIRD_OPTIONS);
  * browser message.
  */
 THREE.ARUtils.getARDisplay().then(function (display) {
-  if (display) {
+  if (!audioContext) {
+    THREE.ARUtils.displayUnsupportedMessage(AUDIO_UNSUPPORTED_MESSAGE);
+  } else if (display) {
     vrFrameData = new VRFrameData();
     vrDisplay = display;
     init();
@@ -144,6 +150,9 @@ THREE.ARUtils.getARDisplay().then(function (display) {
 });
 
 function init() {
+  // Create a (2nd-order Ambisonic) Songbird scene.
+  songbird = new Songbird(audioContext, SONGBIRD_OPTIONS);
+
   // Turn on the debugging panel
   var arDebug = new THREE.ARDebug(vrDisplay);
   document.body.appendChild(arDebug.getElement());

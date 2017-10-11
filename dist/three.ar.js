@@ -295,8 +295,10 @@ var getRandomPaletteColor = exports.getRandomPaletteColor = ARUtils.getRandomPal
 /**
  * Injects a DOM element into the current page prompting the user that
  * their browser does not support these AR features.
+ *
+ * @param {string} customMessage 
  */
-ARUtils.displayUnsupportedMessage = function () {
+ARUtils.displayUnsupportedMessage = function (customMessage) {
   var element = document.createElement('div');
   element.id = 'webgl-error-message';
   element.style.fontFamily = 'monospace';
@@ -309,7 +311,7 @@ ARUtils.displayUnsupportedMessage = function () {
   element.style.padding = '1.5em';
   element.style.width = '400px';
   element.style.margin = '5em auto 0';
-  element.innerHTML = UNSUPPORTED_MESSAGE;
+  element.innerHTML = typeof customMessage === 'string' ? customMessage : UNSUPPORTED_MESSAGE;
   document.body.appendChild(element);
 };
 var displayUnsupportedMessage = exports.displayUnsupportedMessage = ARUtils.displayUnsupportedMessage;
@@ -1389,11 +1391,8 @@ var loadObj = exports.loadObj = function loadObj(objPath, materials) {
 var loadMtl = exports.loadMtl = function loadMtl(mtlPath) {
   return new Promise(function (resolve, reject) {
     var loader = new global.THREE.MTLLoader();
-    var pathChunks = mtlPath.split('/');
 
-    if (pathChunks.length >= 2) {
-      loader.setTexturePath(pathChunks[pathChunks.length - 2]);
-    }
+    loader.setTexturePath(mtlPath.substring(0, mtlPath.lastIndexOf('/') + 1));
 
     loader.load(mtlPath, resolve, noop, reject);
   });
