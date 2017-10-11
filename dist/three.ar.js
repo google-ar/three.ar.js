@@ -1390,11 +1390,9 @@ var loadObj = exports.loadObj = function loadObj(objPath, materialCreator) {
     var loader = new global.THREE.OBJLoader();
 
     if (materialCreator) {
-      var materials = materialCreator.materials;
-      Object.keys(materials).forEach(function (k) {
-        return opacityRemap(materials[k]);
+      Object.keys(materialCreator.materials).forEach(function (k) {
+        return opacityRemap(materialCreator.materials[k]);
       });
-
       loader.setMaterials(materialCreator);
     }
 
