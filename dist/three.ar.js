@@ -1380,7 +1380,7 @@ var noop = function noop() {};
 
 // remaps opacity from 0 to 1
 var opacityRemap = function opacityRemap(mat) {
-  if (mat.opacity == 0) {
+  if (mat.opacity === 0) {
     mat.opacity = 1;
   }
 };

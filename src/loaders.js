@@ -22,7 +22,7 @@ const noop = function() {};
 
 // remaps opacity from 0 to 1
 const opacityRemap = function(mat) {
-  if (mat.opacity == 0) {
+  if (mat.opacity === 0) {
     mat.opacity = 1;
   }
 };
@@ -43,7 +43,7 @@ export const loadMtl = mtlPath => new Promise((resolve, reject) => {
 
   loader.setTexturePath(mtlPath.substring(0, mtlPath.lastIndexOf('/') + 1));
   // remaps ka, kd, & ks values of 0,0,0 -> 1,1,1
-  loader.setMaterialOptions( { ignoreZeroRGBs: true } );
+  loader.setMaterialOptions({ ignoreZeroRGBs: true });
 
   loader.load(mtlPath, resolve, noop, reject);
 });
