@@ -20,11 +20,19 @@
 
 const noop = function() {};
 
-export const loadObj = (objPath, materials) => new Promise((resolve, reject) => {
+// remaps opacity from 0 to 1
+const opacityRemap = function(mat) {
+  if (mat.opacity === 0) {
+    mat.opacity = 1;
+  }
+};
+
+export const loadObj = (objPath, materialCreator) => new Promise((resolve, reject) => {
   const loader = new global.THREE.OBJLoader();
 
-  if (materials) {
-    loader.setMaterials(materials);
+  if (materialCreator) {
+    Object.keys(materialCreator.materials).forEach(k => opacityRemap(materialCreator.materials[k]));
+    loader.setMaterials(materialCreator);
   }
 
   loader.load(objPath, resolve, noop, reject);
@@ -34,6 +42,8 @@ export const loadMtl = mtlPath => new Promise((resolve, reject) => {
   const loader = new global.THREE.MTLLoader();
 
   loader.setTexturePath(mtlPath.substring(0, mtlPath.lastIndexOf('/') + 1));
+  // remaps ka, kd, & ks values of 0,0,0 -> 1,1,1
+  loader.setMaterialOptions({ ignoreZeroRGBs: true });
 
   loader.load(mtlPath, resolve, noop, reject);
 });
