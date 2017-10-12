@@ -208,10 +208,6 @@ var getARDisplay = exports.getARDisplay = ARUtils.getARDisplay;
  * texture and returns a promise resolving to a THREE.Mesh loaded with
  * the appropriate material. Can be used on downloaded models from Blocks.
  *
- * NOTE: loading function will remap materials in the .mtl file whose specular,
- * diffuse, or ambient contribution is (0, 0, 0) to (1, 1, 1). As well as materials
- * whose dissolve is 0 (which becomes an opacity of 0) to 1.
- *
  * @param {string} objPath
  * @param {string} mtlPath
  * @return {THREE.Mesh}
@@ -229,11 +225,11 @@ ARUtils.loadBlocksModel = function (objPath, mtlPath) {
       p = (0, _loaders.loadMtl)(mtlPath);
     }
 
-    p.then(function (materialCreator) {
-      if (materialCreator) {
-        materialCreator.preload();
+    p.then(function (materials) {
+      if (materials) {
+        materials.preload();
       }
-      return (0, _loaders.loadObj)(objPath, materialCreator);
+      return (0, _loaders.loadObj)(objPath, materials);
     }).then(function (obj) {
       var model = obj.children[0];
       model.geometry.applyMatrix(new _three.Matrix4().makeRotationY(_three.Math.degToRad(-90)));
@@ -1378,22 +1374,12 @@ Object.defineProperty(exports, "__esModule", {
 
 var noop = function noop() {};
 
-// remaps opacity from 0 to 1
-var opacityRemap = function opacityRemap(mat) {
-  if (mat.opacity === 0) {
-    mat.opacity = 1;
-  }
-};
-
-var loadObj = exports.loadObj = function loadObj(objPath, materialCreator) {
+var loadObj = exports.loadObj = function loadObj(objPath, materials) {
   return new Promise(function (resolve, reject) {
     var loader = new global.THREE.OBJLoader();
 
-    if (materialCreator) {
-      Object.keys(materialCreator.materials).forEach(function (k) {
-        return opacityRemap(materialCreator.materials[k]);
-      });
-      loader.setMaterials(materialCreator);
+    if (materials) {
+      loader.setMaterials(materials);
     }
 
     loader.load(objPath, resolve, noop, reject);
@@ -1403,10 +1389,11 @@ var loadObj = exports.loadObj = function loadObj(objPath, materialCreator) {
 var loadMtl = exports.loadMtl = function loadMtl(mtlPath) {
   return new Promise(function (resolve, reject) {
     var loader = new global.THREE.MTLLoader();
+    var pathChunks = mtlPath.split('/');
 
-    loader.setTexturePath(mtlPath.substring(0, mtlPath.lastIndexOf('/') + 1));
-    // remaps ka, kd, & ks values of 0,0,0 -> 1,1,1
-    loader.setMaterialOptions({ ignoreZeroRGBs: true });
+    if (pathChunks.length >= 2) {
+      loader.setTexturePath(pathChunks[pathChunks.length - 2]);
+    }
 
     loader.load(mtlPath, resolve, noop, reject);
   });
