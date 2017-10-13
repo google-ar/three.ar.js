@@ -118,17 +118,11 @@ If you're developing and modifying the three.ar.js library itself, there are som
 
 Run `npm install` to install dependencies required for this project.
 
-### Running Development Server
-
-Running `npm run dev` will start a local dev server from the project root at `http://0.0.0.0:8000` and rebuild and reload on changes made to `src/`. View the demos at [http://0.0.0.0:8000/examples](http://0.0.0.0:8000/examples), noting that a desktop browser won't have the AR-enhanced browser features.
-
-If your mobile device with the AR-enhanced browser and your development machine are on the same local network, you can access these demos from your mobile device via `http://$DEV_LOCAL_IP:8000/examples`.
-
-If the devices are not on the same network, or you're having firewall issues, you can use an [adb] command to proxy an Android device's requests to the development machine's host via `adb reverse tcp:8000 tcp:8000`.
-
 ### Building
 
-Run `npm run build` to create a new build in `./dist`. When sending pull requests, do **not** build your changes and allow maintainers to do so.
+Run `npm run build` to create a new build in `./dist`. When sending pull requests, do **not** build your changes and allow maintainers to do so. There are additional commands for building, like `npm run build-min` for building the minified file, and `npm run build-all` for building both.
+
+To auto build when the source changes, run `npm run watch`.
 
 ### Linting
 
@@ -143,6 +137,12 @@ $ npm test
 ```
 
 For testing functionality, go through the examples with your changes and ensure the expected functionality.
+
+### Releasing a new version
+
+For maintainers, to cut a new release for npm, use the [npm version] command. The `preversion`, `version` and `postversion` npm scripts will run tests, build, add built files and tag to git, push to github, and publish the new npm version.
+
+`npm version <semverstring>`
 
 ## Examples
 
@@ -164,3 +164,4 @@ Apache License Version 2.0 (see the `LICENSE` file inside this repo).
 [WebARonARCore]: https://github.com/google-ar/WebARonARCore
 [developers.google.com]: https://developers.google.com/ar/develop/web/getting-started#examples
 [WebVR Extension for AR]: webvr_ar_extension.md
+[npm version]: https://docs.npmjs.com/cli/version
