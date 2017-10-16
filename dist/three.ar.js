@@ -208,6 +208,10 @@ var getARDisplay = exports.getARDisplay = ARUtils.getARDisplay;
  * texture and returns a promise resolving to a THREE.Mesh loaded with
  * the appropriate material. Can be used on downloaded models from Blocks.
  *
+ * NOTE: loading function will remap materials in the .mtl file whose specular,
+ * diffuse, or ambient contribution is (0, 0, 0) to (1, 1, 1). As well as materials
+ * whose dissolve is 0 (which becomes an opacity of 0) to 1.
+ *
  * @param {string} objPath
  * @param {string} mtlPath
  * @return {THREE.Mesh}
@@ -225,11 +229,11 @@ ARUtils.loadBlocksModel = function (objPath, mtlPath) {
       p = (0, _loaders.loadMtl)(mtlPath);
     }
 
-    p.then(function (materials) {
-      if (materials) {
-        materials.preload();
+    p.then(function (materialCreator) {
+      if (materialCreator) {
+        materialCreator.preload();
       }
-      return (0, _loaders.loadObj)(objPath, materials);
+      return (0, _loaders.loadObj)(objPath, materialCreator);
     }).then(function (obj) {
       var model = obj.children[0];
       model.geometry.applyMatrix(new _three.Matrix4().makeRotationY(_three.Math.degToRad(-90)));
@@ -295,8 +299,10 @@ var getRandomPaletteColor = exports.getRandomPaletteColor = ARUtils.getRandomPal
 /**
  * Injects a DOM element into the current page prompting the user that
  * their browser does not support these AR features.
+ *
+ * @param {string} customMessage 
  */
-ARUtils.displayUnsupportedMessage = function () {
+ARUtils.displayUnsupportedMessage = function (customMessage) {
   var element = document.createElement('div');
   element.id = 'webgl-error-message';
   element.style.fontFamily = 'monospace';
@@ -309,7 +315,7 @@ ARUtils.displayUnsupportedMessage = function () {
   element.style.padding = '1.5em';
   element.style.width = '400px';
   element.style.margin = '5em auto 0';
-  element.innerHTML = UNSUPPORTED_MESSAGE;
+  element.innerHTML = typeof customMessage === 'string' ? customMessage : UNSUPPORTED_MESSAGE;
   document.body.appendChild(element);
 };
 var displayUnsupportedMessage = exports.displayUnsupportedMessage = ARUtils.displayUnsupportedMessage;
@@ -1374,12 +1380,22 @@ Object.defineProperty(exports, "__esModule", {
 
 var noop = function noop() {};
 
-var loadObj = exports.loadObj = function loadObj(objPath, materials) {
+// remaps opacity from 0 to 1
+var opacityRemap = function opacityRemap(mat) {
+  if (mat.opacity === 0) {
+    mat.opacity = 1;
+  }
+};
+
+var loadObj = exports.loadObj = function loadObj(objPath, materialCreator) {
   return new Promise(function (resolve, reject) {
     var loader = new global.THREE.OBJLoader();
 
-    if (materials) {
-      loader.setMaterials(materials);
+    if (materialCreator) {
+      Object.keys(materialCreator.materials).forEach(function (k) {
+        return opacityRemap(materialCreator.materials[k]);
+      });
+      loader.setMaterials(materialCreator);
     }
 
     loader.load(objPath, resolve, noop, reject);
@@ -1389,11 +1405,10 @@ var loadObj = exports.loadObj = function loadObj(objPath, materials) {
 var loadMtl = exports.loadMtl = function loadMtl(mtlPath) {
   return new Promise(function (resolve, reject) {
     var loader = new global.THREE.MTLLoader();
-    var pathChunks = mtlPath.split('/');
 
-    if (pathChunks.length >= 2) {
-      loader.setTexturePath(pathChunks[pathChunks.length - 2]);
-    }
+    loader.setTexturePath(mtlPath.substring(0, mtlPath.lastIndexOf('/') + 1));
+    // remaps ka, kd, & ks values of 0,0,0 -> 1,1,1
+    loader.setMaterialOptions({ ignoreZeroRGBs: true });
 
     loader.load(mtlPath, resolve, noop, reject);
   });
