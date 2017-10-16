@@ -246,6 +246,7 @@ class ARVideoRenderer {
       gl.ELEMENT_ARRAY_BUFFER_BINDING,
       gl.CURRENT_PROGRAM,
     ];
+
     preserveGLState(gl, bindings, () => {
       gl.useProgram(this.program);
       gl.bindBuffer(gl.ARRAY_BUFFER, this.vertexPositionBuffer);

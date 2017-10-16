@@ -489,6 +489,8 @@ class ARDebugPlanesRow extends ARDebugRow {
       this.disable();
     }
     this._timer = setInterval(this._onPoll, PLANES_POLLING_TIMER);
+
+    this.planes.enable();
   }
 
   /**
@@ -497,7 +499,8 @@ class ARDebugPlanesRow extends ARDebugRow {
   disable() {
     clearInterval(this._timer);
     this._timer = null;
-    this.planes.clear();
+    
+    this.planes.disable();
   }
 
   /**
@@ -513,7 +516,7 @@ class ARDebugPlanesRow extends ARDebugRow {
    * plane rendering.
    */
   _onPoll() {
-    const planeCount = this.planes.update();
+    const planeCount = this.planes.size();
     this.update(this._planesToString(planeCount), planeCount > 0);
   }
 }
