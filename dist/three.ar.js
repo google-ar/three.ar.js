@@ -400,7 +400,7 @@ var _ARView = __webpack_require__(11);
 
 var _ARView2 = _interopRequireDefault(_ARView);
 
-__webpack_require__(14);
+__webpack_require__(15);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -1417,21 +1417,15 @@ var loadMtl = exports.loadMtl = function loadMtl(mtlPath) {
 
 /***/ }),
 /* 7 */
-/***/ (function(module, exports, __webpack_require__) {
+/***/ (function(module, exports) {
 
-"use strict";
-
-
-module.exports = "// Copyright 2017 Google Inc. All Rights Reserved.\n// Licensed under the Apache License, Version 2.0 (the 'License');\n// you may not use this file except in compliance with the License.\n// You may obtain a copy of the License at\n//\n// http://www.apache.org/licenses/LICENSE-2.0\n//\n// Unless required by applicable law or agreed to in writing, software\n// distributed under the License is distributed on an 'AS IS' BASIS,\n// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n// See the License for the specific language governing permissions and\n// limitations under the License.\n\nprecision mediump float;\nprecision mediump int;\n#define GLSLIFY 1\n\nuniform mat4 modelViewMatrix;\nuniform mat4 modelMatrix;\nuniform mat4 projectionMatrix;\n\nattribute vec3 position;\n\nvarying vec3 vPosition;\n\nvoid main() {\n  vPosition = (modelMatrix * vec4(position, 1.0)).xyz;\n  gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);\n}\n";
+module.exports = "// Copyright 2017 Google Inc. All Rights Reserved.\n// Licensed under the Apache License, Version 2.0 (the 'License');\n// you may not use this file except in compliance with the License.\n// You may obtain a copy of the License at\n//\n// http://www.apache.org/licenses/LICENSE-2.0\n//\n// Unless required by applicable law or agreed to in writing, software\n// distributed under the License is distributed on an 'AS IS' BASIS,\n// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n// See the License for the specific language governing permissions and\n// limitations under the License.\n\nprecision mediump float;\nprecision mediump int;\n#define GLSLIFY 1\n\nuniform mat4 modelViewMatrix;\nuniform mat4 modelMatrix;\nuniform mat4 projectionMatrix;\n\nattribute vec3 position;\n\nvarying vec3 vPosition;\n\nvoid main() {\n  vPosition = (modelMatrix * vec4(position, 1.0)).xyz;\n  gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);\n}\n"
 
 /***/ }),
 /* 8 */
-/***/ (function(module, exports, __webpack_require__) {
+/***/ (function(module, exports) {
 
-"use strict";
-
-
-module.exports = "// Copyright 2017 Google Inc. All Rights Reserved.\n// Licensed under the Apache License, Version 2.0 (the 'License');\n// you may not use this file except in compliance with the License.\n// You may obtain a copy of the License at\n//\n// http://www.apache.org/licenses/LICENSE-2.0\n//\n// Unless required by applicable law or agreed to in writing, software\n// distributed under the License is distributed on an 'AS IS' BASIS,\n// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n// See the License for the specific language governing permissions and\n// limitations under the License.\n\nprecision highp float;\n#define GLSLIFY 1\n\nvarying vec3 vPosition;\n\n#define countX 7.0\n#define countY 4.0\n#define gridAlpha 0.75\n\nuniform float dotRadius; //ui:0.0,0.01,0.006666666667\nuniform vec3 dotColor; //ui:0.0,1.0,1.0\nuniform vec3 lineColor; //ui:0.0,1.0,0.50\nuniform vec3 backgroundColor; //ui:0.0,1.0,0.25\nuniform float alpha; //ui:0.0,1.0,1.0\n\nfloat Circle( in vec2 p, float r ) {\n  return length( p ) - r;\n}\n\nfloat Line( in vec2 p, in vec2 a, in vec2 b ) {\n  vec2 pa = p - a;\n  vec2 ba = b - a;\n  float t = clamp( dot( pa, ba ) / dot( ba, ba ), 0.0, 1.0);\n  vec2 pt = a + t * ba;\n  return length( pt - p );\n}\n\nfloat Union( float a, float b ) {\n  return min( a, b );\n}\n\nvoid main()\n{\n  vec2 count = vec2( countX, countY );\n  vec2 size = vec2( 1.0 ) / count;\n  vec2 halfSize = size * 0.5;\n  vec2 uv = mod( vPosition.xz * 1.5, size ) - halfSize;\n\n  float dots = Circle( uv - vec2( halfSize.x, 0.0 ), dotRadius );\n  dots = Union( dots, Circle( uv + vec2( halfSize.x, 0.0 ), dotRadius ) );\n  dots = Union( dots, Circle( uv + vec2( 0.0, halfSize.y ), dotRadius ) );\n  dots = Union( dots, Circle( uv - vec2( 0.0, halfSize.y ), dotRadius ) );\n\n  float lines = Line( uv, vec2( 0.0, halfSize.y ), -vec2( halfSize.x, 0.0 ) );\n  lines = Union( lines, Line( uv, vec2( 0.0, -halfSize.y ), -vec2( halfSize.x, 0.0 ) ) );\n  lines = Union( lines, Line( uv, vec2( 0.0, -halfSize.y ), vec2( halfSize.x, 0.0 ) ) );\n  lines = Union( lines, Line( uv, vec2( 0.0, halfSize.y ), vec2( halfSize.x, 0.0 ) ) );\n  lines = Union( lines, Line( uv, vec2( -halfSize.x, halfSize.y ), vec2( halfSize.x, halfSize.y ) ) );\n  lines = Union( lines, Line( uv, vec2( -halfSize.x, -halfSize.y ), vec2( halfSize.x, -halfSize.y ) ) );\n  lines = Union( lines, Line( uv, vec2( -halfSize.x, 0.0 ), vec2( halfSize.x, 0.0 ) ) );\n\n  lines = clamp( smoothstep( 0.0, 0.0035, lines ), 0.0, 1.0 );\n  dots = clamp( smoothstep( 0.0, 0.001, dots ), 0.0, 1.0 );\n\n  float result = Union( dots, lines );\n  gl_FragColor = vec4( mix( backgroundColor + mix( dotColor, lineColor, dots ),\n    backgroundColor, result ), mix( gridAlpha, alpha, result ) );\n}\n";
+module.exports = "// Copyright 2017 Google Inc. All Rights Reserved.\n// Licensed under the Apache License, Version 2.0 (the 'License');\n// you may not use this file except in compliance with the License.\n// You may obtain a copy of the License at\n//\n// http://www.apache.org/licenses/LICENSE-2.0\n//\n// Unless required by applicable law or agreed to in writing, software\n// distributed under the License is distributed on an 'AS IS' BASIS,\n// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n// See the License for the specific language governing permissions and\n// limitations under the License.\n\nprecision highp float;\n#define GLSLIFY 1\n\nvarying vec3 vPosition;\n\n#define countX 7.0\n#define countY 4.0\n#define gridAlpha 0.75\n\nuniform float dotRadius; //ui:0.0,0.01,0.006666666667\nuniform vec3 dotColor; //ui:0.0,1.0,1.0\nuniform vec3 lineColor; //ui:0.0,1.0,0.50\nuniform vec3 backgroundColor; //ui:0.0,1.0,0.25\nuniform float alpha; //ui:0.0,1.0,1.0\n\nfloat Circle( in vec2 p, float r ) {\n  return length( p ) - r;\n}\n\nfloat Line( in vec2 p, in vec2 a, in vec2 b ) {\n  vec2 pa = p - a;\n  vec2 ba = b - a;\n  float t = clamp( dot( pa, ba ) / dot( ba, ba ), 0.0, 1.0);\n  vec2 pt = a + t * ba;\n  return length( pt - p );\n}\n\nfloat Union( float a, float b ) {\n  return min( a, b );\n}\n\nvoid main()\n{\n  vec2 count = vec2( countX, countY );\n  vec2 size = vec2( 1.0 ) / count;\n  vec2 halfSize = size * 0.5;\n  vec2 uv = mod( vPosition.xz * 1.5, size ) - halfSize;\n\n  float dots = Circle( uv - vec2( halfSize.x, 0.0 ), dotRadius );\n  dots = Union( dots, Circle( uv + vec2( halfSize.x, 0.0 ), dotRadius ) );\n  dots = Union( dots, Circle( uv + vec2( 0.0, halfSize.y ), dotRadius ) );\n  dots = Union( dots, Circle( uv - vec2( 0.0, halfSize.y ), dotRadius ) );\n\n  float lines = Line( uv, vec2( 0.0, halfSize.y ), -vec2( halfSize.x, 0.0 ) );\n  lines = Union( lines, Line( uv, vec2( 0.0, -halfSize.y ), -vec2( halfSize.x, 0.0 ) ) );\n  lines = Union( lines, Line( uv, vec2( 0.0, -halfSize.y ), vec2( halfSize.x, 0.0 ) ) );\n  lines = Union( lines, Line( uv, vec2( 0.0, halfSize.y ), vec2( halfSize.x, 0.0 ) ) );\n  lines = Union( lines, Line( uv, vec2( -halfSize.x, halfSize.y ), vec2( halfSize.x, halfSize.y ) ) );\n  lines = Union( lines, Line( uv, vec2( -halfSize.x, -halfSize.y ), vec2( halfSize.x, -halfSize.y ) ) );\n  lines = Union( lines, Line( uv, vec2( -halfSize.x, 0.0 ), vec2( halfSize.x, 0.0 ) ) );\n\n  lines = clamp( smoothstep( 0.0, 0.0035, lines ), 0.0, 1.0 );\n  dots = clamp( smoothstep( 0.0, 0.001, dots ), 0.0, 1.0 );\n\n  float result = Union( dots, lines );\n  gl_FragColor = vec4( mix( backgroundColor + mix( dotColor, lineColor, dots ),\n    backgroundColor, result ), mix( gridAlpha, alpha, result ) );\n}\n"
 
 /***/ }),
 /* 9 */
@@ -1693,6 +1687,10 @@ var _arview3 = __webpack_require__(13);
 
 var _arview4 = _interopRequireDefault(_arview3);
 
+var _glPreserveState = __webpack_require__(14);
+
+var _glPreserveState2 = _interopRequireDefault(_glPreserveState);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -1888,42 +1886,40 @@ var ARVideoRenderer = function () {
   _createClass(ARVideoRenderer, [{
     key: 'render',
     value: function render() {
+      var _this = this;
+
       var gl = this.gl;
-      gl.useProgram(this.program);
-      gl.bindBuffer(gl.ARRAY_BUFFER, this.vertexPositionBuffer);
-      gl.enableVertexAttribArray(this.vertexPositionAttribute);
-      gl.vertexAttribPointer(this.vertexPositionAttribute, this.vertexPositionBuffer.itemSize, gl.FLOAT, false, 0, 0);
+      var bindings = [gl.ARRAY_BUFFER_BINDING, gl.ELEMENT_ARRAY_BUFFER_BINDING, gl.CURRENT_PROGRAM];
+      (0, _glPreserveState2.default)(gl, bindings, function () {
 
-      gl.bindBuffer(gl.ARRAY_BUFFER, this.textureCoordBuffer);
+        gl.useProgram(_this.program);
+        gl.bindBuffer(gl.ARRAY_BUFFER, _this.vertexPositionBuffer);
+        gl.enableVertexAttribArray(_this.vertexPositionAttribute);
+        gl.vertexAttribPointer(_this.vertexPositionAttribute, _this.vertexPositionBuffer.itemSize, gl.FLOAT, false, 0, 0);
 
-      // Check the current orientation of the device combined with the
-      // orientation of the VRSeeThroughCamera to determine the correct UV
-      // coordinates to be used.
-      var combinedOrientation = combineOrientations(screen.orientation.angle, this.passThroughCamera.orientation);
-      if (combinedOrientation !== this.combinedOrientation) {
-        this.combinedOrientation = combinedOrientation;
-        gl.bufferData(gl.ARRAY_BUFFER, this.f32TextureCoords[this.combinedOrientation], gl.STATIC_DRAW);
-      }
-      gl.enableVertexAttribArray(this.textureCoordAttribute);
-      gl.vertexAttribPointer(this.textureCoordAttribute, this.textureCoordBuffer.itemSize, gl.FLOAT, false, 0, 0);
+        gl.bindBuffer(gl.ARRAY_BUFFER, _this.textureCoordBuffer);
 
-      gl.activeTexture(gl.TEXTURE0);
-      gl.bindTexture(gl.TEXTURE_EXTERNAL_OES, this.texture);
-      // Update the content of the texture in every frame.
-      gl.texImage2D(gl.TEXTURE_EXTERNAL_OES, 0, gl.RGB, gl.RGB, gl.UNSIGNED_BYTE, this.passThroughCamera);
-      gl.uniform1i(this.samplerUniform, 0);
+        // Check the current orientation of the device combined with the
+        // orientation of the VRSeeThroughCamera to determine the correct UV
+        // coordinates to be used.
+        var combinedOrientation = combineOrientations(screen.orientation.angle, _this.passThroughCamera.orientation);
+        if (combinedOrientation !== _this.combinedOrientation) {
+          _this.combinedOrientation = combinedOrientation;
+          gl.bufferData(gl.ARRAY_BUFFER, _this.f32TextureCoords[_this.combinedOrientation], gl.STATIC_DRAW);
+        }
+        gl.enableVertexAttribArray(_this.textureCoordAttribute);
+        gl.vertexAttribPointer(_this.textureCoordAttribute, _this.textureCoordBuffer.itemSize, gl.FLOAT, false, 0, 0);
 
-      gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.indexBuffer);
+        gl.activeTexture(gl.TEXTURE0);
+        gl.bindTexture(gl.TEXTURE_EXTERNAL_OES, _this.texture);
+        // Update the content of the texture in every frame.
+        gl.texImage2D(gl.TEXTURE_EXTERNAL_OES, 0, gl.RGB, gl.RGB, gl.UNSIGNED_BYTE, _this.passThroughCamera);
+        gl.uniform1i(_this.samplerUniform, 0);
 
-      gl.drawElements(gl.TRIANGLES, this.indexBuffer.numItems, gl.UNSIGNED_SHORT, 0);
+        gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, _this.indexBuffer);
 
-      // Disable enabled states to allow other render calls to correctly work
-      gl.bindTexture(gl.TEXTURE_EXTERNAL_OES, null);
-      gl.disableVertexAttribArray(this.vertexPositionAttribute);
-      gl.disableVertexAttribArray(this.textureCoordAttribute);
-      gl.bindBuffer(gl.ARRAY_BUFFER, null);
-      gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, null);
-      gl.useProgram(null);
+        gl.drawElements(gl.TRIANGLES, _this.indexBuffer.numItems, gl.UNSIGNED_SHORT, 0);
+      });
     }
   }]);
 
@@ -1953,7 +1949,6 @@ var ARView = function () {
     this.gl = renderer.context;
 
     this.videoRenderer = new ARVideoRenderer(vrDisplay, this.gl);
-    this._resetGLState();
 
     // Cache the width/height so we're not potentially forcing
     // a reflow if there's been a style invalidation
@@ -2000,23 +1995,6 @@ var ARView = function () {
 
       this.gl.viewport(0, 0, gl.viewportWidth, gl.viewportHeight);
       this.videoRenderer.render();
-      this._resetGLState();
-    }
-
-    /**
-     * Resets the GL state in the THREE.WebGLRenderer.
-     */
-
-  }, {
-    key: '_resetGLState',
-    value: function _resetGLState() {
-      if (typeof this.renderer.resetGLState === 'function') {
-        // If using three.js <= r86
-        this.renderer.resetGLState();
-      } else {
-        // If using three.js >= r87
-        this.renderer.state.reset();
-      }
     }
   }]);
 
@@ -2027,24 +2005,129 @@ exports.default = ARView;
 
 /***/ }),
 /* 12 */
-/***/ (function(module, exports, __webpack_require__) {
+/***/ (function(module, exports) {
 
-"use strict";
-
-
-module.exports = "#define GLSLIFY 1\n// Copyright 2017 Google Inc. All Rights Reserved.\n// Licensed under the Apache License, Version 2.0 (the 'License');\n// you may not use this file except in compliance with the License.\n// You may obtain a copy of the License at\n//\n// http://www.apache.org/licenses/LICENSE-2.0\n//\n// Unless required by applicable law or agreed to in writing, software\n// distributed under the License is distributed on an 'AS IS' BASIS,\n// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n// See the License for the specific language governing permissions and\n// limitations under the License.\n\nattribute vec3 aVertexPosition;\nattribute vec2 aTextureCoord;\n\nvarying vec2 vTextureCoord;\n\nvoid main(void) {\n  gl_Position = vec4(aVertexPosition, 1.0);\n  vTextureCoord = aTextureCoord;\n}\n";
+module.exports = "#define GLSLIFY 1\n// Copyright 2017 Google Inc. All Rights Reserved.\n// Licensed under the Apache License, Version 2.0 (the 'License');\n// you may not use this file except in compliance with the License.\n// You may obtain a copy of the License at\n//\n// http://www.apache.org/licenses/LICENSE-2.0\n//\n// Unless required by applicable law or agreed to in writing, software\n// distributed under the License is distributed on an 'AS IS' BASIS,\n// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n// See the License for the specific language governing permissions and\n// limitations under the License.\n\nattribute vec3 aVertexPosition;\nattribute vec2 aTextureCoord;\n\nvarying vec2 vTextureCoord;\n\nvoid main(void) {\n  gl_Position = vec4(aVertexPosition, 1.0);\n  vTextureCoord = aTextureCoord;\n}\n"
 
 /***/ }),
 /* 13 */
-/***/ (function(module, exports, __webpack_require__) {
+/***/ (function(module, exports) {
 
-"use strict";
-
-
-module.exports = "// Copyright 2017 Google Inc. All Rights Reserved.\n// Licensed under the Apache License, Version 2.0 (the 'License');\n// you may not use this file except in compliance with the License.\n// You may obtain a copy of the License at\n//\n// http://www.apache.org/licenses/LICENSE-2.0\n//\n// Unless required by applicable law or agreed to in writing, software\n// distributed under the License is distributed on an 'AS IS' BASIS,\n// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n// See the License for the specific language governing permissions and\n// limitations under the License.\n\n#extension GL_OES_EGL_image_external : require\n\nprecision mediump float;\n#define GLSLIFY 1\n\nvarying vec2 vTextureCoord;\n\nuniform samplerExternalOES uSampler;\n\nvoid main(void) {\n  gl_FragColor = texture2D(uSampler, vTextureCoord);\n}\n";
+module.exports = "// Copyright 2017 Google Inc. All Rights Reserved.\n// Licensed under the Apache License, Version 2.0 (the 'License');\n// you may not use this file except in compliance with the License.\n// You may obtain a copy of the License at\n//\n// http://www.apache.org/licenses/LICENSE-2.0\n//\n// Unless required by applicable law or agreed to in writing, software\n// distributed under the License is distributed on an 'AS IS' BASIS,\n// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n// See the License for the specific language governing permissions and\n// limitations under the License.\n\n#extension GL_OES_EGL_image_external : require\n\nprecision mediump float;\n#define GLSLIFY 1\n\nvarying vec2 vTextureCoord;\n\nuniform samplerExternalOES uSampler;\n\nvoid main(void) {\n  gl_FragColor = texture2D(uSampler, vTextureCoord);\n}\n"
 
 /***/ }),
 /* 14 */
+/***/ (function(module, exports) {
+
+function WGLUPreserveGLState(gl, bindings, callback) {
+  if (!bindings) {
+    callback(gl);
+    return;
+  }
+
+  var boundValues = [];
+
+  var activeTexture = null;
+  for (var i = 0; i < bindings.length; ++i) {
+    var binding = bindings[i];
+    switch (binding) {
+      case gl.TEXTURE_BINDING_2D:
+      case gl.TEXTURE_BINDING_CUBE_MAP:
+        var textureUnit = bindings[++i];
+        if (textureUnit < gl.TEXTURE0 || textureUnit > gl.TEXTURE31) {
+          console.error("TEXTURE_BINDING_2D or TEXTURE_BINDING_CUBE_MAP must be followed by a valid texture unit");
+          boundValues.push(null, null);
+          break;
+        }
+        if (!activeTexture) {
+          activeTexture = gl.getParameter(gl.ACTIVE_TEXTURE);
+        }
+        gl.activeTexture(textureUnit);
+        boundValues.push(gl.getParameter(binding), null);
+        break;
+      case gl.ACTIVE_TEXTURE:
+        activeTexture = gl.getParameter(gl.ACTIVE_TEXTURE);
+        boundValues.push(null);
+        break;
+      default:
+        boundValues.push(gl.getParameter(binding));
+        break;
+    }
+  }
+
+  callback(gl);
+
+  for (var i = 0; i < bindings.length; ++i) {
+    var binding = bindings[i];
+    var boundValue = boundValues[i];
+    switch (binding) {
+      case gl.ACTIVE_TEXTURE:
+        break; // Ignore this binding, since we special-case it to happen last.
+      case gl.ARRAY_BUFFER_BINDING:
+        gl.bindBuffer(gl.ARRAY_BUFFER, boundValue);
+        break;
+      case gl.COLOR_CLEAR_VALUE:
+        gl.clearColor(boundValue[0], boundValue[1], boundValue[2], boundValue[3]);
+        break;
+      case gl.COLOR_WRITEMASK:
+        gl.colorMask(boundValue[0], boundValue[1], boundValue[2], boundValue[3]);
+        break;
+      case gl.CURRENT_PROGRAM:
+        gl.useProgram(boundValue);
+        break;
+      case gl.ELEMENT_ARRAY_BUFFER_BINDING:
+        gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, boundValue);
+        break;
+      case gl.FRAMEBUFFER_BINDING:
+        gl.bindFramebuffer(gl.FRAMEBUFFER, boundValue);
+        break;
+      case gl.RENDERBUFFER_BINDING:
+        gl.bindRenderbuffer(gl.RENDERBUFFER, boundValue);
+        break;
+      case gl.TEXTURE_BINDING_2D:
+        var textureUnit = bindings[++i];
+        if (textureUnit < gl.TEXTURE0 || textureUnit > gl.TEXTURE31)
+          break;
+        gl.activeTexture(textureUnit);
+        gl.bindTexture(gl.TEXTURE_2D, boundValue);
+        break;
+      case gl.TEXTURE_BINDING_CUBE_MAP:
+        var textureUnit = bindings[++i];
+        if (textureUnit < gl.TEXTURE0 || textureUnit > gl.TEXTURE31)
+          break;
+        gl.activeTexture(textureUnit);
+        gl.bindTexture(gl.TEXTURE_CUBE_MAP, boundValue);
+        break;
+      case gl.VIEWPORT:
+        gl.viewport(boundValue[0], boundValue[1], boundValue[2], boundValue[3]);
+        break;
+      case gl.BLEND:
+      case gl.CULL_FACE:
+      case gl.DEPTH_TEST:
+      case gl.SCISSOR_TEST:
+      case gl.STENCIL_TEST:
+        if (boundValue) {
+          gl.enable(binding);
+        } else {
+          gl.disable(binding);
+        }
+        break;
+      default:
+        console.log("No GL restore behavior for 0x" + binding.toString(16));
+        break;
+    }
+
+    if (activeTexture) {
+      gl.activeTexture(activeTexture);
+    }
+  }
+}
+
+module.exports = WGLUPreserveGLState;
+
+
+/***/ }),
+/* 15 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
