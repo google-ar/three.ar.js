@@ -16,7 +16,7 @@
 import { isARKit } from './ARUtils';
 import vertexSource from './shaders/arview.vert';
 import fragmentSource from './shaders/arview.frag';
-import WGLUPreserveGLState from 'gl-preserve-state';
+import preserveGLState from 'gl-preserve-state';
 
 /**
  * Creates and load a shader from a string, type specifies either 'vertex' or 'fragment'
@@ -244,10 +244,9 @@ class ARVideoRenderer {
     const bindings = [
       gl.ARRAY_BUFFER_BINDING,
       gl.ELEMENT_ARRAY_BUFFER_BINDING,
-      gl.CURRENT_PROGRAM
+      gl.CURRENT_PROGRAM,
     ];
-    WGLUPreserveGLState(gl, bindings, () => {
-
+    preserveGLState(gl, bindings, () => {
       gl.useProgram(this.program);
       gl.bindBuffer(gl.ARRAY_BUFFER, this.vertexPositionBuffer);
       gl.enableVertexAttribArray(this.vertexPositionAttribute);
