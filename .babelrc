@@ -1,3 +1,4 @@
 {
+  "plugins": ["transform-class-properties"],
   "presets": ["latest"]
 }
