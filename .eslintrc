@@ -1,10 +1,12 @@
 {
+  "parser": "babel-eslint",
   "extends": ["eslint:recommended", "google"],
   "rules": {
     "max-len": ["error", { "code": 100 }],
     "object-curly-spacing": ["error", "always"],
     "arrow-parens": ["error", "as-needed"],
-    "no-console": ["error", { "allow": ["warn", "error"] }]
+    "no-console": ["error", { "allow": ["warn", "error"] }],
+    "no-invalid-this": ["off"], // disable due to transform-class-properties
   },
   "env": {
     "browser": true,

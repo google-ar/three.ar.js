@@ -80,7 +80,7 @@ class ARPlanes extends Object3D {
    *
    * @param {Object} plane The plane data to use to create the plane.
    */
-  addPlane_ = (plane) => {
+  addPlane_ = plane => {
     let planeObj = this.createPlane(plane);
     if (planeObj) {
       this.add(planeObj);
@@ -93,7 +93,7 @@ class ARPlanes extends Object3D {
    *
    * @param {number} identifier The identifier of the plane to remove.
    */
-  removePlane_ = (identifier) => {
+  removePlane_ = identifier => {
     let existing = this.planes.get(identifier);
     if (existing) {
       this.remove(existing);
@@ -102,20 +102,20 @@ class ARPlanes extends Object3D {
   }
 
   /**
-   * Respond to a "planesadded" event by adding the corresponding planes.
+   * Respond to a 'planesadded' event by adding the corresponding planes.
    *
-   * @param {Object} event The event from the "planesadded" handler.
+   * @param {Object} event The event from the 'planesadded' handler.
    */
-  onPlaneAdded_ = (event) => {
-    event.planes.forEach((plane) => this.addPlane_(plane));
+  onPlaneAdded_ = event => {
+    event.planes.forEach(plane => this.addPlane_(plane));
   }
 
   /**
-   * Respond to a "planesupdated" event by updating the corresponding planes.
+   * Respond to a 'planesupdated' event by updating the corresponding planes.
    *
-   * @param {Object} event The event from the "planesupdated" handler.
+   * @param {Object} event The event from the 'planesupdated' handler.
    */
-  onPlaneUpdated_ = (event) => {
+  onPlaneUpdated_ = event => {
     for (let plane of event.planes) {
       this.removePlane_(plane.identifier);
       this.addPlane_(plane);
@@ -123,11 +123,11 @@ class ARPlanes extends Object3D {
   }
 
   /**
-   * Respond to a "planesremoved" event by removing the corresponding planes.
+   * Respond to a 'planesremoved' event by removing the corresponding planes.
    * 
-   * @param {Object} event The event from "planesremoved" handler.
+   * @param {Object} event The event from 'planesremoved' handler.
    */
-  onPlaneRemoved_ = (event) => {
+  onPlaneRemoved_ = event => {
     for (let identifier of event.planes) {
       this.removePlane_(identifier);
     }
@@ -139,18 +139,18 @@ class ARPlanes extends Object3D {
   enable() {
     this.vrDisplay.getPlanes().forEach(this.addPlane_);
 
-    this.vrDisplay.addEventListener("planesadded", this.onPlaneAdded_);
-    this.vrDisplay.addEventListener("planesupdated", this.onPlaneUpdated_);
-    this.vrDisplay.addEventListener("planesremoved", this.onPlaneRemoved_);
+    this.vrDisplay.addEventListener('planesadded', this.onPlaneAdded_);
+    this.vrDisplay.addEventListener('planesupdated', this.onPlaneUpdated_);
+    this.vrDisplay.addEventListener('planesremoved', this.onPlaneRemoved_);
   }
 
   /**
    * Disable the plane visualization.
    */
   disable() {
-    this.vrDisplay.removeEventListener("planesadded", this.onPlaneAdded_);
-    this.vrDisplay.removeEventListener("planesupdated", this.onPlaneUpdated_);
-    this.vrDisplay.removeEventListener("planesremoved", this.onPlaneRemoved_);
+    this.vrDisplay.removeEventListener('planesadded', this.onPlaneAdded_);
+    this.vrDisplay.removeEventListener('planesupdated', this.onPlaneUpdated_);
+    this.vrDisplay.removeEventListener('planesremoved', this.onPlaneRemoved_);
 
     this.planes.keys.forEach(this.removePlane_);
     this.materials.clear();

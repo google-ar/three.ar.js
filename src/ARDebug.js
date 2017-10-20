@@ -499,7 +499,7 @@ class ARDebugPlanesRow extends ARDebugRow {
   disable() {
     clearInterval(this._timer);
     this._timer = null;
-    
+
     this.planes.disable();
   }
 
