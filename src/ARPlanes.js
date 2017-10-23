@@ -128,8 +128,8 @@ class ARPlanes extends Object3D {
    * @param {Object} event The event from 'planesremoved' handler.
    */
   onPlaneRemoved_ = event => {
-    for (let identifier of event.planes) {
-      this.removePlane_(identifier);
+    for (let plane of event.planes) {
+      this.removePlane_(plane.identifier);
     }
   }
 
@@ -152,7 +152,9 @@ class ARPlanes extends Object3D {
     this.vrDisplay.removeEventListener('planesupdated', this.onPlaneUpdated_);
     this.vrDisplay.removeEventListener('planesremoved', this.onPlaneRemoved_);
 
-    this.planes.keys.forEach(this.removePlane_);
+    for (let identifier of this.planes.keys()) {
+      this.removePlane_(identifier);
+    }
     this.materials.clear();
   }
 

@@ -1287,9 +1287,9 @@ var ARPlanes = function (_Object3D) {
 
       try {
         for (var _iterator2 = event.planes[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
-          var identifier = _step2.value;
+          var plane = _step2.value;
 
-          _this.removePlane_(identifier);
+          _this.removePlane_(plane.identifier);
         }
       } catch (err) {
         _didIteratorError2 = true;
@@ -1336,23 +1336,23 @@ var ARPlanes = function (_Object3D) {
 
 
   /**
-   * Respond to a "planesadded" event by adding the corresponding planes.
+   * Respond to a 'planesadded' event by adding the corresponding planes.
    *
-   * @param {Object} event The event from the "planesadded" handler.
+   * @param {Object} event The event from the 'planesadded' handler.
    */
 
 
   /**
-   * Respond to a "planesupdated" event by updating the corresponding planes.
+   * Respond to a 'planesupdated' event by updating the corresponding planes.
    *
-   * @param {Object} event The event from the "planesupdated" handler.
+   * @param {Object} event The event from the 'planesupdated' handler.
    */
 
 
   /**
-   * Respond to a "planesremoved" event by removing the corresponding planes.
+   * Respond to a 'planesremoved' event by removing the corresponding planes.
    * 
-   * @param {Object} event The event from "planesremoved" handler.
+   * @param {Object} event The event from 'planesremoved' handler.
    */
 
 
@@ -1366,9 +1366,9 @@ var ARPlanes = function (_Object3D) {
     value: function enable() {
       this.vrDisplay.getPlanes().forEach(this.addPlane_);
 
-      this.vrDisplay.addEventListener("planesadded", this.onPlaneAdded_);
-      this.vrDisplay.addEventListener("planesupdated", this.onPlaneUpdated_);
-      this.vrDisplay.addEventListener("planesremoved", this.onPlaneRemoved_);
+      this.vrDisplay.addEventListener('planesadded', this.onPlaneAdded_);
+      this.vrDisplay.addEventListener('planesupdated', this.onPlaneUpdated_);
+      this.vrDisplay.addEventListener('planesremoved', this.onPlaneRemoved_);
     }
 
     /**
@@ -1378,11 +1378,35 @@ var ARPlanes = function (_Object3D) {
   }, {
     key: 'disable',
     value: function disable() {
-      this.vrDisplay.removeEventListener("planesadded", this.onPlaneAdded_);
-      this.vrDisplay.removeEventListener("planesupdated", this.onPlaneUpdated_);
-      this.vrDisplay.removeEventListener("planesremoved", this.onPlaneRemoved_);
+      this.vrDisplay.removeEventListener('planesadded', this.onPlaneAdded_);
+      this.vrDisplay.removeEventListener('planesupdated', this.onPlaneUpdated_);
+      this.vrDisplay.removeEventListener('planesremoved', this.onPlaneRemoved_);
 
-      this.planes.keys.forEach(this.removePlane_);
+      var _iteratorNormalCompletion3 = true;
+      var _didIteratorError3 = false;
+      var _iteratorError3 = undefined;
+
+      try {
+        for (var _iterator3 = this.planes.keys()[Symbol.iterator](), _step3; !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
+          var identifier = _step3.value;
+
+          this.removePlane_(identifier);
+        }
+      } catch (err) {
+        _didIteratorError3 = true;
+        _iteratorError3 = err;
+      } finally {
+        try {
+          if (!_iteratorNormalCompletion3 && _iterator3.return) {
+            _iterator3.return();
+          }
+        } finally {
+          if (_didIteratorError3) {
+            throw _iteratorError3;
+          }
+        }
+      }
+
       this.materials.clear();
     }
 
