@@ -14,7 +14,7 @@
 * THREE.ARReticle: a visible reticle drawn on the real surface of real world objects.
 * THREE.ARPerspectiveCamera: a camera that matches your [three.js] scene to your camera's video feed.
 
-See [three.ar.js API documentataion](API.md) for details.
+See [three.ar.js API documentation](API.md) for details.
 
 ## Installing
 
@@ -50,9 +50,10 @@ the code via script tag, as well as a module bundler like [browserify] or [webpa
 
 To view the additional APIs implemented by [WebARonARKit] and [WebARonARCore], view the [WebVR Extension for AR] document.
 
-To view the additional APIs implemented by [WebARonARKit] and [WebARonARCore], view the [WebVR Extension for AR] document.
-
 For more examples, see the [examples/](examples/) directory.
+
+See the full [three.ar.js API documentation](API.md) for more details.
+
 
 ### Script
 
