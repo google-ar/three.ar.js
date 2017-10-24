@@ -50,8 +50,6 @@ the code via script tag, as well as a module bundler like [browserify] or [webpa
 
 To view the additional APIs implemented by [WebARonARKit] and [WebARonARCore], view the [WebVR Extension for AR] document.
 
-To view the additional APIs implemented by [WebARonARKit] and [WebARonARCore], view the [WebVR Extension for AR] document.
-
 For more examples, see the [examples/](examples/) directory.
 
 ### Script
