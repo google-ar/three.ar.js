@@ -16,7 +16,7 @@
     "babel-eslint": "^8.0.1",
     "babel-loader": "^7.0.0",
     "babel-plugin-transform-class-properties": "^6.24.1",
-    "babel-preset-latest": "^6.24.1",
+    "babel-preset-env": "^1.6.1",
     "base64-image-loader": "^1.2.0",
     "eslint": "^4.5.0",
     "eslint-config-google": "^0.9.1",
