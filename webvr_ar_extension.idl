@@ -24,3 +24,22 @@ partial interface VRDisplayCapabilities {
 interface VRHit {
   readonly attribute Float32Array modelMatrix;
 };
+
+interface VRPlane {
+  readonly attribute long identifier;
+  readonly attribute Float32Array? modelMatrix;
+  readonly attribute Float32Array? extent;
+  readonly attribute Float32Array? vertices;
+};
+
+[
+  Constructor(DOMString type, optional VRPlaneEventInit eventInitDict),
+] interface VRPlaneEvent : Event {
+  readonly attribute VRDisplay display;
+  readonly attribute sequence<VRPlane> planes;
+};
+
+dictionary VRPlaneEventInit : EventInit {
+  VRDisplay? display;
+  sequence<VRPlane> planes;
+};
