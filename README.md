@@ -113,6 +113,10 @@ async function init() {
 
 If you're developing and modifying the three.ar.js library itself, there are some helpful build tools for you.
 
+### Installing Dependencies
+
+Run `npm install` to install dependencies required for this project.
+
 ### Running Development Server
 
 Running `npm run dev` will start a local dev server from the project root at `http://0.0.0.0:8000` and rebuild and reload on changes made to `src/`. View the demos at [http://0.0.0.0:8000/examples](http://0.0.0.0:8000/examples), noting that a desktop browser won't have the AR-enhanced browser features.
