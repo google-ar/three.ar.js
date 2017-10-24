@@ -54,6 +54,21 @@ struct VRHit {
 
 The `modelMatrix` property is a 4x4 transformation matrix represented as a Float32Array of size 16, encoding the position and orientation of some object in the real world.
 
+It's also possible to subscribe to events that deliver information on detected planes in the real world. The VRDisplay object is an EventTarget that fires 3 additional events ('planesadded', 'planesremoved', 'planesupdates') as response to changing in the detected planes.
+
+```
+interface VRPlane {
+  readonly attribute long identifier;
+  // A 4x4 transformation matrix, encoding the position and orientation of the plane
+  readonly attribute Float32Array? modelMatrix;
+  // Contains a values [x, z] that represent the extents relative to the plane
+  readonly attribute Float32Array? extent;
+  // An array of values group by x,y,z values of a series of vertices
+  // representing this plane. [p0x, p0y, p0z, p1x, p1y, p1z, ...]
+  readonly attribute Float32Array? vertices;
+}
+```
+
 ## Using the WebVR extension API for AR
 
 As the extension API is built on top of WebVR, please refer to the [WebVR 1.1 API] for more details and basic knowledge that will be necessary to understand this section. Some of the examples will also use some [three.js] based code for clarity purposes but the same concept could be applied in any other engine or basic webgl based web app.
@@ -89,6 +104,22 @@ frameData.leftProjectionMatrix; // Float32Array(16)
 
 The AR extension on top of WebVR allows to cast a ray from the camera to the real world and obtain a list of hits (if any). [This code example](https://github.com/google-ar/three.ar.js/blob/e871fe9ed806ef3be233fd9cc86ffc5a6a7a1382/examples/spawn-at-surface.html#L232-L248) shows how to make that call and process the resulting information.
 
+### Subscribing to Planes Events
+
+Listening to events in the `VRDisplay` allows a developer to observe changes in the underlying plane detection. There are `planesadded`, `planesupdated` and `planesremoved` events. This feature was added in October 2017 in [WebARonARCore] and [WebARonARKit] and an example rendering surfaces from these events can [be seen here](https://google-ar.github.io/three.ar.js/examples/surfaces.html). Note that on ARCore, planes can be convex polygons, and on ARKit, planes are always rectangular.
+
+```js
+display.addEventListener('planesadded', e => {
+  console.log(`Planes added for ${e.display}`);
+  e.planes.forEach(plane => {
+    console.log(`
+      Added plane ${plane.identifier} at ${plane.modelMatrix},
+      with extent ${plane.extent} with vertices ${plane.vertices}
+    `);
+  });
+});
+```
+
 [WebVR 1.1 API]: https://w3c.github.io/webvr/spec/1.1/
 [WebVR 2.0 API]: https://github.com/w3c/webvr/blob/master/explainer.md
 [6DOF]: https://en.wikipedia.org/wiki/Six_degrees_of_freedom
@@ -99,4 +130,6 @@ The AR extension on top of WebVR allows to cast a ray from the camera to the rea
 [getVRDisplays]: https://developer.mozilla.org/en-US/docs/Web/API/Navigator/getVRDisplays
 [three.js]: https://threejs.org/
 [VRControls]: https://github.com/google-ar/three.ar.js/blob/e871fe9ed806ef3be233fd9cc86ffc5a6a7a1382/third_party/three.js/VRControls.js#L87
+[WebARonARKit]: https://github.com/google-ar/WebARonARKit
+[WebARonARCore]: https://github.com/google-ar/WebARonARCore
 
