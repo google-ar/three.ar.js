@@ -141,7 +141,7 @@ const tempScale = new Vector3();
  * @param {number} easing
  * @param {boolean} applyOrientation
  */
-ARUtils.placeObjectAtHit = (object, hit, easing=1, applyOrientation=false) => {
+ARUtils.placeObjectAtHit = (object, hit, easing = 1, applyOrientation = false) => {
   if (!hit || !hit.modelMatrix) {
     throw new Error('placeObjectAtHit requires a VRHit object');
   }
@@ -177,7 +177,7 @@ export const getRandomPaletteColor = ARUtils.getRandomPaletteColor;
  * Injects a DOM element into the current page prompting the user that
  * their browser does not support these AR features.
  *
- * @param {string} customMessage 
+ * @param {string} customMessage
  */
 ARUtils.displayUnsupportedMessage = customMessage => {
   const element = document.createElement('div');

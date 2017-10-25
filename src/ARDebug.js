@@ -144,7 +144,7 @@ class ARDebugView {
    * @param {Object} config
    * @param {boolean} config.open
    */
-  constructor(config={}) {
+  constructor(config = {}) {
     this.rows = new Map();
 
     this.el = document.createElement('div');
