@@ -32,11 +32,10 @@
       -webkit-user-select: none;
       user-select: none;
     }
-
     #info {
       position: absolute;
       left: 50%;
-      bottom: 7%;
+      bottom: 0;
       transform: translate(-50%, 0);
       margin: 1em;
       z-index: 10;
@@ -45,24 +44,23 @@
       line-height: 2em;
       text-align: center;
     }
-
-    #info a,
-    #info .title {
+    #info * {
+      color: #fff;
+    }
+    .title {
+      background-color: rgba(40, 40, 40, 0.4);
       padding: 0.4em 0.6em;
       border-radius: 0.1em;
     }
-
-    #info a {
-      color: rgba(255, 255, 255, 0.8);
+    .links {
       background-color: rgba(40, 40, 40, 0.6);
-      font-weight: bold;
-      text-decoration: none;
+      padding: 0.4em 0.6em;
+      border-radius: 0.1em;
     }
-
     #buttons {
       left: 50%;
       position: absolute;
-      bottom: 0;
+      bottom: 35px;
       z-index: 11;
       transform: translate(-50%, 0);
       margin: 1em;
@@ -72,13 +70,6 @@
       text-align: center;
       font-size: 20px;
     }
-
-    .title {
-      color: rgba(255, 255, 255, 0.9);
-      background-color: rgba(40, 40, 40, 0.4);
-      margin-left: 0.2em;
-    }
-
     canvas {
       position: absolute;
       top: 0;
@@ -88,7 +79,11 @@
 </head>
 <body>
 <div id="info">
-  <a href="https://github.com/google-ar/three.ar.js">three.ar.js</a><span class="title">Tap anywhere and hold to record audio</span>
+  <span class="title">Tap anywhere and hold to record audio.</span><br/>
+  <span class="links">
+    <a href="https://github.com/google-ar/three.ar.js">three.ar.js</a> -
+    <a href="https://developers.google.com/ar/develop/web/getting-started#examples">examples</a>
+  </span>
 </div>
 <div id="buttons">
   <button id="erase" onclick="deleteAudioElements()">Erase all recordings</button>
@@ -127,8 +122,8 @@ var audioElements = [];
 var songbird;
 
 var LEARN_MORE_LINK = 'https://developers.google.com/ar/develop/web/getting-started#examples';
-var AUDIO_UNSUPPORTED_MESSAGE = `This augmented reality experience requires getUserMedia(), 
-    which is not supported on this browser. See other demos on the 
+var AUDIO_UNSUPPORTED_MESSAGE = `This augmented reality experience requires getUserMedia(),
+    which is not supported on this browser. See other demos on the
     <a href="${LEARN_MORE_LINK}">Google Developers site</a>.`;
 
 /**

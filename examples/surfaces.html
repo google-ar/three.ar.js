@@ -33,26 +33,29 @@
       user-select: none;
     }
     #info {
-      background-color: rgba(40, 40, 40, 0.4);
-      bottom: 0;
-      box-sizing: border-box;
-      color: rgba(255, 255, 255, 0.7);
-      left: 50%;
-      line-height: 1.3em;
-      padding: 0.75em;
       position: absolute;
-      text-align: center;
+      left: 50%;
+      bottom: 0;
       transform: translate(-50%, 0);
-      width: 100%;
+      margin: 1em;
       z-index: 10;
+      display: block;
+      width: 100%;
+      line-height: 2em;
+      text-align: center;
     }
-    .divider {
-      color: rgba(255, 255, 255, 0.2);
-      padding: 0 0.5em;
+    #info * {
+      color: #fff;
     }
-    #info a {
-      text-decoration: none;
-      color: white;
+    .title {
+      background-color: rgba(40, 40, 40, 0.4);
+      padding: 0.4em 0.6em;
+      border-radius: 0.1em;
+    }
+    .links {
+      background-color: rgba(40, 40, 40, 0.6);
+      padding: 0.4em 0.6em;
+      border-radius: 0.1em;
     }
     canvas {
       position: absolute;
@@ -63,7 +66,11 @@
 </head>
 <body>
 <div id="info">
-    <a href="https://github.com/google-ar/three.ar.js">three.ar.js</a><span class="divider">|</span>Render detected surfaces.
+  <span class="title">Render detected surfaces.</span><br/>
+  <span class="links">
+    <a href="https://github.com/google-ar/three.ar.js">three.ar.js</a> -
+    <a href="https://developers.google.com/ar/develop/web/getting-started#examples">examples</a>
+  </span>
 </div>
 <script src="../third_party/three.js/three.js"></script>
 <script src="../third_party/three.js/VRControls.js"></script>
