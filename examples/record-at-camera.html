@@ -249,8 +249,8 @@ function update() {
   songbird.setListenerFromMatrix(camera.matrix);
 
   // Kick off the requestAnimationFrame to call this function
-  // on the next frame
-  requestAnimationFrame(update);
+  // when a new VRDisplay frame is rendered
+  vrDisplay.requestAnimationFrame(update);
 }
 
 /**

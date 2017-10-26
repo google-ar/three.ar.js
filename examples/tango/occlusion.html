@@ -44,17 +44,17 @@
       width: 100%;
       z-index: 10;
     }
-    
+
     .divider {
       color: rgba(255, 255, 255, 0.2);
       padding: 0 0.5em;
     }
-    
+
     #info a {
       text-decoration: none;
       color: white;
     }
-    
+
     #dat {
       user-select: none;
       position: absolute;
@@ -62,7 +62,7 @@
       top: 0;
       z-Index: 200;
     }
-    
+
     #glFullscreen {
       width: 100%;
       height: 100vh;
@@ -366,7 +366,7 @@ function update() {
 
   renderer.render(scene, camera);
 
-  requestAnimationFrame(update);
+  vrDisplay.requestAnimationFrame(update);
 }
 
 /**
