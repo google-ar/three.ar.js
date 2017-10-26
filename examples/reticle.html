@@ -154,7 +154,7 @@ function init() {
 function update() {
   // Clears color from the frame before rendering the camera (arView) or scene.
   renderer.clearColor();
-  
+
   // Render the device's camera stream on screen first of all.
   // It allows to get the right pose synchronized with the right frame.
   arView.render();
@@ -176,8 +176,8 @@ function update() {
   renderer.render(scene, camera);
 
   // Kick off the requestAnimationFrame to call this function
-  // on the next frame
-  requestAnimationFrame(update);
+  // when a new VRDisplay frame is rendered
+  vrDisplay.requestAnimationFrame(update);
 }
 
 /**
