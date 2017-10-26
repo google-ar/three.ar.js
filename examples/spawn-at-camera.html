@@ -44,20 +44,18 @@
       line-height: 2em;
       text-align: center;
     }
-    #info a, #info .title {
+    #info * {
+      color: #fff;
+    }
+    .title {
+      background-color: rgba(40, 40, 40, 0.4);
       padding: 0.4em 0.6em;
       border-radius: 0.1em;
     }
-    #info a {
-      color: rgba(255, 255, 255, 0.8);
+    .links {
       background-color: rgba(40, 40, 40, 0.6);
-      font-weight: bold;
-      text-decoration: none;
-    }
-    .title {
-      color: rgba(255, 255, 255, 0.9);
-      background-color: rgba(40, 40, 40, 0.4);
-      margin-left: 0.2em;
+      padding: 0.4em 0.6em;
+      border-radius: 0.1em;
     }
     canvas {
       position: absolute;
@@ -68,7 +66,11 @@
 </head>
 <body>
 <div id="info">
-    <a href="https://github.com/google-ar/three.ar.js">three.ar.js</a><span class="title">Tap to spawn objects at camera position</span>
+  <span class="title">Tap to spawn objects at camera position.</span><br/>
+  <span class="links">
+    <a href="https://github.com/google-ar/three.ar.js">three.ar.js</a> -
+    <a href="https://developers.google.com/ar/develop/web/getting-started#examples">examples</a>
+  </span>
 </div>
 <script src="../third_party/three.js/three.js"></script>
 <script src="../third_party/three.js/VRControls.js"></script>
@@ -180,7 +182,7 @@ function init() {
 function update() {
   // Clears color from the frame before rendering the camera (arView) or scene.
   renderer.clearColor();
-  
+
   // Render the device's camera stream on screen first of all.
   // It allows to get the right pose synchronized with the right frame.
   arView.render();
