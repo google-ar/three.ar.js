@@ -246,11 +246,23 @@
 
         var fText = function() {
             this.py = 0;
+            this.sx = 0;
+            this.sy = 0;
         }
-        var controller = gui.add(new fText(), 'py', -20, 20);
+        var py = gui.add(new fText(), 'py', -20, 20);
+        var sx = gui.add(new fText(), 'sx', 1, 10);
+        var sy = gui.add(new fText(), 'sy', 1, 10);
 
-        controller.onChange(function(value) {
+        py.onChange(function(value) {
             floor.position.y = value;
+        });
+
+        sx.onChange(function(value) {
+            floor.scale.x = value;
+        });
+
+        sy.onChange(function(value) {
+            floor.scale.y = value;
         });
 
     }
