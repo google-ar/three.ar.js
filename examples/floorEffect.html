@@ -24,6 +24,7 @@
   minimum-scale=1.0, maximum-scale=1.0">
     <link rel="stylesheet" href="style/style.css">
     <script src="//g.alicdn.com/tmapp/animation-data/4.1.37/jc/tools/vconsole.min.js"></script>
+    <script type="text/javascript" src="../src/dat.gui.js"></script>
     <style>
     body {
         font-family: monospace;
@@ -96,7 +97,7 @@
 
 
         Flipsnap('.flipsnap', {
-            distance:60,
+            distance: 60,
             transitionDuration: 1000
         });
 
@@ -202,6 +203,9 @@
          * Once we have position information applied to our camera,
          * create some boxes at the same height as the camera
          */
+
+        var floor;
+
         function addBoxes() {
             // Create some cubes around the origin point
             // for (var i = 0; i < BOX_QUANTITY; i++) {
@@ -213,33 +217,41 @@
             //     scene.add(cube);
             // }
 
-            for (var i = 0; i < 1; i++) {
+            var geometry = new THREE.PlaneGeometry(100, 100);
+            floor = new THREE.Mesh(geometry, new THREE.MeshBasicMaterial({ color: 0xff0000 }));
 
-                var geometry = new THREE.PlaneGeometry(100, 100);
-                var object = new THREE.Mesh(geometry, new THREE.MeshBasicMaterial({ color: 0xff0000 }));
+            floor.position.x = 0;
+            floor.position.y = 0;
+            floor.position.z = 0;
 
-                object.position.x = 0;
-                object.position.y = 0;
-                object.position.z = 0;
+            floor.rotation.x = 0.5 * Math.PI;
+            floor.rotation.y = 0;
+            floor.rotation.z = -0.5 * Math.PI;
 
-                object.rotation.x = 0.5 * Math.PI;
-                object.rotation.y = 0;
-                object.rotation.z = -0.5 * Math.PI;
+            // object.scale.x = Math.random() * 2 + 1;
+            // object.scale.y = Math.random() * 2 + 1;
+            // object.scale.z = Math.random() * 2 + 1;
 
-                // object.scale.x = Math.random() * 2 + 1;
-                // object.scale.y = Math.random() * 2 + 1;
-                // object.scale.z = Math.random() * 2 + 1;
+            // object.castShadow = true;
+            // object.receiveShadow = true;
 
-                // object.castShadow = true;
-                // object.receiveShadow = true;
-
-                scene.add(object);
-            }
-
-
-            // Flip this switch so that we only perform this once
-            boxesAdded = true;
+            scene.add(floor);
         }
+
+
+        var gui = new DAT.GUI({
+            load: JSON,
+            preset: 'Flow'
+        });
+
+        var fText = function() {
+            this.py = 0;
+        }
+        var controller = gui.add(new fText(), 'py', -20, 20);
+
+        controller.onChange(function(value) {
+            floor.position.y = value;
+        });
 
     }
     </script>
