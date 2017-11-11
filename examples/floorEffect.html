@@ -215,7 +215,7 @@
 
             for (var i = 0; i < 1; i++) {
 
-                var geometry = new THREE.PlaneGeometry(1000, 1000);
+                var geometry = new THREE.PlaneGeometry(100, 100);
                 var object = new THREE.Mesh(geometry, new THREE.MeshBasicMaterial({ color: 0xff0000 }));
 
                 object.position.x = 10;
@@ -224,7 +224,7 @@
 
                 object.rotation.x = 0.5 * Math.PI;
                 object.rotation.y = 0;
-                object.rotation.z = 0;
+                object.rotation.z = -10;
 
                 // object.scale.x = Math.random() * 2 + 1;
                 // object.scale.y = Math.random() * 2 + 1;
