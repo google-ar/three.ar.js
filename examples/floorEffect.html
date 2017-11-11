@@ -213,22 +213,22 @@
             //     scene.add(cube);
             // }
 
-            for (var i = 0; i < 10; i++) {
+            for (var i = 0; i < 1; i++) {
 
                 var geometry = new THREE.PlaneGeometry(10, 10);
                 var object = new THREE.Mesh(geometry, new THREE.MeshBasicMaterial({ color: Math.random() * 0xffffff }));
 
-                // object.position.x = Math.random() * 1000 - 500;
-                // object.position.y = Math.random() * 600 - 300;
-                // object.position.z = Math.random() * 800 - 400;
+                object.position.x = 10;
+                object.position.y = 20;
+                object.position.z = 30;
 
-                // object.rotation.x = Math.random() * 2 * Math.PI;
-                // object.rotation.y = Math.random() * 2 * Math.PI;
-                // object.rotation.z = Math.random() * 2 * Math.PI;
+                object.rotation.x = 0;
+                object.rotation.y = 0.5 * Math.PI;
+                object.rotation.z = 0.5 * Math.PI;
 
-                object.scale.x = Math.random() * 2 + 1;
-                object.scale.y = Math.random() * 2 + 1;
-                object.scale.z = Math.random() * 2 + 1;
+                // object.scale.x = Math.random() * 2 + 1;
+                // object.scale.y = Math.random() * 2 + 1;
+                // object.scale.z = Math.random() * 2 + 1;
 
                 // object.castShadow = true;
                 // object.receiveShadow = true;
