@@ -1,0 +1,248 @@
+<!--
+/*
+ * Copyright 2017 Google Inc. All Rights Reserved.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+-->
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>three.ar.js - draggable cubes</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no,
+  minimum-scale=1.0, maximum-scale=1.0">
+    <link rel="stylesheet" href="style/style.css">
+    <script src="//g.alicdn.com/tmapp/animation-data/4.1.37/jc/tools/vconsole.min.js"></script>
+    <style>
+    body {
+        font-family: monospace;
+        margin: 0;
+        overflow: hidden;
+        position: fixed;
+        width: 100%;
+        height: 100vh;
+        -webkit-user-select: none;
+        user-select: none;
+    }
+
+    #container {
+        position: absolute;
+        z-index: 10000;
+        bottom: 10px;
+        left: 0px;
+        right: 0px;
+        height: 200px;
+    }
+
+
+    .title {
+        color: rgba(255, 255, 255, 0.9);
+        background-color: rgba(40, 40, 40, 0.4);
+        margin-left: 0.2em;
+    }
+
+    canvas {
+        position: absolute;
+        top: 0;
+        left: 0;
+    }
+    </style>
+</head>
+
+<body>
+    <div id="container">
+        <section class="demo" id="demo-transitionDuration">
+            <h3>选择模型</h3>
+            <div class="viewport">
+                <div class="flipsnap">
+                    <div class="item">1</div>
+                    <div class="item">2</div>
+                    <div class="item">3</div>
+                    <div class="item">4</div>
+                    <div class="item">6</div>
+                    <div class="item">7</div>
+                    <div class="item">8</div>
+                    <div class="item">9</div>
+                    <div class="item">10</div>
+                    <div class="item">11</div>
+                </div>
+            </div>
+        </section>
+    </div>
+    <script src="../third_party/three.js/three.js"></script>
+    <script src="../third_party/three.js/VRControls.js"></script>
+    <script src="../third_party/flipsnap.min.js"></script>
+    <!-- <script src="../third_party/jquery.js"></script> -->
+    <script src="../dist/three.ar.js"></script>
+    <script>
+    window.onload = function() {
+        var vrDisplay, vrControls, arView;
+        var canvas, camera, scene, renderer;
+        var BOX_DISTANCE = 1.5;
+        var BOX_SIZE = 0.25;
+        var BOX_QUANTITY = 6;
+        var boxesAdded = false;
+
+
+        Flipsnap('.flipsnap', {
+            distance:60,
+            transitionDuration: 1000
+        });
+
+        /**
+         * Use the `getARDisplay()` utility to leverage the WebVR API
+         * to see if there are any AR-capable WebVR VRDisplays. Returns
+         * a valid display if found. Otherwise, display the unsupported
+         * browser message.
+         */
+        THREE.ARUtils.getARDisplay().then(function(display) {
+            if (display) {
+                vrDisplay = display;
+                init();
+            } else {
+                THREE.ARUtils.displayUnsupportedMessage();
+                init();
+            }
+        });
+
+        function init() {
+            // Setup the three.js rendering environment
+            renderer = new THREE.WebGLRenderer({ alpha: true });
+            renderer.setPixelRatio(window.devicePixelRatio);
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.autoClear = false;
+            canvas = renderer.domElement;
+            document.body.appendChild(canvas);
+            scene = new THREE.Scene();
+
+            // Creating the ARView, which is the object that handles
+            // the rendering of the camera stream behind the three.js
+            // scene
+            arView = new THREE.ARView(vrDisplay, renderer);
+
+            // The ARPerspectiveCamera is very similar to THREE.PerspectiveCamera,
+            // except when using an AR-capable browser, the camera uses
+            // the projection matrix provided from the device, so that the
+            // perspective camera's depth planes and field of view matches
+            // the physical camera on the device.
+            camera = new THREE.ARPerspectiveCamera(
+                vrDisplay,
+                60,
+                window.innerWidth / window.innerHeight,
+                vrDisplay.depthNear,
+                vrDisplay.depthFar
+            );
+
+            // VRControls is a utility from three.js that applies the device's
+            // orientation/position to the perspective camera, keeping our
+            // real world and virtual world in sync.
+            vrControls = new THREE.VRControls(camera);
+
+            // Bind our event handlers
+            window.addEventListener('resize', onWindowResize, false);
+
+            // Kick off the render loop!
+            update();
+        }
+
+        /**
+         * The render loop, called once per frame. Handles updating
+         * our scene and rendering.
+         */
+        function update() {
+            // Update our camera projection matrix in the event that
+            // the near or far planes have updated
+            camera.updateProjectionMatrix();
+
+            // Update our perspective camera's positioning
+            vrControls.update();
+
+            // If we have not added boxes yet, and we have positional
+            // information applied to our camera (it can take a few seconds),
+            // and the camera's Y position is not undefined or 0, create boxes
+            if (!boxesAdded && !camera.position.y) {
+                addBoxes();
+            }
+
+            // Render the device's camera stream on screen
+            arView.render();
+
+            // Render our three.js virtual scene
+            renderer.clearDepth();
+            renderer.render(scene, camera);
+
+            // Kick off the requestAnimationFrame to call this function
+            // on the next frame
+            requestAnimationFrame(update);
+        }
+
+        /**
+         * On window resize, update the perspective camera's aspect ratio,
+         * and call `updateProjectionMatrix` so that we can get the latest
+         * projection matrix provided from the device
+         */
+        function onWindowResize() {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        }
+
+        /**
+         * Once we have position information applied to our camera,
+         * create some boxes at the same height as the camera
+         */
+        function addBoxes() {
+            // Create some cubes around the origin point
+            // for (var i = 0; i < BOX_QUANTITY; i++) {
+            //     var angle = Math.PI * 2 * (i / BOX_QUANTITY);
+            //     var geometry = new THREE.BoxGeometry(BOX_SIZE, BOX_SIZE, BOX_SIZE);
+            //     var material = new THREE.MeshNormalMaterial();
+            //     var cube = new THREE.Mesh(geometry, material);
+            //     cube.position.set(Math.cos(angle) * BOX_DISTANCE, camera.position.y - 0.25, Math.sin(angle) * BOX_DISTANCE);
+            //     scene.add(cube);
+            // }
+
+            for (var i = 0; i < 10; i++) {
+
+                var geometry = new THREE.PlaneGeometry(10, 10);
+                var object = new THREE.Mesh(geometry, new THREE.MeshBasicMaterial({ color: Math.random() * 0xffffff }));
+
+                // object.position.x = Math.random() * 1000 - 500;
+                // object.position.y = Math.random() * 600 - 300;
+                // object.position.z = Math.random() * 800 - 400;
+
+                // object.rotation.x = Math.random() * 2 * Math.PI;
+                // object.rotation.y = Math.random() * 2 * Math.PI;
+                // object.rotation.z = Math.random() * 2 * Math.PI;
+
+                object.scale.x = Math.random() * 2 + 1;
+                object.scale.y = Math.random() * 2 + 1;
+                object.scale.z = Math.random() * 2 + 1;
+
+                // object.castShadow = true;
+                // object.receiveShadow = true;
+
+                scene.add(object);
+            }
+
+
+            // Flip this switch so that we only perform this once
+            boxesAdded = true;
+        }
+
+    }
+    </script>
+</body>
+
+</html>
