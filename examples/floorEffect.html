@@ -249,9 +249,9 @@
             this.sx = 0;
             this.sy = 0;
         }
-        var py = gui.add(new fText(), 'py', -20, 20);
-        var sx = gui.add(new fText(), 'sx', 1, 10);
-        var sy = gui.add(new fText(), 'sy', 1, 10);
+        var py = gui.add(new fText(), 'py', -20, 80);
+        var sx = gui.add(new fText(), 'sx', 0.1, 2);
+        var sy = gui.add(new fText(), 'sy', 0.1, 2);
 
         py.onChange(function(value) {
             floor.position.y = value;
