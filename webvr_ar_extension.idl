@@ -15,6 +15,7 @@
 
 partial interface VRDisplay {
   sequence<VRHit> hitTest(float x, float y);
+  sequence<VRPlane> getPlanes();
 };
 
 partial interface VRDisplayCapabilities {
