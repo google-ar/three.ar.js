@@ -25,6 +25,7 @@ const DEFAULTS = {
 const SUCCESS_COLOR = '#00ff00';
 const FAILURE_COLOR = '#ff0077';
 const PLANES_POLLING_TIMER = 500;
+const THROTTLE_SPEED = 500;
 
 // A cache to store original native VRDisplay methods
 // since WebARonARKit does not provide a VRDisplay.prototype[method],
@@ -280,7 +281,7 @@ class ARDebugRow {
     this.el.appendChild(this._titleEl);
     this.el.appendChild(this._dataEl);
 
-    this.update = throttle(this.update, 500, this);
+    this._throttledWriteToDOM = throttle(this._writeToDOM, THROTTLE_SPEED, this);
   }
 
   /**
@@ -309,12 +310,30 @@ class ARDebugRow {
   }
 
   /**
-   * Updates the row's value.
+   * Updates the row's value. Can be marked to write immediately to render
+   * now versus at a throttled rate, for instance on a state change
+   * that may be rendered in the future (like slight changes in position).
+   *
+   * @param {string} value
+   * @param {boolean} isSuccess
+   * @param {boolean} renderImmediately
+   */
+  update(value, isSuccess, renderImmediately) {
+    if (renderImmediately) {
+      this._writeToDOM(value, isSuccess);
+    } else {
+      this._throttledWriteToDOM(value, isSuccess);
+    }
+  }
+
+  /**
+   * Underlying function called by `update` that does the DOM
+   * changes.
    *
    * @param {string} value
    * @param {boolean} isSuccess
    */
-  update(value, isSuccess) {
+  _writeToDOM(value, isSuccess) {
     this._dataElText.nodeValue = value;
     this._dataEl.style.color = isSuccess ? SUCCESS_COLOR : FAILURE_COLOR;
   }
@@ -373,8 +392,9 @@ class ARDebugHitTestRow extends ARDebugRow {
 
     const t = (parseInt(performance.now(), 10) / 1000).toFixed(1);
     const didHit = hits && hits.length;
+    const value = `${didHit ? this._hitToString(hits[0]) : 'MISS'} @ ${t}s`;
 
-    this.update(`${didHit ? this._hitToString(hits[0]) : 'MISS'} @ ${t}s`, didHit);
+    this.update(value, didHit, didHit !== this._didPreviouslyHit);
     this._didPreviouslyHit = didHit;
     return hits;
   }
@@ -398,7 +418,7 @@ class ARDebugPoseRow extends ARDebugRow {
                                this.vrDisplay.getFrameData;
     cachedVRDisplayMethods.set('getFrameData', this._nativeGetFrameData);
 
-    this.update('Looking for position...');
+    this.update('Looking for position...', false, true);
     this._initialPose = false;
   }
 
@@ -448,10 +468,11 @@ class ARDebugPoseRow extends ARDebugRow {
       return results;
     }
 
+    const renderImmediately = isValidPose !== this._lastPoseValid;
     if (isValidPose) {
-      this.update(this._poseToString(pose), true);
+      this.update(this._poseToString(pose), true, renderImmediately);
     } else if (!isValidPose && this._lastPoseValid !== false) {
-      this.update(`Position lost`, false);
+      this.update(`Position lost`, false, renderImmediately);
     }
 
     this._lastPoseValid = isValidPose;
@@ -475,7 +496,7 @@ class ARDebugPlanesRow extends ARDebugRow {
     this.vrDisplay = vrDisplay;
     this.planes = new ARPlanes(this.vrDisplay);
     this._onPoll = this._onPoll.bind(this);
-    this.update('Looking for planes...');
+    this.update('Looking for planes...', false, true);
     if (scene) {
       scene.add(this.planes);
     }
@@ -517,7 +538,13 @@ class ARDebugPlanesRow extends ARDebugRow {
    */
   _onPoll() {
     const planeCount = this.planes.size();
-    this.update(this._planesToString(planeCount), planeCount > 0);
+    // Plane count will change much less often than position or hits;
+    // don't even bother throttling to rerender the same information
+    // if there are no changes
+    if (this._lastPlaneCount !== planeCount) {
+      this.update(this._planesToString(planeCount), planeCount > 0, true);
+    }
+    this._lastPlaneCount = planeCount;
   }
 }
 
