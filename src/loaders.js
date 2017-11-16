@@ -41,7 +41,7 @@ export const loadObj = (objPath, materialCreator) => new Promise((resolve, rejec
 export const loadMtl = mtlPath => new Promise((resolve, reject) => {
   const loader = new global.THREE.MTLLoader();
 
-  loader.setTexturePath(mtlPath.substring(0, mtlPath.lastIndexOf('/') + 1));
+  loader.setTexturePath(mtlPath.substr(0, mtlPath.lastIndexOf('/') + 1));
   // remaps ka, kd, & ks values of 0,0,0 -> 1,1,1
   loader.setMaterialOptions({ ignoreZeroRGBs: true });
 
