@@ -69,6 +69,8 @@ interface VRPlane {
 }
 ```
 
+See [webvr_ar_extension.idl] for structure of VRPlane, VRHit, and others.
+
 ## Using the WebVR extension API for AR
 
 As the extension API is built on top of WebVR, please refer to the [WebVR 1.1 API] for more details and basic knowledge that will be necessary to understand this section. Some of the examples will also use some [three.js] based code for clarity purposes but the same concept could be applied in any other engine or basic webgl based web app.
@@ -104,7 +106,7 @@ frameData.leftProjectionMatrix; // Float32Array(16)
 
 The AR extension on top of WebVR allows to cast a ray from the camera to the real world and obtain a list of hits (if any). [This code example](https://github.com/google-ar/three.ar.js/blob/e871fe9ed806ef3be233fd9cc86ffc5a6a7a1382/examples/spawn-at-surface.html#L232-L248) shows how to make that call and process the resulting information.
 
-### Subscribing to Planes Events
+### Getting planes data
 
 Listening to events in the `VRDisplay` allows a developer to observe changes in the underlying plane detection. There are `planesadded`, `planesupdated` and `planesremoved` events. This feature was added in October 2017 in [WebARonARCore] and [WebARonARKit] and an example rendering surfaces from these events can [be seen here](https://google-ar.github.io/three.ar.js/examples/surfaces.html). Note that on ARCore, planes can be convex polygons, and on ARKit, planes are always rectangular.
 
@@ -120,6 +122,17 @@ display.addEventListener('planesadded', e => {
 });
 ```
 
+It's also possible to just fetch the current planes detected. While less performant than subscribing to events, it may be desirable to just get a snapshot of the current planes. For example, a developer may fetch planes for one point in time rather than managing the plane changes, or want to fetch planes before subscribing to events for an accurate representation.
+
+```js
+display.getPlanes().forEach(plane => {
+  console.log(`
+    Found plane ${plane.identifier} at ${plane.modelMatrix},
+    with extent ${plane.extent} with vertices ${plane.vertices}
+  `);
+});
+```
+
 [WebVR 1.1 API]: https://w3c.github.io/webvr/spec/1.1/
 [WebVR 2.0 API]: https://github.com/w3c/webvr/blob/master/explainer.md
 [6DOF]: https://en.wikipedia.org/wiki/Six_degrees_of_freedom
@@ -132,4 +145,5 @@ display.addEventListener('planesadded', e => {
 [VRControls]: https://github.com/google-ar/three.ar.js/blob/e871fe9ed806ef3be233fd9cc86ffc5a6a7a1382/third_party/three.js/VRControls.js#L87
 [WebARonARKit]: https://github.com/google-ar/WebARonARKit
 [WebARonARCore]: https://github.com/google-ar/WebARonARCore
+[webvr_ar_extension.idl]: webvr_ar_extension.idl
 
