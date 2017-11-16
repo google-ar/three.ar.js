@@ -22,6 +22,7 @@ const cleanup = require('rollup-plugin-cleanup');
 const babel = require('rollup-plugin-babel');
 const glsl = require('rollup-plugin-glsl');
 const uglify = require('rollup-plugin-uglify');
+const globals = require('rollup-plugin-node-globals');
 const banner = fs.readFileSync(path.join(__dirname, 'licenses.txt'));
 
 export default {
@@ -49,6 +50,7 @@ export default {
       plugins: ['external-helpers'],
       exclude: 'node_modules/**',
     }),
+    globals(),
     resolve(),
     commonjs(),
     cleanup(),

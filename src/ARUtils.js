@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-import { Color, Matrix4, Quaternion, Vector3, Math as Math3 } from 'three';
+import { Color, Matrix4, Quaternion, Vector3 } from 'three';
 
 import { loadMtl, loadObj } from './loaders';
 
@@ -113,13 +113,6 @@ ARUtils.loadBlocksModel = (objPath, mtlPath) => new Promise((resolve, reject) =>
       materialCreator.preload();
     }
     return loadObj(objPath, materialCreator);
-  }).then(obj => {
-    const model = obj.children[0];
-    model.geometry.applyMatrix(
-      new Matrix4().makeRotationY(Math3.degToRad(-90))
-    );
-
-    return model;
   }).then(resolve, reject);
 });
 export const loadBlocksModel = ARUtils.loadBlocksModel;
