@@ -77,9 +77,9 @@ Takes a [VRDisplay] instance and returns a boolean whether or not this is a Tang
 ### boolean THREE.ARUtils.isARKit(vrDisplay)
 
 Takes a [VRDisplay] instance and returns a boolean whether or not this is an ARKit-based iOS device.
-### Promise<THREE.Mesh> THREE.ARUtils.loadBlocksModel(objPath, mtlPath?)
+### Promise<THREE.Mesh> THREE.ARUtils.loadPolyModel(objPath, mtlPath?)
 
-Takes a path for an OBJ model and optionally a path for an MTL texture and returns a promise resolving to a [THREE.Mesh] loaded with the appropriate material. Can be used on downloaded models from Blocks.
+Takes a path for an OBJ model and optionally a path for an MTL texture and returns a promise resolving to a [THREE.Mesh] loaded with the appropriate material. Can be used on downloaded models from [Poly].
 
 ### void THREE.ARUtils.placeObjectAtHit(object, hit, easing=1, applyOrientation=false)
 
@@ -102,3 +102,4 @@ Generates an element and injects into the DOM a message notifying the user that 
 [THREE.Object3D]: https://threejs.org/docs/#api/core/Object3D
 [HTMLElement]: https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement
 [VRHit]: webvr_ar_extension.idl
+[Poly]: https://poly.google.com/
