@@ -21,9 +21,9 @@ See [three.ar.js API documentation](API.md) for details.
 ### CDN
 
 ```html
-<script href="https://cdn.jsdelivr.net/npm/three.ar.js@latest/dist/three.ar.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three.ar.js@latest/dist/three.ar.js"></script>
 <!-- or the minified version -->
-<script href="https://cdn.jsdelivr.net/npm/three.ar.js@latest/dist/three.ar.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three.ar.js@latest/dist/three.ar.min.js"></script>
 ```
 
 ### Script
