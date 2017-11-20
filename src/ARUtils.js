@@ -85,7 +85,7 @@ export const getARDisplay = ARUtils.getARDisplay;
 
 /**
  * Takes a path for an OBJ model and optionally a path for an MTL
- * texture and returns a promise resolving to a THREE.Mesh loaded with
+ * texture and returns a promise resolving to a THREE.Group loaded with
  * the appropriate material. Can be used on downloaded models from Blocks.
  *
  * NOTE: loading function will remap materials in the .mtl file whose specular,
@@ -94,7 +94,7 @@ export const getARDisplay = ARUtils.getARDisplay;
  *
  * @param {string} objPath
  * @param {string} mtlPath
- * @return {THREE.Mesh}
+ * @return {THREE.Group}
  */
 ARUtils.loadPolyModel = (objPath, mtlPath) => new Promise((resolve, reject) => {
   if (!global.THREE || !global.THREE.OBJLoader || !global.THREE.MTLLoader) {
