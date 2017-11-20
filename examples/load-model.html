@@ -17,7 +17,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <title>three.ar.js - Load Poly Model</title>
+  <title>three.ar.js - Load Model</title>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, user-scalable=no,
   minimum-scale=1.0, maximum-scale=1.0">
@@ -187,7 +187,12 @@ function init() {
   shadowMesh.receiveShadow = true;
   scene.add(shadowMesh);
 
-  THREE.ARUtils.loadPolyModel(OBJ_PATH, MTL_PATH).then(function(group) {
+  THREE.ARUtils.loadModel({
+    objPath: OBJ_PATH,
+    mtlPath: MTL_PATH,
+    OBJLoader: undefined, // uses window.THREE.OBJLoader by default
+    MTLLoader: undefined, // uses window.THREE.MTLLoader by default
+  }).then(function(group) {
     model = group;
     // As OBJ models may contain a group with several meshes,
     // we want all of them to cast shadow

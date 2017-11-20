@@ -27,8 +27,8 @@ const opacityRemap = function(mat) {
   }
 };
 
-export const loadObj = (objPath, materialCreator) => new Promise((resolve, reject) => {
-  const loader = new global.THREE.OBJLoader();
+export const loadObj = (objPath, materialCreator, OBJLoader) => new Promise((resolve, reject) => {
+  const loader = new OBJLoader();
 
   if (materialCreator) {
     Object.keys(materialCreator.materials).forEach(k => opacityRemap(materialCreator.materials[k]));
@@ -38,8 +38,8 @@ export const loadObj = (objPath, materialCreator) => new Promise((resolve, rejec
   loader.load(objPath, resolve, noop, reject);
 });
 
-export const loadMtl = mtlPath => new Promise((resolve, reject) => {
-  const loader = new global.THREE.MTLLoader();
+export const loadMtl = (mtlPath, MTLLoader) => new Promise((resolve, reject) => {
+  const loader = new MTLLoader();
 
   loader.setTexturePath(mtlPath.substr(0, mtlPath.lastIndexOf('/') + 1));
   // remaps ka, kd, & ks values of 0,0,0 -> 1,1,1

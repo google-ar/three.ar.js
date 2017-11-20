@@ -92,30 +92,47 @@ export const getARDisplay = ARUtils.getARDisplay;
  * diffuse, or ambient contribution is (0, 0, 0) to (1, 1, 1). As well as materials
  * whose dissolve is 0 (which becomes an opacity of 0) to 1.
  *
- * @param {string} objPath
- * @param {string} mtlPath
+ * @param {Object} config
+ * @param {string} config.objPath
+ * @param {string} config.mtlPath
+ * @param {THREE.OBJLoader} config.OBJLoader
+ * @param {THREE.MTLLoader} config.MTLLoader
  * @return {THREE.Group}
  */
-ARUtils.loadPolyModel = (objPath, mtlPath) => new Promise((resolve, reject) => {
-  if (!global.THREE || !global.THREE.OBJLoader || !global.THREE.MTLLoader) {
-    reject(new Error('Must include THREE.OBJLoader and THREE.MTLLoader'));
+ARUtils.loadModel = (config={}) => new Promise((resolve, reject) => {
+  const { mtlPath, objPath } = config;
+  const OBJLoader = config.OBJLoader || (global.THREE ? global.THREE.OBJLoader : null);
+  const MTLLoader = config.MTLLoader || (global.THREE ? global.THREE.MTLLoader : null);
+
+  if (!config.objPath) {
+    reject(new Error('`objPath` must be specified.'));
+    return;
+  }
+
+  if (!OBJLoader) {
+    reject(new Error('Missing OBJLoader as third argument, or window.THREE.OBJLoader existence'));
+    return;
+  }
+
+  if (config.mtlPath && !MTLLoader) {
+    reject(new Error('Missing MTLLoader as fourth argument, or window.THREE.MTLLoader existence'));
     return;
   }
 
   let p = Promise.resolve();
 
   if (mtlPath) {
-    p = loadMtl(mtlPath);
+    p = loadMtl(mtlPath, MTLLoader);
   }
 
   p.then(materialCreator => {
     if (materialCreator) {
       materialCreator.preload();
     }
-    return loadObj(objPath, materialCreator);
+    return loadObj(objPath, materialCreator, OBJLoader);
   }).then(resolve, reject);
 });
-export const loadBlocksModel = ARUtils.loadBlocksModel;
+export const loadModel = ARUtils.loadModel;
 
 const model = new Matrix4();
 const tempPos = new Vector3();

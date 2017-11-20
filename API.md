@@ -77,9 +77,16 @@ Takes a [VRDisplay] instance and returns a boolean whether or not this is a Tang
 ### boolean THREE.ARUtils.isARKit(vrDisplay)
 
 Takes a [VRDisplay] instance and returns a boolean whether or not this is an ARKit-based iOS device.
-### Promise<THREE.Mesh> THREE.ARUtils.loadPolyModel(objPath, mtlPath?)
+### Promise<THREE.Group> THREE.ARUtils.loadModel(config)
 
-Takes a path for an OBJ model and optionally a path for an MTL texture and returns a promise resolving to a [THREE.Group] loaded with the appropriate material. Can be used on downloaded models from [Poly].
+Takes configuration to load an OBJ model, and optionally a path for an MTL material and returns a promise resolving to a [THREE.Group] loaded with the appropriate material. Can be used on downloaded models from [Poly].
+
+`config` takes the following properties:
+
+* `objPath`: path to the OBJ model. Required.
+* `mtlPath`: path to the MTL material. Optional.
+* `OBJLoader`: A constructor for THREE's [OBJLoader]. Defaults to `window.THREE.OBJLoader`. Useful to specify when in an ES6 module environment.
+* `MTLLoader`: A constructor for THREE's [MTLLoader]. Defaults to `window.THREE.MTLLoader`. Useful to specify when in an ES6 module environment.
 
 ### void THREE.ARUtils.placeObjectAtHit(object, hit, easing=1, applyOrientation=false)
 
@@ -101,6 +108,8 @@ Generates an element and injects into the DOM a message notifying the user that 
 [THREE.BufferGeometry]: https://threejs.org/docs/#api/core/BufferGeometry
 [THREE.Color]: https://threejs.org/docs/#api/math/Color
 [THREE.Object3D]: https://threejs.org/docs/#api/core/Object3D
+[OBJLoader]: https://github.com/mrdoob/three.js/blob/master/examples/js/loaders/OBJLoader.js
+[MTLLoader]: https://github.com/mrdoob/three.js/blob/master/examples/js/loaders/MTLLoader.js
 [HTMLElement]: https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement
 [VRHit]: webvr_ar_extension.idl
 [Poly]: https://poly.google.com/
