@@ -61,9 +61,6 @@ export default class ARAnchorManager extends EventDispatcher {
     // later on.
     this.anchorsToObject3Ds_.set(anchor, object3d);
     this.object3DsToAnchors_.set(object3d, anchor);
-
-    console.log("anchor " + anchor.identifier + " added for object3d " + object3d.id);
-
     return this;
   }
 
@@ -83,9 +80,6 @@ export default class ARAnchorManager extends EventDispatcher {
     this.anchorsToObject3Ds_.delete(anchor);
     this.object3DsToAnchors_.delete(object3d);
     this.vrDisplay_.removeAnchor(anchor);
-
-    console.log("anchor " + anchor.identifier + " removed for object3d " + object3d.id);
-
     return true;
   }
   /**
@@ -98,9 +92,11 @@ export default class ARAnchorManager extends EventDispatcher {
     for (let anchor of event.anchors) {
       const object3d = this.anchorsToObject3Ds_.get(anchor);
       if (!object3d) { 
-        throw new Error("this should never happen: " +
-          "an anchor (identifier = " + anchor.identifier + 
-          ") without the corresponding object3d."); 
+        // It could happen that there are more than one AnchorManager and
+        // that create Anchors that reside in the native side and are not
+        // handled by all of the AnchorManagers, so let's just continue to
+        // see if the updated anchors are managed by this AnchorManager.
+        continue;
       };
       // get the anchor's updated model matrix
       object3d.matrix.fromArray(anchor.modelMatrix);
