@@ -27,6 +27,7 @@ import {
 import { getRandomPaletteColor } from './ARUtils';
 import vertexShader from './shaders/arplanes.vert';
 import fragmentShader from './shaders/arplanes.frag';
+import ARAnchorManager from './ARAnchorManager';
 
 const DEFAULT_MATERIAL = new RawShaderMaterial({
   side: DoubleSide,
@@ -73,6 +74,8 @@ class ARPlanes extends Object3D {
      * @type {Map<number, Material} A Map from plane identifier to plane material.
      */
     this.materials = new Map();
+
+    this.anchorManager = new ARAnchorManager(vrDisplay);
   }
 
   /**
@@ -85,6 +88,7 @@ class ARPlanes extends Object3D {
     if (planeObj) {
       this.add(planeObj);
       this.planes.set(plane.identifier, planeObj);
+      this.anchorManager.add(planeObj);
     }
   }
 
@@ -96,6 +100,7 @@ class ARPlanes extends Object3D {
   removePlane_ = identifier => {
     let existing = this.planes.get(identifier);
     if (existing) {
+      this.anchorManager.remove(existing);
       this.remove(existing);
     }
     this.planes.delete(identifier);
