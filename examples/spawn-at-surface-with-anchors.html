@@ -179,6 +179,10 @@ function init() {
 
   // Initialize the anchor manager
   anchorManager = new THREE.ARAnchorManager(vrDisplay);
+  // Just show a message when anchors update.
+  anchorManager.addEventListener("anchorsupdated", function(event) {
+    console.log(event.object3ds.length + " Object3D-s updated their pose!");
+  });
 
   // Bind our event handlers
   window.addEventListener('resize', onWindowResize, false);
@@ -235,7 +239,7 @@ function onClick (e) {
   // Remove cubes with more than one finger.
   if (e.touches.length > 1 && cubes.length > 0) {
     scene.remove(cubes[0]);
-    anchorManager.removeAnchorForObject3D(cubes[0]);
+    anchorManager.remove(cubes[0]);
     cubes.splice(0, 1);
     return;
   }
@@ -258,15 +262,15 @@ function onClick (e) {
     // Use the `placeObjectAtHit` utility to position
     // the cube where the hit occurred
     THREE.ARUtils.placeObjectAtHit(cubeClone,  // The object to place
-                                   hit,   // The VRHit object to move the cube to
-                                   1,     // Easing value from 0 to 1; we want to move
-                                          // the cube directly to the hit position
-                                   true); // Whether or not we also apply orientation
+        hit,   // The VRHit object to move the cube to
+        1,     // Easing value from 0 to 1; we want to move
+              // the cube directly to the hit position
+        true); // Whether or not we also apply orientation
 
+    anchorManager.add(cubeClone);
+    scene.add(cubeClone);
+    cubes.push(cubeClone);
   }
-  anchorManager.addAnchorForObject3D(cubeClone);
-  scene.add(cubeClone);
-  cubes.push(cubeClone);
 }
 </script>
 </body>
