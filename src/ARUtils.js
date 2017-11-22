@@ -99,7 +99,7 @@ export const getARDisplay = ARUtils.getARDisplay;
  * @param {THREE.MTLLoader} config.MTLLoader
  * @return {THREE.Group}
  */
-ARUtils.loadModel = (config={}) => new Promise((resolve, reject) => {
+ARUtils.loadModel = (config = {}) => new Promise((resolve, reject) => {
   const { mtlPath, objPath } = config;
   const OBJLoader = config.OBJLoader || (global.THREE ? global.THREE.OBJLoader : null);
   const MTLLoader = config.MTLLoader || (global.THREE ? global.THREE.MTLLoader : null);
