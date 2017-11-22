@@ -8,7 +8,7 @@
     "build-min": "rollup -c rollup.config.min.js",
     "build-all": "npm run build && npm run build-min",
     "watch": "rollup -c -w",
-    "lint": "eslint src/**/*.js",
+    "lint": "eslint 'src/**/*.js'",
     "test": "npm run lint",
     "preversion": "npm test",
     "version": "npm run build-all && git add dist/*",
