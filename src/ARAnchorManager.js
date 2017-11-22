@@ -1,4 +1,5 @@
 import { Object3D, Vector3, Matrix4, EventDispatcher } from 'three';
+
 /**
  * A class to manage registration and unregistration of anchors
  * for any THREE.Object3D. Anchors are world space and handle updating
@@ -24,6 +25,7 @@ export default class ARAnchorManager extends EventDispatcher {
     // object3d.
     this.matrix_ = new Matrix4();
   }
+
   /**
    * Assign a new anchor to an THREE.Object3D.
    * @param object3d {THREE.Object3D} A Three Object3D instance to create and
@@ -65,9 +67,7 @@ export default class ARAnchorManager extends EventDispatcher {
   }
 
   /**
-   * Delete anchor from the THREE.Object3D.
-   * @return {boolean} a flag that indicates if the anchor was correctly removed for
-   * the provided object3d.
+   * Delete anchor associated to the THREE.Object3D.
    */
   remove(object3d) {
     if (!(object3d instanceof Object3D)) {
@@ -75,13 +75,14 @@ export default class ARAnchorManager extends EventDispatcher {
     };
     const anchor = this.object3DsToAnchors_.get(object3d);
     if (!anchor) { 
-      return false 
+      return this;
     };
     this.anchorsToObject3Ds_.delete(anchor);
     this.object3DsToAnchors_.delete(object3d);
     this.vrDisplay_.removeAnchor(anchor);
-    return true;
+    return this;;
   }
+
   /**
    * Called when any anchors are updated. The updated modelMatrix is
    * set for the THREE.Object3D associated with each updated anchor.
