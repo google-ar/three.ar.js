@@ -68,6 +68,11 @@ export default class ARAnchorManager extends EventDispatcher {
 
   /**
    * Delete anchor associated to the THREE.Object3D.
+   * @param object3d {THREE.Object3D} The ThreeJS Object3D that has an anchor
+   * associated to it and that should be removed.
+   * @return {boolean} A flag indicating if the removal of the anchor was
+   * successful (true) or not (false, in case there is no anchor for the given
+   * Object3D).
    */
   remove(object3d) {
     if (!(object3d instanceof Object3D)) {
@@ -75,12 +80,12 @@ export default class ARAnchorManager extends EventDispatcher {
     };
     const anchor = this.object3DsToAnchors_.get(object3d);
     if (!anchor) { 
-      return this;
+      return false;
     };
     this.anchorsToObject3Ds_.delete(anchor);
     this.object3DsToAnchors_.delete(object3d);
     this.vrDisplay_.removeAnchor(anchor);
-    return this;;
+    return true;
   }
 
   /**
@@ -107,8 +112,6 @@ export default class ARAnchorManager extends EventDispatcher {
                                 this.scale_);
       updatedObject3Ds.push(object3d);
     }
-    this.dispatchEvent({
-        type: 'anchorsupdated', 
-        object3ds: updatedObject3Ds});
+    this.dispatchEvent({ type: 'anchorsupdated', anchors: updatedObject3Ds });
   }
 }
