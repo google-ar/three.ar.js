@@ -181,7 +181,7 @@ function init() {
   anchorManager = new THREE.ARAnchorManager(vrDisplay);
   // Just show a message when anchors update.
   anchorManager.addEventListener("anchorsupdated", function(event) {
-    console.log(event.object3ds.length + " Object3D-s updated their pose!");
+    console.log(event.anchors.length + " Object3D-s updated their pose!");
   });
 
   // Bind our event handlers
