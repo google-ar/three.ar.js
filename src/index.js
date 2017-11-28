@@ -40,5 +40,5 @@ export {
   ARReticle,
   ARUtils,
   ARView,
-  ARAnchorManager
+  ARAnchorManager,
 };
