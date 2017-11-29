@@ -16,6 +16,11 @@
 partial interface VRDisplay {
   sequence<VRHit> hitTest(float x, float y);
   sequence<VRPlane> getPlanes();
+  VRAnchor addAnchor(sequence<float> modelMatrix);
+  VRAnchor addAnchor(Float32Array modelMatrix);
+  void removeAnchor(VRAnchor anchor);
+  sequence<VRAnchor> getAnchors();
+  sequence<VRMarker> getMarkers(long type, float size);
 };
 
 partial interface VRDisplayCapabilities {
@@ -43,4 +48,28 @@ interface VRPlane {
 dictionary VRPlaneEventInit : EventInit {
   VRDisplay? display;
   sequence<VRPlane> planes;
+};
+
+interface VRAnchor {
+  readonly attribute long identifier;
+  readonly attribute Float32Array? modelMatrix;
+};
+
+[
+  Constructor(DOMString type, optional VRAnchorEventInit eventInitDict),
+] interface VRanchorEvent : Event {
+  readonly attribute VRDisplay display;
+  readonly attribute sequence<VRAnchor> anchors;
+};
+
+dictionary VRAnchorEventInit : EventInit {
+  VRDisplay? display;
+  sequence<VRAnchor> anchors;
+};
+
+interface VRMarker {
+  readonly attribute long type;
+  readonly attribute long id;
+  readonly attribute DOMString content;
+  readonly attribute Float32Array modelMatrix;
 };
