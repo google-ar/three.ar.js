@@ -12,8 +12,13 @@ export default class ARAnchorManager extends EventDispatcher {
   */
   constructor(vrDisplay) {
     super();
-    if (!(vrDisplay instanceof window.VRDisplay) || !vrDisplay.getAnchors) {
-      throw new Error('invalid vr display parameter');
+    if (!(vrDisplay instanceof window.VRDisplay)) {
+      throw new Error('A correct VRDisplay instance is required to ' +
+          'initialize an ARAnchorManager.');
+    }
+    if (typeof(vrDisplay.getAnchors) !== 'function') {
+      throw new Error('VRDisplay does not support anchors. Upgrade ' +
+          'to latest AR browser to get anchor support.');
     }
     this.vrDisplay_ = vrDisplay;
     this.anchorsToObject3Ds_ = new Map();
