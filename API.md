@@ -61,7 +61,7 @@ Returns the HTMLElement for the debug panel to inject into the content.
 
 Not a constructor but an object storing several utility functions listed below.
 
-### Promise<VRDisplay?> THREE.ARUtils.getARDevice()
+### Promise<VRDisplay?> THREE.ARUtils.getARDisplay()
 
 Returns a promise that resolves to a [VRDisplay] with AR capabilities or null if
 device is unsupported.
