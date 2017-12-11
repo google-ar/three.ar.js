@@ -133,8 +133,8 @@ display.getPlanes().forEach(plane => {
 });
 ```
 
-[WebVR 1.1 API]: https://w3c.github.io/webvr/spec/1.1/
-[WebVR 2.0 API]: https://github.com/w3c/webvr/blob/master/explainer.md
+[WebVR 1.1 API]: https://immersive-web.github.io/webvr/spec/1.1/
+[WebVR 2.0 API]: https://immersive-web.github.io/webvr/spec/latest/
 [6DOF]: https://en.wikipedia.org/wiki/Six_degrees_of_freedom
 [VRFrameData]: https://developer.mozilla.org/en-US/docs/Web/API/VRFrameData
 [VRPose]: https://developer.mozilla.org/en-US/docs/Web/API/VRPose
