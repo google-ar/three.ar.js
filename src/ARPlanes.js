@@ -124,7 +124,7 @@ class ARPlanes extends Object3D {
 
   /**
    * Respond to a 'planesremoved' event by removing the corresponding planes.
-   * 
+   *
    * @param {Object} event The event from 'planesremoved' handler.
    */
   onPlaneRemoved_ = event => {
@@ -161,7 +161,7 @@ class ARPlanes extends Object3D {
   /**
    * Create and add a new plane visualization based on the given plane.
    *
-   * @param {Object} plane The plane object from WebARonARKit. 
+   * @param {Object} plane The plane object from WebARonARKit.
    * @return {number} The number of planes.
    */
   createPlane(plane) {

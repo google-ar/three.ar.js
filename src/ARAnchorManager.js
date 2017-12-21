@@ -8,8 +8,8 @@ import { Object3D, Vector3, Matrix4, EventDispatcher } from 'three';
  */
 export default class ARAnchorManager extends EventDispatcher {
   /**
-  * @param {VRDisplay} vrDisplay 
-  */
+   * @param {VRDisplay} vrDisplay
+   */
   constructor(vrDisplay) {
     super();
     if (!(vrDisplay instanceof window.VRDisplay)) {

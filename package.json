@@ -24,7 +24,7 @@
     "babel-plugin-transform-class-properties": "^6.24.1",
     "babel-preset-env": "^1.6.1",
     "base64-image-loader": "^1.2.0",
-    "eslint": "^4.5.0",
+    "eslint": "^4.13.1",
     "eslint-config-google": "^0.9.1",
     "glsl-y-hsv": "^1.0.0",
     "rollup": "^0.50.0",
