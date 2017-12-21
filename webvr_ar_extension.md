@@ -9,7 +9,7 @@ Basic smartphone based Augmented Reality (AR) web applications can be enabled wi
 This extension mainly focuses on smartphone based AR where there are 3 basic elements that enable AR experiences:
 
 * **Motion tracking**: The device needs to know its exact location and orientation in 3D space. This is called 6 Degrees Of Freedom ([6DOF]) motion tracking.
-* **Rendering the pass through camera**: Smartphones allow to render virtual content on top of the reality represented by the feed provided by the camera they have.
+* **Rendering the pass through camera**: Smartphones allow rendering virtual content on top of the reality represented by the feed provided by the camera.
 * **Basic understanding of the real world**: Motion tracking provides the exact location of the device in the real world but apart from that, the device does not understand much more from it. In order to be able to interact with the real world correctly, some basic understanding is very valuable. Current Smartphone AR technology provides different ways to identify planes in the real world (or even more complex information like meshes or objects like markers or even complete point clouds). This way, virtual objects can be anchored in the real world so they appear to interact with it as a human would expect them to.
 
 ## Features
@@ -34,7 +34,7 @@ A new property has been added to [VRDisplayCapabilities] that indicate the exist
 
 ### Basic understanding of the real world
 
-There are multiple ways to get some information in an AR system about the real world surrounding the device. For now, the WebVR extension for AR exposes one of the simplest possible: throw a ray from the device perspective into the real world and let the app know if there has been a hit against any of the elements the system understands from the real world.
+There are multiple ways to get some information in an AR system about the real world surrounding the device. For now the WebVR extension for AR exposes one of the simplest possible: throw a ray from the device perspective into the real world and let the app know if there has been a hit against any of the elements the system understands from the real world.
 
 ```
 partial interface VRDisplay {
@@ -69,7 +69,7 @@ interface VRPlane {
 }
 ```
 
-See [webvr_ar_extension.idl] for structure of VRPlane, VRHit, and others.
+See [webvr_ar_extension.idl] for the structure of VRPlane, VRHit, and others.
 
 ## Using the WebVR extension API for AR
 
@@ -134,7 +134,7 @@ display.getPlanes().forEach(plane => {
 ```
 
 [WebVR 1.1 API]: https://immersive-web.github.io/webvr/spec/1.1/
-[WebVR 2.0 API]: https://immersive-web.github.io/webvr/spec/latest/
+[WebVR 2.0 API]: https://immersive-web.github.io/webxr/spec/latest/
 [6DOF]: https://en.wikipedia.org/wiki/Six_degrees_of_freedom
 [VRFrameData]: https://developer.mozilla.org/en-US/docs/Web/API/VRFrameData
 [VRPose]: https://developer.mozilla.org/en-US/docs/Web/API/VRPose
