@@ -206,7 +206,8 @@
             for (var i = 0; i < BOX_QUANTITY; i++) {
                 var angle = Math.PI * 2 * (i / BOX_QUANTITY);
                 var geometry = new THREE.BoxGeometry(BOX_SIZE, BOX_SIZE, BOX_SIZE);
-                var material = new THREE.MeshNormalMaterial();
+                var material = new THRE
+                E.MeshNormalMaterial();
                 var cube = new THREE.Mesh(geometry, material);
                 cube.position.set(Math.cos(angle) * BOX_DISTANCE, camera.position.y - 0.25, Math.sin(angle) * BOX_DISTANCE);
                 scene.add(cube);
@@ -214,6 +215,26 @@
 
             // Flip this switch so that we only perform this once
             boxesAdded = true;
+
+
+
+            var loader = new THREE.OBJLoader(manager);
+            loader.load('models/city/city.obj', function(object) {
+
+                object.traverse(function(child) {
+
+                    if (child instanceof THREE.Mesh) {
+
+                        // child.material.map = texture;
+
+                    }
+
+                });
+
+                object.position.set(Math.cos(angle) * BOX_DISTANCE, camera.position.y - 0.25, Math.sin(angle) * BOX_DISTANCE);
+                scene.add(object);
+
+            }, function(){}, function(){});
         }
 
     }
