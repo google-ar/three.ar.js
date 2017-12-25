@@ -65,6 +65,8 @@
 
          // Kick off the render loop!
          update();
+
+         loadModels();
      }
 
      /**
@@ -84,6 +86,8 @@
          // and the camera's Y position is not undefined or 0, create boxes
          if (!boxesAdded && !camera.position.y) {
              addBoxes();
+
+             models_obj.position.set(Math.cos(Math.PI / 4) * 10, camera.position.y - 0.25, -Math.sin(Math.PI / 4) * 10);
          }
 
          // Render the device's camera stream on screen
@@ -128,16 +132,20 @@
          boxesAdded = true;
 
 
+         console.log(loader);
+     }
 
+     var models_obj;
+     function loadModels() {
          var mtlLoader = new THREE.MTLLoader();
-         mtlLoader.setPath( 'models/city/' );
+         mtlLoader.setPath('models/city/');
          mtlLoader.load('city.mtl', function(materials) {
              materials.preload();
 
 
              var objLoader = new THREE.OBJLoader();
              objLoader.setMaterials(materials);
-             objLoader.load('models/city/city.obj', function(object) {
+             objLoader.load('models/city/city.obj', function(obj) {
 
                  // object.traverse(function(child) {
                  //     if (child instanceof THREE.Mesh) {
@@ -145,18 +153,14 @@
                  //     }
                  // });
 
-                 object.scale.set(0.1, 0.1, 0.1);
-                 object.position.set(Math.cos(Math.PI / 4) * 10, camera.position.y - 0.25, -Math.sin(Math.PI / 4) * 10);
-                 // scene.add(object);
+                 models_obj = obj;
+                 models_obj.scale.set(0.1, 0.1, 0.1);
+                 scene.add(models_obj);
 
              }, function() {
 
              }, function() {});
          })
-
-
-
-         console.log(loader);
      }
 
 
