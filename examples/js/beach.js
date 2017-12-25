@@ -66,6 +66,7 @@
          // Kick off the render loop!
          update();
 
+         addBoxes();
          loadModels();
      }
 
@@ -81,14 +82,11 @@
          // Update our perspective camera's positioning
          vrControls.update();
 
-         // If we have not added boxes yet, and we have positional
-         // information applied to our camera (it can take a few seconds),
-         // and the camera's Y position is not undefined or 0, create boxes
-         if (!boxesAdded && !camera.position.y) {
-             addBoxes();
+         // for(var i = 0,len = cubes.length; i < len; i++){
+         //    cubes[i].position.set(Math.cos(angle) * BOX_DISTANCE, camera.position.y - 0.25, Math.sin(angle) * BOX_DISTANCE);
+         // }
 
-             models_obj.position.set(Math.cos(Math.PI / 4) * 10, camera.position.y - 0.25, -Math.sin(Math.PI / 4) * 10);
-         }
+         //models_obj && models_obj.position.set(Math.cos(Math.PI / 4) * 10, camera.position.y - 0.25, -Math.sin(Math.PI / 4) * 10);
 
          // Render the device's camera stream on screen
          arView.render();
@@ -117,6 +115,8 @@
       * Once we have position information applied to our camera,
       * create some boxes at the same height as the camera
       */
+     var cubes = [];
+
      function addBoxes() {
          // Create some cubes around the origin point
          for (var i = 0; i < BOX_QUANTITY; i++) {
@@ -125,27 +125,27 @@
              var material = new THREE.MeshNormalMaterial();
              var cube = new THREE.Mesh(geometry, material);
              cube.position.set(Math.cos(angle) * BOX_DISTANCE, camera.position.y - 0.25, Math.sin(angle) * BOX_DISTANCE);
+
+             cubes.push(cube);
              scene.add(cube);
          }
 
          // Flip this switch so that we only perform this once
          boxesAdded = true;
-
-
-         console.log(loader);
      }
 
      var models_obj;
+
      function loadModels() {
          var mtlLoader = new THREE.MTLLoader();
-         mtlLoader.setPath('models/city/');
-         mtlLoader.load('city.mtl', function(materials) {
+         mtlLoader.setPath('models/chris/');
+         mtlLoader.load('chris.mtl', function(materials) {
              materials.preload();
 
 
              var objLoader = new THREE.OBJLoader();
              objLoader.setMaterials(materials);
-             objLoader.load('models/city/city.obj', function(obj) {
+             objLoader.load('models/chris/chris.obj', function(obj) {
 
                  // object.traverse(function(child) {
                  //     if (child instanceof THREE.Mesh) {
@@ -155,6 +155,7 @@
 
                  models_obj = obj;
                  models_obj.scale.set(0.1, 0.1, 0.1);
+                 models_obj.position.set(Math.cos(0.2) * BOX_DISTANCE, camera.position.y - 0.25, Math.sin(0.2) * BOX_DISTANCE);
                  scene.add(models_obj);
 
              }, function() {
