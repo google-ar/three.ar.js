@@ -118,8 +118,7 @@
          for (var i = 0; i < BOX_QUANTITY; i++) {
              var angle = Math.PI * 2 * (i / BOX_QUANTITY);
              var geometry = new THREE.BoxGeometry(BOX_SIZE, BOX_SIZE, BOX_SIZE);
-             var material = new THRE
-             E.MeshNormalMaterial();
+             var material = new THREE.MeshNormalMaterial();
              var cube = new THREE.Mesh(geometry, material);
              cube.position.set(Math.cos(angle) * BOX_DISTANCE, camera.position.y - 0.25, Math.sin(angle) * BOX_DISTANCE);
              scene.add(cube);
@@ -129,28 +128,39 @@
          boxesAdded = true;
 
 
-         // var manager = new THREE.LoadingManager();
-         // var loader = new THREE.OBJLoader(manager);
-         // loader.load('models/city/city.obj', function(object) {
 
-         //     object.traverse(function(child) {
+         var mtlLoader = new THREE.MTLLoader();
+         mtlLoader.setPath( 'models/city/' );
+         mtlLoader.load('city.mtl', function(materials) {
+             materials.preload();
 
-         //         if (child instanceof THREE.Mesh) {
 
-         //             // child.material.map = texture;
+             var objLoader = new THREE.OBJLoader();
+             objLoader.setMaterials(materials);
+             objLoader.load('models/city/city.obj', function(object) {
 
-         //         }
+                 // object.traverse(function(child) {
+                 //     if (child instanceof THREE.Mesh) {
+                 //         // child.material.map = texture;
+                 //     }
+                 // });
 
-         //     });
+                 object.scale.set(0.1, 0.1, 0.1);
+                 object.position.set(Math.cos(Math.PI / 4) * 10, camera.position.y - 0.25, -Math.sin(Math.PI / 4) * 10);
+                 // scene.add(object);
 
-         //     alert("A");
+             }, function() {
 
-         //     object.scale.set(0.00001, 0.00001, 0.00001);
-         //     object.position.set(Math.cos(Math.PI/4) * 10000, camera.position.y - 0.25, Math.sin(Math.PI/4) * 10000);
-         //     // scene.add(object);
+             }, function() {});
+         })
 
-         // }, function() {}, function() {});
 
-         alert("A");
+
+         console.log(loader);
      }
+
+
+
+     alert(Math.random());
+
  }
