@@ -28,11 +28,14 @@ const banner = fs.readFileSync(path.join(__dirname, 'licenses.txt'));
 export default {
   input: 'src/index.js',
   external: ['three'],
-  output: {
+  output: [{
     file: './dist/three.ar.js',
     format: 'umd',
     name: 'three-ar',
-  },
+  }, {
+    file: './dist/three.ar.module.js',
+    format: 'es',
+  }],
   globals: {
     'three': 'THREE',
   },

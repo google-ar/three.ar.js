@@ -3,6 +3,7 @@
   "version": "0.1.6",
   "description": "A helper three.js library for building AR web experiences that run in WebARonARKit and WebARonARCore",
   "main": "./dist/three.ar.js",
+  "module": "./dist/three.ar.module.js",
   "scripts": {
     "build": "rollup -c",
     "build-min": "rollup -c rollup.config.min.js",
