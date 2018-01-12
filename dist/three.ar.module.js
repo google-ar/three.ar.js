@@ -39,11 +39,7 @@
  * THE SOFTWARE.
  */
 
-(function (global, factory) {
-	typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('three')) :
-	typeof define === 'function' && define.amd ? define(['exports', 'three'], factory) :
-	(factory((global['three-ar'] = {}),global.THREE));
-}(this, (function (exports,three) { 'use strict';
+import { Color, DoubleSide, EventDispatcher, Face3, Geometry, Math as Math$1, Matrix4, Mesh, MeshBasicMaterial, Object3D, PerspectiveCamera, Quaternion, RawShaderMaterial, RingGeometry, Vector3 } from 'three';
 
 var global$1 = typeof global !== "undefined" ? global :
             typeof self !== "undefined" ? self :
@@ -77,7 +73,7 @@ var loadMtl = function loadMtl(mtlPath, MTLLoader) {
 };
 
 var colors = ['#F44336', '#E91E63', '#9C27B0', '#673AB7', '#3F51B5', '#2196F3', '#03A9F4', '#00BCD4', '#009688', '#4CAF50', '#8BC34A', '#CDDC39', '#FFEB3B', '#FFC107', '#FF9800'].map(function (hex) {
-  return new three.Color(hex);
+  return new Color(hex);
 });
 var LEARN_MORE_LINK = 'https://developers.google.com/ar/develop/web/getting-started';
 var UNSUPPORTED_MESSAGE = 'This augmented reality experience requires\n  WebARonARCore or WebARonARKit, experimental browsers from Google\n  for Android and iOS. Learn more at the <a href="' + LEARN_MORE_LINK + '">Google Developers site</a>.';
@@ -167,10 +163,10 @@ ARUtils.loadModel = function () {
   });
 };
 
-var model = new three.Matrix4();
-var tempPos = new three.Vector3();
-var tempQuat = new three.Quaternion();
-var tempScale = new three.Vector3();
+var model = new Matrix4();
+var tempPos = new Vector3();
+var tempQuat = new Quaternion();
+var tempScale = new Vector3();
 ARUtils.placeObjectAtHit = function (object, hit) {
   var easing = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 1;
   var applyOrientation = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : false;
@@ -475,18 +471,18 @@ var slicedToArray = function () {
   };
 }();
 
-var DEFAULT_MATERIAL = new three.RawShaderMaterial({
-  side: three.DoubleSide,
+var DEFAULT_MATERIAL = new RawShaderMaterial({
+  side: DoubleSide,
   transparent: true,
   uniforms: {
     dotColor: {
-      value: new three.Color(0xffffff)
+      value: new Color(0xffffff)
     },
     lineColor: {
-      value: new three.Color(0x707070)
+      value: new Color(0x707070)
     },
     backgroundColor: {
-      value: new three.Color(0x404040)
+      value: new Color(0x404040)
     },
     dotRadius: {
       value: 0.006666666667
@@ -620,12 +616,12 @@ var ARPlanes = function (_Object3D) {
       if (plane.vertices.length == 0) {
         return null;
       }
-      var geo = new three.Geometry();
+      var geo = new Geometry();
       for (var pt = 0; pt < plane.vertices.length / 3; pt++) {
-        geo.vertices.push(new three.Vector3(plane.vertices[pt * 3], plane.vertices[pt * 3 + 1], plane.vertices[pt * 3 + 2]));
+        geo.vertices.push(new Vector3(plane.vertices[pt * 3], plane.vertices[pt * 3 + 1], plane.vertices[pt * 3 + 2]));
       }
       for (var face = 0; face < geo.vertices.length - 2; face++) {
-        geo.faces.push(new three.Face3(0, face + 1, face + 2));
+        geo.faces.push(new Face3(0, face + 1, face + 2));
       }
       var material = void 0;
       if (this.materials.has(plane.identifier)) {
@@ -636,7 +632,7 @@ var ARPlanes = function (_Object3D) {
         material.uniforms.backgroundColor.value = color;
         this.materials.set(plane.identifier, material);
       }
-      var planeObj = new three.Mesh(geo, material);
+      var planeObj = new Mesh(geo, material);
       var mm = plane.modelMatrix;
       planeObj.matrixAutoUpdate = false;
       planeObj.matrix.set(mm[0], mm[4], mm[8], mm[12], mm[1], mm[5], mm[9], mm[13], mm[2], mm[6], mm[10], mm[14], mm[3], mm[7], mm[11], mm[15]);
@@ -650,7 +646,7 @@ var ARPlanes = function (_Object3D) {
     }
   }]);
   return ARPlanes;
-}(three.Object3D);
+}(Object3D);
 
 var DEFAULTS = {
   open: true,
@@ -1083,7 +1079,7 @@ var ARPerspectiveCamera = function (_PerspectiveCamera) {
     }
   }]);
   return ARPerspectiveCamera;
-}(three.PerspectiveCamera);
+}(PerspectiveCamera);
 
 var ARReticle = function (_Mesh) {
   inherits(ARReticle, _Mesh);
@@ -1093,15 +1089,15 @@ var ARReticle = function (_Mesh) {
     var color = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : 0xff0077;
     var easing = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : 0.25;
     classCallCheck(this, ARReticle);
-    var geometry = new three.RingGeometry(innerRadius, outerRadius, 36, 64);
-    var material = new three.MeshBasicMaterial({ color: color });
-    geometry.applyMatrix(new three.Matrix4().makeRotationX(three.Math.degToRad(-90)));
+    var geometry = new RingGeometry(innerRadius, outerRadius, 36, 64);
+    var material = new MeshBasicMaterial({ color: color });
+    geometry.applyMatrix(new Matrix4().makeRotationX(Math$1.degToRad(-90)));
     var _this = possibleConstructorReturn(this, (ARReticle.__proto__ || Object.getPrototypeOf(ARReticle)).call(this, geometry, material));
     _this.visible = false;
     _this.easing = easing;
     _this.applyOrientation = true;
     _this.vrDisplay = vrDisplay;
-    _this._planeDir = new three.Vector3();
+    _this._planeDir = new Vector3();
     return _this;
   }
   createClass(ARReticle, [{
@@ -1120,7 +1116,7 @@ var ARReticle = function (_Mesh) {
     }
   }]);
   return ARReticle;
-}(three.Mesh);
+}(Mesh);
 
 var vertexSource = "attribute vec3 aVertexPosition;attribute vec2 aTextureCoord;varying vec2 vTextureCoord;void main(void){gl_Position=vec4(aVertexPosition,1.0);vTextureCoord=aTextureCoord;}";
 
@@ -1440,14 +1436,14 @@ var ARAnchorManager = function (_EventDispatcher) {
     _this.vrDisplay_.addEventListener('anchorsupdated', function (event) {
       return _this.onAnchorsUpdated_(event);
     });
-    _this.scale_ = new three.Vector3();
-    _this.matrix_ = new three.Matrix4();
+    _this.scale_ = new Vector3();
+    _this.matrix_ = new Matrix4();
     return _this;
   }
   createClass(ARAnchorManager, [{
     key: 'add',
     value: function add(object3d) {
-      if (!(object3d instanceof three.Object3D)) {
+      if (!(object3d instanceof Object3D)) {
         throw new Error('Invalid Object3D trying to add an anchor');
       }
       if (this.object3DsToAnchors_.has(object3d)) {
@@ -1463,7 +1459,7 @@ var ARAnchorManager = function (_EventDispatcher) {
   }, {
     key: 'remove',
     value: function remove(object3d) {
-      if (!(object3d instanceof three.Object3D)) {
+      if (!(object3d instanceof Object3D)) {
         throw new Error('Invalid Object3D trying to remove anchor');
       }
       var anchor = this.object3DsToAnchors_.get(object3d);
@@ -1511,7 +1507,7 @@ var ARAnchorManager = function (_EventDispatcher) {
     }
   }]);
   return ARAnchorManager;
-}(three.EventDispatcher);
+}(EventDispatcher);
 
 (function () {
   if (window.webarSpeechRecognitionInstance) {
@@ -1585,13 +1581,4 @@ if (typeof window !== 'undefined' && _typeof(window.THREE) === 'object') {
   window.THREE.ARAnchorManager = ARAnchorManager;
 }
 
-exports.ARDebug = ARDebug;
-exports.ARPerspectiveCamera = ARPerspectiveCamera;
-exports.ARReticle = ARReticle;
-exports.ARUtils = ARUtils;
-exports.ARView = ARView;
-exports.ARAnchorManager = ARAnchorManager;
-
-Object.defineProperty(exports, '__esModule', { value: true });
-
-})));
+export { ARDebug, ARPerspectiveCamera, ARReticle, ARUtils, ARView, ARAnchorManager };
