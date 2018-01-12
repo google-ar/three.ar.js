@@ -135,18 +135,37 @@ display.getPlanes().forEach(plane => {
 
 ### Anchors
 
-AR systems tyr to estimate with the highest accuracy possible the pose of the device
-in the real world. This estimation evolves over time as the system "learns" more about
-the real world and because of this learning process, the pose estimation may vary to
-be as accurate as it can get.
+AR systems try to estimate the pose of the device in the real world with the highest
+accuracy possible. This estimation evolves over time as the system "learns" more about
+the real world. Because of this learning process, the pose estimation may vary over time
+and thus, the pose value needs to change.
 
-An anchor is the concept of specifying to the underlying tracking system that a especific
-pose in the world space is important for the app and that if the system should track changes
-in the device pose estimation to correctly update the important pose at all times.
+An anchor is the concept of telling the underlying tracking system that a specific
+pose in the real world for a virtual element is important for the app. Once the system knows
+about that specific pose, it will be able to notify the application about changes in the tracking
+estimation so the virtual element can correctly correct its pose.
 
-The VRDisplay interface has been augmented with functions to handle the creation, removal,
+The VRDisplay interface has been extended with functions to handle the creation, removal,
 retrieval and even handling of anchors. Anchors have a unique identifier and the pose 
 information represented by a model matrix that should be up to date.
+
+```
+interface VRAnchor {
+  readonly attribute long identifier;
+  readonly attribute Float32Array? modelMatrix;
+};
+
+partial interface VRDisplay {
+  ...
+  VRAnchor addAnchor(sequence<float> modelMatrix);
+  VRAnchor addAnchor(Float32Array modelMatrix);
+  void removeAnchor(VRAnchor anchor);
+  sequence<VRAnchor> getAnchors();
+  ...
+};
+```
+
+Here is some basic code on how the whole Anchor API extension can be used:
 
 ```js
 var anchor = display.addAnchor(modelMatrix);
@@ -165,21 +184,23 @@ display.addEventListener('anchorsupdated', e => {
 It is important to note that the modelMatrix to create the anchor is assumed to be in world
 space and that its scale is (1, 1, 1).
 
-Anchors should be used in order to get the most accurate pose for a 3D model possible as the
-AR system underneath evolves.
+Anchors should be used in order to get the most accurate pose possible for a 3D model as the
+AR system underneath evolves its tracking estimation.
+
+Anchor support was added to [WebARonARCore] and [WebARonARKit] in November 2017 and there is [an
+example](https://github.com/google-ar/three.ar.js/blob/master/examples/anchors.html) of their use.
 
 ### Markers
 
-[WebARonARCore](https://github.com/google-ar/WebARonARCore) and 
-[WebARonTango](https://github.com/google-ar/WebARonTango) have an additional feature that allows
+[WebARonARCore] and [WebARonTango] have an additional feature that allows
 to detect markers. Markers are printed tags that the AR system can recognize when they are in the
-line of sight of the camera and their world scale pose can be calculated. They can be very useful
-to trigger a experience or to share the same coordinate system between different devices, among
+line of sight of the camera so their world scale pose can be calculated. They can be very useful
+to trigger an experience or to share the same coordinate system between different devices, among
 others.
 
 There is support for 2 types of markers: QRCodes and ARMarkers. Both allow to obtain their world
-pose but in the case of QRCodes, they can contain a string. ARMakers have a unique identifier, a
-number between 0 and 255.
+pose but in the case of QRCodes, they can contain a string that is encoded in the marker itself.
+ARMakers have a unique identifier, a number between 0 and 255.
 
 The WebVR extension function allows to constantly query if the system has been able to detect
 markers. There is no event involved for now. The query requires to specify the type of marker to
@@ -188,8 +209,27 @@ be detected and the actual size of the real/printed marker in meters.
 VRMarkers include the type of the marker, their pose as a modelMatrix and either an identifier
 (for ARMarkers) or a content string (for QRCodes).
 
+```
+interface VRMarker {
+  readonly attribute long type;
+  readonly attribute long id;
+  readonly attribute DOMString content;
+  readonly attribute Float32Array modelMatrix;
+};
+
+partial interface VRDisplay {
+  ...
+  const long MARKER_TYPE_AR       = 0x01;
+  const long MARKER_TYPE_QRCODE   = 0x02;
+  sequence<VRMarker> getMarkers(long type, float size);
+  ...
+};
+```
+
+Here is a basic example on how to query for QRCode markers.
 As not all of the WebAR prototypes support markers, it is a good idea to ask if the getMarkers
-function is available.
+function is available. Marker support was added to [WebARonTango] and [WebARonARCore] in November
+2017 and there is [an example](https://github.com/google-ar/three.ar.js/blob/master/examples/markers.html) of their use.
 
 ```js
 if (display.getMarkers) {
@@ -215,5 +255,6 @@ if (display.getMarkers) {
 [VRControls]: https://github.com/google-ar/three.ar.js/blob/e871fe9ed806ef3be233fd9cc86ffc5a6a7a1382/third_party/three.js/VRControls.js#L87
 [WebARonARKit]: https://github.com/google-ar/WebARonARKit
 [WebARonARCore]: https://github.com/google-ar/WebARonARCore
+[WebARonTango]: https://github.com/google-ar/WebARonTango
 [webvr_ar_extension.idl]: webvr_ar_extension.idl
 

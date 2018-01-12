@@ -21,6 +21,8 @@ partial interface VRDisplay {
   void removeAnchor(VRAnchor anchor);
   sequence<VRAnchor> getAnchors();
   sequence<VRMarker> getMarkers(long type, float size);
+  const long MARKER_TYPE_AR       = 0x01;
+  const long MARKER_TYPE_QRCODE   = 0x02;
 };
 
 partial interface VRDisplayCapabilities {

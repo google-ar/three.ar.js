@@ -107,8 +107,9 @@ var scene, cameraPersp, model = null;
 var MODEL_SIZE_IN_METERS = 0.2;
 var vrControls = null;
 var gui;
+var scale = new THREE.Vector3();
 
-var MARKER_SIZE_IN_METERS = 0.1397;
+var MARKER_SIZE_IN_METERS = 0.06;
 
 /**
  * Use the `getARDisplay()` utility to leverage the WebVR API
@@ -118,8 +119,12 @@ var MARKER_SIZE_IN_METERS = 0.1397;
  */
 THREE.ARUtils.getARDisplay().then(function (display) {
   if (display) {
-    vrDisplay = display;
-    init();
+    if (display.getMarkers) {
+      vrDisplay = display;
+      init();
+    } else {
+      THREE.ARUtils.displayUnsupportedMessage("This prototype browser app for WebAR does not support marker detection yet.");
+    }
   } else {
     THREE.ARUtils.displayUnsupportedMessage();
   }
@@ -221,9 +226,10 @@ function update() {
   renderer.render(scene, camera);
 
   var markers = vrDisplay.getMarkers(gui.markerType, MARKER_SIZE_IN_METERS);
+  console.log(markers.length);
   if (markers.length > 0) {
-    model.position.fromArray(markers[0].position);
-    model.quaternion.fromArray(markers[0].orientation);
+    model.matrix.fromArray(markers[0].modelMatrix);
+    model.matrix.decompose(model.position, model.quaternion, scale);
   }
 
   // Kick off the requestAnimationFrame to call this function
