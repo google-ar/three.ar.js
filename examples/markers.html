@@ -85,7 +85,6 @@
 
 <script>
 function GUI() {
-  this.showSeeThroughCamera = true;
   this.markerTypeString = "AR";
   this.markerType = 1;
   return this;
@@ -135,7 +134,6 @@ function init() {
   // Initialize the dat.GUI.
   var datGUI = new dat.GUI();
   gui = new GUI();
-  datGUI.add(gui, "showSeeThroughCamera").name("Show seethrough camera");
   datGUI.add(gui, "markerTypeString", ["AR", "QRCODE"]).onFinishChange(function(value) {
     if (!vrDisplay) {
       return;
