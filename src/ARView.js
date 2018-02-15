@@ -194,9 +194,9 @@ class ARVideoRenderer {
     if (this.vrDisplay) {
       // In the case of ARKit camera frame the canvas might not have been
       // created of the correct size so the UV values can't be calculated from it.
-      let u = window.WebARonARKitUsesCameraFrames ? 1.0 :
+      let u = window.WebARonARKitSendsCameraFrames ? 1.0 :
         this.passThroughCamera.width / this.passThroughCamera.textureWidth;
-      let v = window.WebARonARKitUsesCameraFrames ? 1.0 :
+      let v = window.WebARonARKitSendsCameraFrames ? 1.0 :
         this.passThroughCamera.height / this.passThroughCamera.textureHeight;
       textureCoords = [
         [0.0, 0.0, 0.0, v, u, 0.0, u, v],
@@ -263,6 +263,11 @@ class ARVideoRenderer {
     ];
 
     preserveGLState(gl, bindings, () => {
+      // If the camera pass through is still not valid, skip the rendering.
+      if (this.passThroughCamera.textureWidth == 0 || 
+          this.passThroughCamera.textureHeight == 0) {
+        return;
+      }
       gl.useProgram(this.program);
       gl.bindBuffer(gl.ARRAY_BUFFER, this.vertexPositionBuffer);
       gl.enableVertexAttribArray(this.vertexPositionAttribute);
@@ -318,7 +323,7 @@ class ARVideoRenderer {
 
       // The texture from ARKit is not power of 2 friendly so these parameters
       // are needed.
-      if (window.WebARonARKitUsesCameraFrames) {
+      if (window.WebARonARKitSendsCameraFrames) {
         gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
         gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
         gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
@@ -351,7 +356,7 @@ class ARView {
     // Only with ARKit and the camera frames are not being passed, we should
     // not do anything and let the transparent webview show the camera
     // underneath.
-    if (isARKit(this.vrDisplay) && !window.WebARonARKitUsesCameraFrames) {
+    if (isARKit(this.vrDisplay) && !window.WebARonARKitSendsCameraFrames) {
       return;
     }
     this.renderer = renderer;
@@ -381,7 +386,7 @@ class ARView {
     // Only with ARKit and the camera frames are not being passed, we should
     // not do anything and let the transparent webview show the camera
     // underneath.
-    if (isARKit(this.vrDisplay) && !window.WebARonARKitUsesCameraFrames) {
+    if (isARKit(this.vrDisplay) && !window.WebARonARKitSendsCameraFrames) {
       return;
     }
 
