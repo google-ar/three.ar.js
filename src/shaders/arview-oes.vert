@@ -11,12 +11,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-precision mediump float;
+attribute vec3 aVertexPosition;
+attribute vec2 aTextureCoord;
 
 varying vec2 vTextureCoord;
 
-uniform sampler2D uSampler;
-
 void main(void) {
-  gl_FragColor = texture2D(uSampler, vTextureCoord);
+  gl_Position = vec4(aVertexPosition, 1.0);
+  vTextureCoord = aTextureCoord;
 }

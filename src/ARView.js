@@ -14,6 +14,8 @@
  */
 
 import { isARKit } from './ARUtils';
+import vertexSourceOES from './shaders/arview-oes.vert';
+import fragmentSourceOES from './shaders/arview-oes.frag';
 import vertexSource from './shaders/arview.vert';
 import fragmentSource from './shaders/arview.frag';
 import preserveGLState from 'gl-preserve-state';
@@ -135,7 +137,18 @@ class ARVideoRenderer {
     this.gl = gl;
     if (this.vrDisplay) {
       this.passThroughCamera = vrDisplay.getPassThroughCamera();
-      this.program = getProgram(gl, vertexSource, fragmentSource);
+      // Depending on the type of passThroughCamera, use a different
+      // target for the texture and different shaders.
+      if (this.passThroughCamera instanceof Image) {
+        this.textureTarget = gl.TEXTURE_2D;
+        this.vertexSource = vertexSource;
+        this.fragmentSource = fragmentSource;
+      } else {
+        this.textureTarget = gl.TEXTURE_EXTERNAL_OES;
+        this.vertexSource = vertexSourceOES;
+        this.fragmentSource = fragmentSourceOES;
+      }
+      this.program = getProgram(gl, this.vertexSource, this.fragmentSource);
     }
 
     gl.useProgram(this.program);
@@ -179,9 +192,11 @@ class ARVideoRenderer {
     // orientations of the device depending if there is a VRDisplay or not
     let textureCoords = null;
     if (this.vrDisplay) {
-      let u =
+      // In the case of ARKit camera frame the canvas might not have been
+      // created of the correct size so the UV values can't be calculated from it.
+      let u = window.WebARonARKitUsesCameraFrames ? 1.0 :
         this.passThroughCamera.width / this.passThroughCamera.textureWidth;
-      let v =
+      let v = window.WebARonARKitUsesCameraFrames ? 1.0 :
         this.passThroughCamera.height / this.passThroughCamera.textureHeight;
       textureCoords = [
         [0.0, 0.0, 0.0, v, u, 0.0, u, v],
@@ -205,7 +220,7 @@ class ARVideoRenderer {
     // Store the current combined orientation to check if it has changed
     // during the update calls and use the correct texture coordinates.
     this.combinedOrientation = combineOrientations(
-      screen.orientation.angle,
+      screen.orientation ? screen.orientation.angle : window.orientation,
       this.passThroughCamera.orientation
     );
 
@@ -266,9 +281,10 @@ class ARVideoRenderer {
       // orientation of the VRSeeThroughCamera to determine the correct UV
       // coordinates to be used.
       let combinedOrientation = combineOrientations(
-        screen.orientation.angle,
+        screen.orientation ? screen.orientation.angle : window.orientation,
         this.passThroughCamera.orientation
       );
+
       if (combinedOrientation !== this.combinedOrientation) {
         this.combinedOrientation = combinedOrientation;
         gl.bufferData(
@@ -288,10 +304,10 @@ class ARVideoRenderer {
       );
 
       gl.activeTexture(gl.TEXTURE0);
-      gl.bindTexture(gl.TEXTURE_EXTERNAL_OES, this.texture);
+      gl.bindTexture(this.textureTarget, this.texture);
       // Update the content of the texture in every frame.
       gl.texImage2D(
-        gl.TEXTURE_EXTERNAL_OES,
+        this.textureTarget,
         0,
         gl.RGB,
         gl.RGB,
@@ -299,6 +315,14 @@ class ARVideoRenderer {
         this.passThroughCamera
       );
       gl.uniform1i(this.samplerUniform, 0);
+
+      // The texture from ARKit is not power of 2 friendly so these parameters
+      // are needed.
+      if (window.WebARonARKitUsesCameraFrames) {
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+      }
 
       gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.indexBuffer);
 
@@ -324,7 +348,10 @@ class ARView {
    */
   constructor(vrDisplay, renderer) {
     this.vrDisplay = vrDisplay;
-    if (isARKit(this.vrDisplay)) {
+    // Only with ARKit and the camera frames are not being passed, we should
+    // not do anything and let the transparent webview show the camera
+    // underneath.
+    if (isARKit(this.vrDisplay) && !window.WebARonARKitUsesCameraFrames) {
       return;
     }
     this.renderer = renderer;
@@ -351,7 +378,10 @@ class ARView {
    * Renders the see through camera to the passed in renderer
    */
   render() {
-    if (isARKit(this.vrDisplay)) {
+    // Only with ARKit and the camera frames are not being passed, we should
+    // not do anything and let the transparent webview show the camera
+    // underneath.
+    if (isARKit(this.vrDisplay) && !window.WebARonARKitUsesCameraFrames) {
       return;
     }
 
