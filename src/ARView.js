@@ -14,10 +14,9 @@
  */
 
 import { isARKit } from './ARUtils';
-import vertexSourceOES from './shaders/arview-oes.vert';
-import fragmentSourceOES from './shaders/arview-oes.frag';
 import vertexSource from './shaders/arview.vert';
 import fragmentSource from './shaders/arview.frag';
+import fragmentSourceOES from './shaders/arview-oes.frag';
 import preserveGLState from 'gl-preserve-state';
 
 /**
@@ -141,14 +140,12 @@ class ARVideoRenderer {
       // target for the texture and different shaders.
       if (this.passThroughCamera instanceof Image) {
         this.textureTarget = gl.TEXTURE_2D;
-        this.vertexSource = vertexSource;
         this.fragmentSource = fragmentSource;
       } else {
         this.textureTarget = gl.TEXTURE_EXTERNAL_OES;
-        this.vertexSource = vertexSourceOES;
         this.fragmentSource = fragmentSourceOES;
       }
-      this.program = getProgram(gl, this.vertexSource, this.fragmentSource);
+      this.program = getProgram(gl, vertexSource, this.fragmentSource);
     }
 
     gl.useProgram(this.program);
@@ -264,8 +261,8 @@ class ARVideoRenderer {
 
     preserveGLState(gl, bindings, () => {
       // If the camera pass through is still not valid, skip the rendering.
-      if (this.passThroughCamera.textureWidth == 0 || 
-          this.passThroughCamera.textureHeight == 0) {
+      if (this.passThroughCamera.textureWidth === 0 ||
+          this.passThroughCamera.textureHeight === 0) {
         return;
       }
       gl.useProgram(this.program);
