@@ -142,7 +142,9 @@ For testing functionality, go through the examples with your changes and ensure 
 
 For maintainers, to cut a new release for npm, use the [npm version] command. The `preversion`, `version` and `postversion` npm scripts will run tests, build, add built files and tag to git, push to github, and publish the new npm version.
 
-`npm version <semverstring>`
+`npm version <patch|minor|major>`
+
+You should be sure that `git push` pushes to the origin repository if you're working in a fork. See the `postversion` npm script, and that you have access to both the repo and npm package.
 
 ## Examples
 
