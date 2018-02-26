@@ -1124,7 +1124,9 @@ var ARReticle = function (_Mesh) {
 
 var vertexSource = "attribute vec3 aVertexPosition;attribute vec2 aTextureCoord;varying vec2 vTextureCoord;void main(void){gl_Position=vec4(aVertexPosition,1.0);vTextureCoord=aTextureCoord;}";
 
-var fragmentSource = "\n#extension GL_OES_EGL_image_external : require\nprecision mediump float;varying vec2 vTextureCoord;uniform samplerExternalOES uSampler;void main(void){gl_FragColor=texture2D(uSampler,vTextureCoord);}";
+var fragmentSource = "precision mediump float;varying vec2 vTextureCoord;uniform sampler2D uSampler;void main(void){gl_FragColor=texture2D(uSampler,vTextureCoord);}";
+
+var fragmentSourceOES = "\n#extension GL_OES_EGL_image_external : require\nprecision mediump float;varying vec2 vTextureCoord;uniform samplerExternalOES uSampler;void main(void){gl_FragColor=texture2D(uSampler,vTextureCoord);}";
 
 function WGLUPreserveGLState(gl, bindings, callback) {
   if (!bindings) {
@@ -1304,7 +1306,14 @@ var ARVideoRenderer = function () {
     this.gl = gl;
     if (this.vrDisplay) {
       this.passThroughCamera = vrDisplay.getPassThroughCamera();
-      this.program = getProgram(gl, vertexSource, fragmentSource);
+      if (this.passThroughCamera instanceof Image) {
+        this.textureTarget = gl.TEXTURE_2D;
+        this.fragmentSource = fragmentSource;
+      } else {
+        this.textureTarget = gl.TEXTURE_EXTERNAL_OES;
+        this.fragmentSource = fragmentSourceOES;
+      }
+      this.program = getProgram(gl, vertexSource, this.fragmentSource);
     }
     gl.useProgram(this.program);
     this.vertexPositionAttribute = gl.getAttribLocation(this.program, 'aVertexPosition');
@@ -1321,8 +1330,8 @@ var ARVideoRenderer = function () {
     gl.bindBuffer(gl.ARRAY_BUFFER, this.textureCoordBuffer);
     var textureCoords = null;
     if (this.vrDisplay) {
-      var u = this.passThroughCamera.width / this.passThroughCamera.textureWidth;
-      var v = this.passThroughCamera.height / this.passThroughCamera.textureHeight;
+      var u = window.WebARonARKitSendsCameraFrames ? 1.0 : this.passThroughCamera.width / this.passThroughCamera.textureWidth;
+      var v = window.WebARonARKitSendsCameraFrames ? 1.0 : this.passThroughCamera.height / this.passThroughCamera.textureHeight;
       textureCoords = [[0.0, 0.0, 0.0, v, u, 0.0, u, v], [u, 0.0, 0.0, 0.0, u, v, 0.0, v], [u, v, u, 0.0, 0.0, v, 0.0, 0.0], [0.0, v, u, v, 0.0, 0.0, u, 0.0]];
     } else {
       textureCoords = [[0.0, 0.0, 0.0, 1.0, 1.0, 0.0, 1.0, 1.0], [1.0, 0.0, 0.0, 0.0, 1.0, 1.0, 0.0, 1.0], [1.0, 1.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0], [0.0, 1.0, 1.0, 1.0, 0.0, 0.0, 1.0, 0.0]];
@@ -1331,7 +1340,7 @@ var ARVideoRenderer = function () {
     for (var i = 0; i < textureCoords.length; i++) {
       this.f32TextureCoords.push(new Float32Array(textureCoords[i]));
     }
-    this.combinedOrientation = combineOrientations(screen.orientation.angle, this.passThroughCamera.orientation);
+    this.combinedOrientation = combineOrientations(screen.orientation ? screen.orientation.angle : window.orientation, this.passThroughCamera.orientation);
     gl.bufferData(gl.ARRAY_BUFFER, this.f32TextureCoords[this.combinedOrientation], gl.STATIC_DRAW);
     this.textureCoordBuffer.itemSize = 2;
     this.textureCoordBuffer.numItems = 8;
@@ -1355,14 +1364,21 @@ var ARVideoRenderer = function () {
     value: function render() {
       var _this = this;
       var gl = this.gl;
-      var bindings = [gl.ARRAY_BUFFER_BINDING, gl.ELEMENT_ARRAY_BUFFER_BINDING, gl.CURRENT_PROGRAM];
+      var bindings = [gl.ARRAY_BUFFER_BINDING, gl.ELEMENT_ARRAY_BUFFER_BINDING, gl.CURRENT_PROGRAM, gl.TEXTURE_BINDING_2D];
       glPreserveState(gl, bindings, function () {
+        if (_this.passThroughCamera.textureWidth === 0 || _this.passThroughCamera.textureHeight === 0) {
+          return;
+        }
+        var previousFlipY = gl.getParameter(gl.UNPACK_FLIP_Y_WEBGL);
+        var previousWinding = gl.getParameter(gl.FRONT_FACE);
+        gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, false);
+        gl.frontFace(gl.CCW);
         gl.useProgram(_this.program);
         gl.bindBuffer(gl.ARRAY_BUFFER, _this.vertexPositionBuffer);
         gl.enableVertexAttribArray(_this.vertexPositionAttribute);
         gl.vertexAttribPointer(_this.vertexPositionAttribute, _this.vertexPositionBuffer.itemSize, gl.FLOAT, false, 0, 0);
         gl.bindBuffer(gl.ARRAY_BUFFER, _this.textureCoordBuffer);
-        var combinedOrientation = combineOrientations(screen.orientation.angle, _this.passThroughCamera.orientation);
+        var combinedOrientation = combineOrientations(screen.orientation ? screen.orientation.angle : window.orientation, _this.passThroughCamera.orientation);
         if (combinedOrientation !== _this.combinedOrientation) {
           _this.combinedOrientation = combinedOrientation;
           gl.bufferData(gl.ARRAY_BUFFER, _this.f32TextureCoords[_this.combinedOrientation], gl.STATIC_DRAW);
@@ -1370,11 +1386,18 @@ var ARVideoRenderer = function () {
         gl.enableVertexAttribArray(_this.textureCoordAttribute);
         gl.vertexAttribPointer(_this.textureCoordAttribute, _this.textureCoordBuffer.itemSize, gl.FLOAT, false, 0, 0);
         gl.activeTexture(gl.TEXTURE0);
-        gl.bindTexture(gl.TEXTURE_EXTERNAL_OES, _this.texture);
-        gl.texImage2D(gl.TEXTURE_EXTERNAL_OES, 0, gl.RGB, gl.RGB, gl.UNSIGNED_BYTE, _this.passThroughCamera);
+        gl.bindTexture(_this.textureTarget, _this.texture);
+        gl.texImage2D(_this.textureTarget, 0, gl.RGB, gl.RGB, gl.UNSIGNED_BYTE, _this.passThroughCamera);
         gl.uniform1i(_this.samplerUniform, 0);
+        if (window.WebARonARKitSendsCameraFrames) {
+          gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+          gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+          gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+        }
         gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, _this.indexBuffer);
         gl.drawElements(gl.TRIANGLES, _this.indexBuffer.numItems, gl.UNSIGNED_SHORT, 0);
+        gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, previousFlipY);
+        gl.frontFace(previousWinding);
       });
     }
   }]);
@@ -1384,7 +1407,7 @@ var ARView = function () {
   function ARView(vrDisplay, renderer) {
     classCallCheck(this, ARView);
     this.vrDisplay = vrDisplay;
-    if (isARKit(this.vrDisplay)) {
+    if (isARKit(this.vrDisplay) && !window.WebARonARKitSendsCameraFrames) {
       return;
     }
     this.renderer = renderer;
@@ -1403,7 +1426,7 @@ var ARView = function () {
   }, {
     key: 'render',
     value: function render() {
-      if (isARKit(this.vrDisplay)) {
+      if (isARKit(this.vrDisplay) && !window.WebARonARKitSendsCameraFrames) {
         return;
       }
       var gl = this.gl;
