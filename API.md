@@ -8,6 +8,28 @@ Creates an ARView with a [VRDisplay] and a [THREE.WebGLRenderer]. Handles the pa
 
 Renders the pass through camera. Usually called on every frame in a render loop before rendering other objects in the scene.
 
+## new THREE.ARAnchorManager(vrDisplay)
+
+Creates an ARAnchorManager with a [VRDisplay]. Allows the adding of [THREE.Object3D]s to be tracked and updated accurately as scene understanding improves via anchors. Extends `EventTarget`, so subscribe to events via:
+
+```js
+  anchorManager.addEventListener('anchorsupdated', e => {
+    e.anchors.forEach(obj => console.log('updated', obj));
+  });
+```
+
+Currently there's only the `anchorsupdated` event has an `anchors` property containing an array
+of all updated [THREE.Object3D]s when an anchor update occurs.
+
+### ARAnchorManager THREE.ARAnchorManager#add(object)
+
+Takes a [THREE.Object3D] and sets an anchor at its current position. If anchor is updated, the
+object will be updated accordingly, and a `anchorsupdated` event will be fired on the ARAnchorManager. Returns the ARAnchorManager.
+
+### boolean THREE.ARAnchorManager#remove(object)
+
+Removes the anchor from [THREE.Object3D] and will no longer be updated when an anchor changes. Returns a boolean indicating if the object was being tracked initially.
+
 ## new THREE.ARReticle(vrDisplay, innerRadius, outerRadius, color, easing)
 
 Creates a [THREE.Mesh] reticle to render via hit tests with the [VRDisplay].
