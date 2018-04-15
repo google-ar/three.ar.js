@@ -15,7 +15,7 @@
 
 import { Color, Matrix4, Quaternion, Vector3 } from 'three';
 
-import { loadMtl, loadObj } from './loaders';
+import { loadMtl, loadObj, loadGltf } from './loaders';
 
 const colors = [
   '#F44336',
@@ -84,7 +84,7 @@ ARUtils.getARDisplay = () => new Promise((resolve, reject) => {
 export const getARDisplay = ARUtils.getARDisplay;
 
 /**
- * Takes a path for an OBJ model and optionally a path for an MTL
+ * Takes a path for OBJ model or GLTF model. optionally a path for MTL or DRACO decoder
  * texture and returns a promise resolving to a THREE.Group loaded with
  * the appropriate material. Can be used on downloaded models from Blocks.
  *
@@ -95,42 +95,76 @@ export const getARDisplay = ARUtils.getARDisplay;
  * @param {Object} config
  * @param {string} config.objPath
  * @param {string} config.mtlPath
+ * @param {string} config.gltfPath
+ * @param {string} config.decoderPath
  * @param {THREE.OBJLoader} config.OBJLoader
  * @param {THREE.MTLLoader} config.MTLLoader
+ * @param {THREE.GLTFLoader} config.GLTFLoader
+ * @param {THREE.DRACOLoader} config.DRACOLoader
  * @return {THREE.Group}
  */
 ARUtils.loadModel = (config = {}) => new Promise((resolve, reject) => {
-  const { mtlPath, objPath } = config;
+  const { mtlPath, objPath, gltfPath, decoderPath } = config;
   const OBJLoader = config.OBJLoader || (global.THREE ? global.THREE.OBJLoader : null);
   const MTLLoader = config.MTLLoader || (global.THREE ? global.THREE.MTLLoader : null);
+  const GLTFLoader = config.GLTFLoader || (global.THREE ? global.THREE.GLTFLoader : null);
+  const DRACOLoader = config.DRACOLoader || (global.THREE ? global.THREE.DRACOLoader : null);
 
-  if (!config.objPath) {
-    reject(new Error('`objPath` must be specified.'));
+  if (config.objPath ^ config.gltfPath) {
+    reject(new Error('`objPath` or `gltfPath` must be only one specified.'));
     return;
   }
 
-  if (!OBJLoader) {
-    reject(new Error('Missing OBJLoader as third argument, or window.THREE.OBJLoader existence'));
+  if (config.objPath && !OBJLoader) {
+    reject(new Error('Missing OBJLoader, or window.THREE.OBJLoader existence'));
     return;
   }
 
-  if (config.mtlPath && !MTLLoader) {
-    reject(new Error('Missing MTLLoader as fourth argument, or window.THREE.MTLLoader existence'));
+  if (config.gltfPath && !GLTFLoader) {
+    reject(new Error('Missing GLTFLoader, or window.THREE.GLTFLoader existence'));
+    return;
+  }
+
+  if (config.objPath && config.mtlPath && !MTLLoader) {
+    reject(new Error('Missing MTLLoader, or window.THREE.MTLLoader existence'));
+    return;
+  }
+  
+  if( decoderPath ^ DRACOLoader ) {
+    if (decoderPath) {
+      reject(new Error('Missing DRACOLoader, or window.THREE.DRACOLoader existence'));
+    } else if (DRACOLoader) {
+      reject(new Error('Missing `decoderPath`. if you wanna using DRACOLoader, `decoderPath` must be specified.'));
+    }
+
     return;
   }
 
   let p = Promise.resolve();
 
-  if (mtlPath) {
+  if (objPath && mtlPath) {
     p = loadMtl(mtlPath, MTLLoader);
+  }
+
+  if (gltfPath && decoderPath){
+    DRACOLoader.setDecoderPath(decoderPath);
   }
 
   p.then(materialCreator => {
     if (materialCreator) {
       materialCreator.preload();
     }
-    return loadObj(objPath, materialCreator, OBJLoader);
+
+    if(objPath) {
+      return loadObj(objPath, materialCreator, OBJLoader);
+    }
+
+    if(gltfPath) {
+      return loadGltf(gltfPath, GLTFLoader, DRACOLoader);
+    }
+    
   }).then(resolve, reject);
+
 });
 export const loadModel = ARUtils.loadModel;
 

@@ -34,8 +34,18 @@ export const loadObj = (objPath, materialCreator, OBJLoader) => new Promise((res
     Object.keys(materialCreator.materials).forEach(k => opacityRemap(materialCreator.materials[k]));
     loader.setMaterials(materialCreator);
   }
-
+  
   loader.load(objPath, resolve, noop, reject);
+});
+
+export const loadGltf = (gltfPath, GLTFLoader, DRACOLoader) => new Promise((resolve, reject) => {
+  const loader = new GLTFLoader();
+
+  if(DRACOLoader) {
+    loader.setDRACOLoader( new THREE.DRACOLoader() );
+  }
+
+  loader.load(gltfPath, resolve, noop, reject);
 });
 
 export const loadMtl = (mtlPath, MTLLoader) => new Promise((resolve, reject) => {
