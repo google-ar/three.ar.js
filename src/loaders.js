@@ -38,6 +38,16 @@ export const loadObj = (objPath, materialCreator, OBJLoader) => new Promise((res
   loader.load(objPath, resolve, noop, reject);
 });
 
+export const loadGltf = (gltfPath, GLTFLoader, DRACOLoader) => new Promise((resolve, reject) => {
+  const loader = new GLTFLoader();
+
+  if (DRACOLoader) {
+    loader.setDRACOLoader( new DRACOLoader() );
+  }
+
+  loader.load(gltfPath, resolve, noop, reject);
+});
+
 export const loadMtl = (mtlPath, MTLLoader) => new Promise((resolve, reject) => {
   const loader = new MTLLoader();
 
